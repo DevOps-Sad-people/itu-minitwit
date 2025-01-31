@@ -37,4 +37,30 @@
 - `logout`
 - `register`
 ### Other problems
- 
+
+
+## Set up env
+Create env
+```bash
+python3 -m venv venv
+```
+Activate env
+```bash
+source venv/bin/activate
+```
+Deactivate env
+```bash
+deactivate
+```
+
+## Install requirements
+This is used to install all the required packages from the requirements file
+```bash
+pip install -r requirements.txt
+```
+
+## Update requirements file
+This is used to update the requirements file with the current packages.
+```bash
+pip freeze > requirements.txt
+```

@@ -11,6 +11,10 @@
 
 ### Other observations 
 - Hashing md5
+- Opens and closes db connection for each request
+- Flagging system. 
+- time: Unix seconds
+- Requests return HTML
 
 
 ### POST/GET Features

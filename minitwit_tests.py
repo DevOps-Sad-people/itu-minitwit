@@ -8,7 +8,7 @@
     :copyright: (c) 2010 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
-import minitwit3
+import minitwit
 import unittest
 import tempfile
 
@@ -18,9 +18,9 @@ class MiniTwitTestCase(unittest.TestCase):
     def setUp(self):
         """Before each test, set up a blank database"""
         self.db = tempfile.NamedTemporaryFile()
-        self.app = minitwit3.app.test_client()
-        minitwit3.DATABASE = self.db.name
-        minitwit3.init_db()
+        self.app = minitwit.app.test_client()
+        minitwit.DATABASE = self.db.name
+        minitwit.init_db()
 
     # helper functions
 

@@ -64,3 +64,8 @@ This is used to update the requirements file with the current packages.
 ```bash
 pip freeze > requirements.txt
 ```
+
+## Compile flag tool
+```bash
+gcc flag_tool.c -o flag_tool -lsqlite3
+```

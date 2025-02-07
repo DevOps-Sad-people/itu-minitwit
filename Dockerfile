@@ -11,5 +11,7 @@ RUN bundle install
 # Copy the application code to the container
 COPY . .
 
+EXPOSE 4567
+
 # Expose the port the app runs on
 CMD ["ruby", "./minitwit.rb"]

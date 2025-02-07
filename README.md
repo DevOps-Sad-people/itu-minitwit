@@ -4,6 +4,11 @@
 - Install Ruby version 3.3
 - run `bundle install`
 
+## Using Docker
+
+- Install `docker build -t my-ruby-app .`
+- Run `docker run -it -p 4567:4567 my-ruby-app`
+
 
 ## Observations
 

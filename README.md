@@ -18,6 +18,35 @@
     -w /app \
     ruby:3.3 bash -c "bundle install; ruby minitwit.rb"`
 
+### developing erb files
+
+The `.erb` files are in folder `templates/`
+
+read more about the erb syntax [here](https://www.puppet.com/docs/puppet/5.5/lang_template_erb.html)
+
+The css file should be in the `public/` folder, but for now it is just directly in the layout file. 
+
+The erb structure and syntax
+```erb
+<%# Non-printing tag ↓ -%>
+<% if @keys_enable -%>
+<%# Expression-printing tag ↓ -%>
+keys <%= @keys_file %>
+<% unless @keys_trusted.empty? -%>
+trustedkey <%= @keys_trusted.join(' ') %>
+<% end -%>
+<% if @keys_requestkey != '' -%>
+requestkey <%= @keys_requestkey %>
+<% end -%>
+<% if @keys_controlkey != '' -%>
+controlkey <%= @keys_controlkey %>
+<% end -%>
+
+<% end -%>
+``` 
+
+
+
 ## Observations
 
 

@@ -1,4 +1,9 @@
 # itu-minitwit
+## Start developing:
+
+- Install Ruby version 3.3
+- run `bundle install`
+
 
 ## Observations
 

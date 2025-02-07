@@ -1,5 +1,5 @@
-# Use the official Alpine base image
-FROM ruby:3.3
+# Use the official ruby
+FROM ruby:3.4.1-alpine
 
 # Set the working directory
 WORKDIR /usr/src/app

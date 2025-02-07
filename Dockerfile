@@ -12,4 +12,4 @@ RUN bundle install
 COPY . .
 
 # Expose the port the app runs on
-CMD ["./minitwit.rb"]
+CMD ["ruby", "./minitwit.rb"]

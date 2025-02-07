@@ -1,0 +1,29 @@
+<h2>Test</h2>
+
+<% if @user %>
+  <h1>Timeline for <%= @user %></h1>
+  <p>Here is the timeline for <%= @user %></p>
+<% end %>
+
+<ul class="messages">
+  <% if @messages %>
+    <% @messages.each do |message| %>
+      <li>
+        <img src="<%= message['gravatar_url'] %>" alt="gravatar">
+          <p>
+            <strong>
+              <a href="/<%= message['author'] %>">
+                <%= message['author'] %>
+              </a>
+            </strong>
+            <%= message['text'] %>
+            <small>
+              &mdash; <%= message['pub_date'] %>
+            </small>
+          </p>
+      </li>
+    <% end %>
+  <% else %>
+    <li><em>There's no message so far.</em></li>
+  <% end %>
+</ul>

@@ -11,7 +11,7 @@
 
 ### To develop
 
-docker run -it --rm \
+`docker run -it --rm \
     --name my-ruby-server \
     -v $(pwd)/:/app \
     -p 4567:4567 \

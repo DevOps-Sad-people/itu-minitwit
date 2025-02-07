@@ -9,6 +9,14 @@
 - Install `docker build -t my-ruby-app .`
 - Run `docker run -it -p 4567:4567 my-ruby-app`
 
+### To develop
+
+docker run -it --rm \
+    --name my-ruby-server \
+    -v $(pwd)/:/app \
+    -p 4567:4567 \
+    -w /app \
+    ruby:3.3 bash -c "bundle install; ruby minitwit.rb"`
 
 ## Observations
 

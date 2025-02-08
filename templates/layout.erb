@@ -200,6 +200,13 @@
                     <a href="/login">sign in</a>
                 <% end %>
             </div>
+            <% if flash %>
+                <ul class="flashes">
+                    <% flash.keys.each do |type| %>
+                        <li><%= flash[type] %></li>
+                    <% end %>
+                </ul>
+            <% end %>
             <% if @flashes %>
                 <ul class="flashes">
                     <% @flashes.each do |flash| %>

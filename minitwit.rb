@@ -200,6 +200,34 @@ get '/logout' do
     redirect '/'
 end
 
+get '/:username/follow' do 
+    username = params[:username]
+    # halt 401, "Unauthorized" unless current_user
+    # who_to_do_the_following = @user['user_id']
+    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
+    halt 404, "User not found" unless @profile_user
+  
+    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [@user["user_id"], @profile_user['user_id']])
+
+
+    @flashes = 'You are now following ' + username
+    redirect "/#{username}"
+end
+
+
+get '/:username/unfollow' do 
+    username = params[:username]
+    # halt 401, "Unauthorized" unless current_user
+    # who_to_do_the_following = @user['user_id']
+    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
+    halt 404, "User not found" unless @profile_user
+    
+    @db.execute('delete from follower where who_id=? and whom_id=?', [@user["user_id"], @profile_user['user_id']])
+
+    @flashes = "You are no longer following #{username}"
+    redirect "/#{username}"
+end
+
 # Place this in buttom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout
 get '/:username' do
@@ -213,9 +241,10 @@ get '/:username' do
 
     # Todo: I dont know how to use this followed yet
     @followed = false
-    if session[:user_id]
+    if @user
       @followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = ? AND follower.whom_id = ?',
-                          [session[:user_id], @profile_user['user_id']]).any?
+                          [@user["user_id"], @profile_user['user_id']]).any?
+        puts "#{@user["username"]} Follows #{@profile_user['username']}: #{@followed}"
     end
   
     # # Fetch the user's messages from the database
@@ -230,16 +259,3 @@ get '/:username' do
     erb :timeline
 end
 
-get '/:username/follow' do 
-    username = params[:username]
-    # halt 401, "Unauthorized" unless current_user
-    # who_to_do_the_following = @user['user_id']
-    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
-    halt 404, "User not found" unless @profile_user
-  
-    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [session[:user_id], @profile_user['user_id']])
-    @db.commit
-
-    @flashes = 'You are now following ' + username
-    redirect "/#{username}"
-end

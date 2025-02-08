@@ -1,7 +1,4 @@
 <h2>Test</h2>
-<%= request.request_method  %> <br>
-<%= request.query_string  %> <br>
-<%= request.path  %> <br>
 <% if  @user != nil %>
   <h1>Timeline for: <%= @user["username"] %></h1>
   <% if  @show_follow_unfollow %>

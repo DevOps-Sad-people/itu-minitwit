@@ -1,11 +1,22 @@
 <h2>Test</h2>
-
-<% if @user %>
+<% if  @user != nil %>
   <h1>Timeline for: <%= @user["username"] %></h1>
+  <% if  @show_follow_unfollow %>
+    <div class="followstatues">
+      <% if @profile_user != nil and @user["user_id"] == @profile_user['user_id'] %>
+        This is you!
+      <% elsif @followed %>
+          <a href="/<%= @profile_user['username']%>/unfollow">Unfollow</a>
+      <% else %>
+          <a href="/<%= @profile_user['username']%>/follow">Follow</a>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
 
+
 <ul class="messages">
-  <% if @messages != [] %>
+  <% if @messages != [] or @message != nil %>
     <% @messages.each do |message| %>
       <li>
         <img src="<%= gravatar_url(message['email'], 48) %>" alt="gravatar">

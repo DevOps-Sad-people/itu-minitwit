@@ -65,9 +65,12 @@ end
 # before each request, make sure the database is connected
 before do
     @db = connect_db
-    @user = nil
+    @user = nil # current logged in user
+    @profile_user = nil # user whose profile is being viewed
+    @followed = false # whether the current user is following the profile user
     @error = nil
     @flashes = nil
+    @show_follow_unfollow = false
     # check if the user is logged in
     if session[:user]
         @user = query_db('select * from user where user_id = ?', [session[:user]], true)
@@ -105,6 +108,7 @@ end
 
 get '/public_timeline' do
     """Displays the latest messages of all users."""
+    puts "Getting public messages"
     @messages = query_db('''
         select message.*, user.* from message, user
         where message.flagged = 0 and message.author_id = user.user_id
@@ -185,10 +189,71 @@ end
 
 get '/logout' do
     """Logs the user out."""
-    if session[:user]
+    puts "Logging out user: #{@user}"
+    if session[:user] or @user
         session[:user] = nil
     end
     @user = nil
     @flashes = 'You were logged out'
     redirect '/'
 end
+
+get '/:username/follow' do 
+    username = params[:username]
+    # halt 401, "Unauthorized" unless current_user
+    # who_to_do_the_following = @user['user_id']
+    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
+    halt 404, "User not found" unless @profile_user
+  
+    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [@user["user_id"], @profile_user['user_id']])
+
+
+    @flashes = 'You are now following ' + username
+    redirect "/#{username}"
+end
+
+
+get '/:username/unfollow' do 
+    username = params[:username]
+    # halt 401, "Unauthorized" unless current_user
+    # who_to_do_the_following = @user['user_id']
+    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
+    halt 404, "User not found" unless @profile_user
+    
+    @db.execute('delete from follower where who_id=? and whom_id=?', [@user["user_id"], @profile_user['user_id']])
+
+    @flashes = "You are no longer following #{username}"
+    redirect "/#{username}"
+end
+
+# Place this in buttom, because the routes are evaluated from top to bottom
+# e.g. /:username would match /login or /logout
+get '/:username' do
+    
+    username = params[:username]
+    puts "Getting profile for user: #{username}"
+    # # Fetch the user's profile from the database
+    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
+    halt 404, "User not found" unless @profile_user
+    puts "Getting profile_user: #{@profile_user}"
+
+    # Todo: I dont know how to use this followed yet
+    @followed = false
+    if @user
+      @followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = ? AND follower.whom_id = ?',
+                          [@user["user_id"], @profile_user['user_id']]).any?
+        puts "#{@user["username"]} Follows #{@profile_user['username']}: #{@followed}"
+    end
+  
+    # # Fetch the user's messages from the database
+    @messages = query_db('''
+      SELECT message.*, user.* FROM message, user 
+      WHERE user.user_id = message.author_id AND user.user_id = ?
+      ORDER BY message.pub_date DESC LIMIT ?
+    ''', [@profile_user['user_id'], PER_PAGE])
+  
+    # Render the timeline template (timeline.erb)
+    @show_follow_unfollow = true
+    erb :timeline
+end
+

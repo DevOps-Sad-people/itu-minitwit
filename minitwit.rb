@@ -155,8 +155,6 @@ post '/login' do
     erb :login
 end
 
-
-
 get '/register' do
     """Displays the register form."""
     if @user

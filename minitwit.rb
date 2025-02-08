@@ -226,6 +226,22 @@ get '/:username/unfollow' do
     redirect "/#{username}"
 end
 
+post '/add_message' do
+    """Registers a new message for the user."""
+    if not @user
+        halt 401, "Unauthorized"
+    end
+    if params[:message]
+        @db.execute('''
+            insert into message (author_id, text, pub_date, flagged)
+            values (?, ?, ?, 0)
+        ''', [@user["user_id"], params[:message], Time.now.to_i])
+        flash[:notice] = 'Your message was recorded'
+    end
+    redirect '/'
+end
+
+
 # Place this in buttom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout
 get '/:username' do

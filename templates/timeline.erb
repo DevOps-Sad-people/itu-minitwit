@@ -1,6 +1,5 @@
 <h2>Test</h2>
-<% if  @user != nil %>
-  <h1>Timeline for: <%= @user["username"] %></h1>
+<% if  @user %>
   <% if  @show_follow_unfollow %>
     <div class="followstatues">
       <% if @profile_user != nil and @user["user_id"] == @profile_user['user_id'] %>
@@ -14,9 +13,18 @@
   <% end %>
 <% end %>
 
+<% if request.path_info == "/" %>
+  <div class="twitbox">
+    <h3>What's on your mind <%= @user["username"] %>?</h3>
+    <form action="/add_message" method="post">
+      <textarea name="message" rows="3" cols="60"></textarea>
+      <input type="submit" value="Share">
+    </form>
+  </div>
+<% end %>
 
 <ul class="messages">
-  <% if @messages != [] or @message != nil %>
+  <% if @messages != [] or @message %>
     <% @messages.each do |message| %>
       <li>
         <img src="<%= gravatar_url(message['email'], 48) %>" alt="gravatar">

@@ -1,12 +1,11 @@
 <h2>Test</h2>
 
 <% if @user %>
-  <h1>Timeline for <%= @user %></h1>
-  <p>Here is the timeline for <%= @user %></p>
+  <h1>Timeline for: <%= @user["username"] %></h1>
 <% end %>
 
 <ul class="messages">
-  <% if @messages %>
+  <% if @messages != [] %>
     <% @messages.each do |message| %>
       <li>
         <img src="<%= gravatar_url(message['email'], 48) %>" alt="gravatar">

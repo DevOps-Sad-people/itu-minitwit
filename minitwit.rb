@@ -89,6 +89,7 @@ get '/' do
     if not @user
         redirect '/public_timeline'
     end
+    puts "Getting messages User: #{@user}"
     @messages = query_db('''
         select message.*, user.* from message, user
         where message.flagged = 0 and message.author_id = user.user_id and (
@@ -121,6 +122,7 @@ end
 
 post '/login' do
     if @user
+        puts "User: #{@user} already logged in redirecting to /"
         # already logged in
         redirect '/'
     end
@@ -140,6 +142,7 @@ post '/login' do
         # display a message
         @flashes = 'You were logged in'
         # redirect to the timeline
+        puts "User: #{@user} logged in redirecting to /"
         redirect '/'
     end
 
@@ -182,7 +185,9 @@ end
 
 get '/logout' do
     """Logs the user out."""
-    session[:user] = nil
+    if session[:user]
+        session[:user] = nil
+    end
     @user = nil
     @flashes = 'You were logged out'
     redirect '/'

@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'sinatra/flash'
 require 'sqlite3'
 require 'digest/md5'
 require 'digest/sha2'
@@ -69,7 +70,6 @@ before do
     @profile_user = nil # user whose profile is being viewed
     @followed = false # whether the current user is following the profile user
     @error = nil
-    @flashes = nil
     @show_follow_unfollow = false
     # check if the user is logged in
     if session[:user]
@@ -144,7 +144,7 @@ post '/login' do
         # set the session when the user is logged in
         session[:user] = @user['user_id']
         # display a message
-        @flashes = 'You were logged in'
+        flash[:notice] = 'You were logged in'
         # redirect to the timeline
         puts "User: #{@user} logged in redirecting to /"
         redirect '/'
@@ -181,7 +181,7 @@ post '/register' do
         @db.execute('''
             insert into user (username, email, pw_hash) values (?, ?, ?)
         ''', [params[:username], params[:email], generate_pw_hash(params[:password])])
-        @flashes = 'You were successfully registered and can login now'
+        flash[:notice] = 'You were successfully registered and can login now'
         redirect '/login'
     end
     erb :register
@@ -194,7 +194,7 @@ get '/logout' do
         session[:user] = nil
     end
     @user = nil
-    @flashes = 'You were logged out'
+    flash[:notice] = 'You were logged out'
     redirect '/'
 end
 
@@ -208,7 +208,7 @@ get '/:username/follow' do
     @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [@user["user_id"], @profile_user['user_id']])
 
 
-    @flashes = 'You are now following ' + username
+    flash[:notice] = 'You are now following ' + username
     redirect "/#{username}"
 end
 
@@ -222,7 +222,7 @@ get '/:username/unfollow' do
     
     @db.execute('delete from follower where who_id=? and whom_id=?', [@user["user_id"], @profile_user['user_id']])
 
-    @flashes = "You are no longer following #{username}"
+    flash[:notice] = "You are no longer following #{username}"
     redirect "/#{username}"
 end
 

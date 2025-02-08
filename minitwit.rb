@@ -236,7 +236,7 @@ post '/add_message' do
             insert into message (author_id, text, pub_date, flagged)
             values (?, ?, ?, 0)
         ''', [@user["user_id"], params[:message], Time.now.to_i])
-        @flashes = 'Your message was recorded'
+        flash[:notice] = 'Your message was recorded'
     end
     redirect '/'
 end

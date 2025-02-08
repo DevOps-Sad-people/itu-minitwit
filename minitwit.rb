@@ -151,30 +151,6 @@ post '/login' do
     erb :login
 end
 
-# get '/:username' do
-#     username = params[:username]
-  
-#     # Fetch the user's profile from the database
-#     profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
-#     halt 404, "User not found" unless profile_user
-  
-#     followed = false
-#     if session[:user_id]
-#       followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = ? AND follower.whom_id = ?',
-#                           [session[:user_id], profile_user['user_id']]).any?
-#     end
-  
-#     # Fetch the user's messages from the database
-#     messages = query_db('''
-#       SELECT message.*, user.* FROM message, user 
-#       WHERE user.user_id = message.author_id AND user.user_id = ?
-#       ORDER BY message.pub_date DESC LIMIT ?
-#     ''', [profile_user['user_id'], PER_PAGE])
-  
-#     # Render the timeline template (timeline.erb)
-#     erb :timeline, locals: { messages: messages, followed: followed, profile_user: profile_user }
-#   end
-
 get '/register' do
     """Displays the register form."""
     if @user

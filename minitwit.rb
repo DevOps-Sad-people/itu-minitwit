@@ -1,5 +1,8 @@
 require 'sinatra'
 require 'sqlite3'
+require 'digest/md5'
+require 'digest/sha2'
+require 'json'
 
 # configuration
 DATABASE = './tmp/minitwit.db'
@@ -8,6 +11,8 @@ DEBUG = true
 SECRET_KEY = 'development key development key development key development key development key development key development key'
 
 configure do
+    set :port, 4567
+    set :bind, '0.0.0.0'
     enable :sessions
     set :session_secret, SECRET_KEY
     set :show_exceptions, DEBUG
@@ -16,14 +21,12 @@ configure do
 end
 
 def connect_db
-    puts "in connect_db"
     db = SQLite3::Database.new(DATABASE)
     db.results_as_hash = true
     db
 end
 
 def init_db
-    puts "in init_db"
     db = connect_db
     schema = File.read(File.join(File.dirname(__FILE__), 'schema.sql'))
     db.execute_batch(schema)
@@ -40,7 +43,6 @@ def query_db(query, args=[], one=false)
 end
 
 def get_user_id(username)
-    puts "in get_user_id"
     db = connect_db
     row = db.get_first_row("select user_id from user where username = ?", username)
     row ? row['user_id'] : nil
@@ -55,10 +57,17 @@ def gravatar_url(email, size = 80)
     "http://www.gravatar.com/avatar/#{hash}?d=identicon&s=#{size}"
 end
 
+def generate_pw_hash(password)
+    digest = Digest::SHA256.new
+    "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
+end
+
 # before each request, make sure the database is connected
 before do
     @db = connect_db
     @user = nil
+    @error = nil
+    @flashes = nil
     # check if the user is logged in
     if session[:user]
         @user = query_db('select * from user where user_id = ?', [session[:user]], true)
@@ -102,12 +111,79 @@ get '/public_timeline' do
     erb :timeline
 end
 
+get '/login' do
+    """Logs the user in."""
+    if @user
+        redirect '/'
+    end
+    erb :login
+end
 
+post '/login' do
+    if @user
+        # already logged in
+        redirect '/'
+    end
 
+    puts "Username: #{params[:username]}"
+    # get the user
+    result = query_db('''
+        select * from user where username = ?
+    ''', [params[:username]], true)
 
-set :port, 4567
-set :bind, '0.0.0.0'
+    # check the password
+    if result.length > 0 && result['pw_hash'] == generate_pw_hash(params[:password])
 
-get '/frank-says' do
-    'Put this in your pipe & smoke it!'
+        @user = result
+        # set the session when the user is logged in
+        session[:user] = @user['user_id']
+        # display a message
+        @flashes = 'You were logged in'
+        # redirect to the timeline
+        redirect '/'
+    end
+
+    @error = 'The username or password is incorrect.'
+    # error message
+    erb :login
+end
+
+get '/register' do
+    """Displays the register form."""
+    if @user
+        redirect '/'
+    end
+    erb :register
+end
+
+post '/register' do
+    if @user
+        redirect '/'
+    end
+    if not params[:username]
+        @error = 'You have to enter a username'
+    elsif not params[:email] or not params[:email].include? '@'
+        @error = 'You have to enter a valid email address'
+    elsif not params[:password]
+        @error = 'You have to enter a password'
+    elsif params[:password] != params[:password2]
+        @error = 'The two passwords do not match'
+    elsif get_user_id(params[:username]) != nil
+        @error = 'The username is already taken'
+    else
+        @db.execute('''
+            insert into user (username, email, pw_hash) values (?, ?, ?)
+        ''', [params[:username], params[:email], generate_pw_hash(params[:password])])
+        @flashes = 'You were successfully registered and can login now'
+        redirect '/login'
+    end
+    erb :register
+end
+
+get '/logout' do
+    """Logs the user out."""
+    session[:user] = nil
+    @user = nil
+    @flashes = 'You were logged out'
+    redirect '/'
 end

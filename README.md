@@ -24,7 +24,7 @@ The `.erb` files are in folder `templates/`
 
 read more about the erb syntax [here](https://www.puppet.com/docs/puppet/5.5/lang_template_erb.html)
 
-The css file should be in the `public/` folder, but for now it is just directly in the layout file. 
+The css file is in the `public/stylesheets` folder.
 
 The erb structure and syntax
 ```erb

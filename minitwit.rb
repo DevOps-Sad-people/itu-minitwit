@@ -17,8 +17,8 @@ configure do
     enable :sessions
     set :session_secret, SECRET_KEY
     set :show_exceptions, DEBUG
-    set :views, File.join(File.dirname(__FILE__), 'templates')
-    set :public_folder, __dir__ + '/public'
+    set :views, 'templates'
+    set :public_folder, 'public'
 end
 
 def connect_db

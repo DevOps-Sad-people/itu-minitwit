@@ -7,10 +7,10 @@ if [ "$1" = "init" ]; then
         exit 1
     fi
     echo "Putting a database to ./tmp/minitwit.db..."
-    ruby -r "./minitwit.rb" -e "init_db"
+    python -c"from minitwit import init_db;init_db()"
 elif [ "$1" = "start" ]; then
     echo "Starting minitwit..."
-    nohup "$(which ruby)" minitwit.rb > ./tmp/out.log 2>&1 &
+    nohup "$(which python)" minitwit.py > ./tmp/out.log 2>&1 &
 elif [ "$1" = "stop" ]; then
     echo "Stopping minitwit..."
     pkill -f minitwit
@@ -21,3 +21,5 @@ elif [ "$1" = "flag" ]; then
 else
   echo "I do not know this command..."
 fi
+
+

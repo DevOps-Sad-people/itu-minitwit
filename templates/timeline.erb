@@ -1,4 +1,11 @@
-<h2>Test</h2>
+<% if  request.path_info == "/public_timeline" %>
+  <% content_for :title do %>Public Timeline<% end %>
+<% elsif request.path_info == "/" %>
+  <% content_for :title do %>My Timeline<% end %>
+<% elsif @profile_user != nil %>
+  <% content_for :title do %><%= @profile_user['username']%>'s Timeline<% end %>
+<% end %>
+
 <% if  @user %>
   <% if  @show_follow_unfollow %>
     <div class="followstatues">

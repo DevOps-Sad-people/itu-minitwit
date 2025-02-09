@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/flash'
+require 'sinatra/content_for'
 require 'sqlite3'
 require 'digest/md5'
 require 'digest/sha2'

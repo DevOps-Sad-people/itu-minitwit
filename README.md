@@ -18,6 +18,14 @@
     -w /app \
     ruby:3.3 bash -c "bundle install; ruby minitwit.rb"`
 
+### To test
+
+`docker run -it --rm \
+    --name my-ruby-server \
+    -v $(pwd)/:/app \
+    -w /app \
+    ruby:3.3 bash -c "bundle install; rspec"`
+
 ### developing erb files
 
 The `.erb` files are in folder `templates/`

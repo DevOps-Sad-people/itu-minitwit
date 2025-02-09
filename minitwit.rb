@@ -5,25 +5,25 @@ require 'sqlite3'
 require 'digest/md5'
 require 'digest/sha2'
 require 'json'
+require 'dotenv/load'
 
 # configuration
-DATABASE = './tmp/minitwit.db'
 PER_PAGE = 30
 DEBUG = true
-SECRET_KEY = 'development key development key development key development key development key development key development key'
 
 configure do
     set :port, 4567
     set :bind, '0.0.0.0'
     enable :sessions
-    set :session_secret, SECRET_KEY
+    set :session_secret, ENV.fetch('SECRET_KEY')
     set :show_exceptions, DEBUG
     set :views, 'templates'
     set :public_folder, 'public'
 end
 
 def connect_db
-    db = SQLite3::Database.new(DATABASE)
+    path = ENV.fetch('DATABASE_PATH')
+    db = SQLite3::Database.new(path)
     db.results_as_hash = true
     db
 end
@@ -91,7 +91,7 @@ get '/' do
     messages as well as all the messages of followed users.
     """
     if not @user
-        redirect '/public_timeline'
+        redirect '/public'
     end
     puts "Getting messages User: #{@user}"
     @messages = query_db('''
@@ -107,7 +107,7 @@ get '/' do
     erb :timeline
 end
 
-get '/public_timeline' do
+get '/public' do
     """Displays the latest messages of all users."""
     puts "Getting public messages"
     @messages = query_db('''
@@ -254,7 +254,7 @@ get '/:username' do
     halt 404, "User not found" unless @profile_user
     puts "Getting profile_user: #{@profile_user}"
 
-    # Todo: I dont know how to use this followed yet
+    # TODO: I dont know how to use this followed yet
     @followed = false
     if @user
       @followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = ? AND follower.whom_id = ?',

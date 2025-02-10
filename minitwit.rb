@@ -197,7 +197,7 @@ get '/logout' do
     end
     @user = nil
     flash[:notice] = 'You were logged out'
-    redirect '/'
+    redirect '/public'
 end
 
 get '/:username/follow' do 
@@ -210,7 +210,7 @@ get '/:username/follow' do
     @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [@user["user_id"], @profile_user['user_id']])
 
 
-    flash[:notice] = 'You are now following ' + username
+    flash[:notice] = "You are now following &#34;#{username}&#34;"
     redirect "/#{username}"
 end
 

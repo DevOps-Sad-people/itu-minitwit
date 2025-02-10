@@ -138,9 +138,10 @@ post '/login' do
         select * from user where username = ?
     ''', [params[:username]], true)
 
-    # check the password
-    if result.length > 0 && result['pw_hash'] == generate_pw_hash(params[:password])
+    if result.length <= 0
+        @error = 'Invalid username'
 
+    elsif result['pw_hash'] == generate_pw_hash(params[:password])
         @user = result
         # set the session when the user is logged in
         session[:user] = @user['user_id']
@@ -149,9 +150,9 @@ post '/login' do
         # redirect to the timeline
         puts "User: #{@user} logged in redirecting to /"
         redirect '/'
+    else
+        @error = 'Invalid password'
     end
-
-    @error = 'The username or password is incorrect.'
     # error message
     erb :login
 end
@@ -186,10 +187,6 @@ post '/register' do
         redirect '/login'
     end
     erb :register
-end
-
-get '/test' do 
-    "hello world"
 end
 
 get '/logout' do
@@ -239,7 +236,7 @@ post '/add_message' do
         @db.execute('''
             insert into message (author_id, text, pub_date, flagged)
             values (?, ?, ?, 0)
-        ''', [@user["user_id"], params[:message], Time.now.to_i])
+        ''', [@user["user_id"], Rack::Utils.escape_html(params[:message]), Time.now.to_i])
         flash[:notice] = 'Your message was recorded'
     end
     redirect '/'

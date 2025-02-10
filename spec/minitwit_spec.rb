@@ -12,13 +12,19 @@ end
 
 def login(username, password)
   post '/login', { username: username, password: password }
-  follow_redirect!
+  
+  if last_response.redirect?
+    follow_redirect!
+  end
 end
 
 def add_message(text)
-  post '/add_message', { text: text }
-  expect(last_response.body).to include("Your message was recorded")
-  follow_redirect!
+  post '/add_message', { message: text }
+  
+  if last_response.redirect?
+    follow_redirect!
+    expect(last_response.body).to include("Your message was recorded")
+  end
 end
 
 def register_and_login(username, password)
@@ -61,6 +67,9 @@ describe 'Full application test' do
     register_and_login('user1', 'default')
     expect(last_response.body).to include('You were logged in')
 
+    login('user1', 'default')
+    expect(last_response.body).not_to include('You were logged in')
+
     logout()
     expect(last_response.body).to include('You were logged out')
 
@@ -69,5 +78,52 @@ describe 'Full application test' do
 
     login('user2', 'default')
     expect(last_response.body).to include('Invalid username')
+  end
+
+  it 'Add message' do
+    register_and_login('user1', 'default')
+    add_message('Hello, world! 1')
+    add_message('<Hello, world!>')
+    get '/'
+    expect(last_response.body).to include('Hello, world! 1')
+    expect(last_response.body).to include('&lt;Hello, world!&gt;')
+  end
+
+  it 'Timelines' do
+    register_and_login('foo', 'default')
+    add_message('the message by foo')
+    logout()
+
+    register_and_login('bar', 'default')
+    add_message('the message by bar')
+    
+    get '/public'
+    expect(last_response.body).to include('the message by foo')
+    expect(last_response.body).to include('the message by bar')
+
+    # bar's timeline should just show bar's message
+    get '/'
+    expect(last_response.body).to include('the message by bar')
+    expect(last_response.body).not_to include('the message by foo')
+
+    # now let's follow foo
+    get '/foo/follow'
+    follow_redirect!
+    expect(last_response.body).to include('You are now following &#34;foo&#34;')
+
+    # we should now see foo's message
+    get '/'
+    expect(last_response.body).to include('the message by foo')
+    expect(last_response.body).to include('the message by bar')
+    
+    # but on the user's page we only want the user's message
+    get '/bar'
+    expect(last_response.body).not_to include('the message by foo')
+    expect(last_response.body).to include('the message by bar')
+
+    # and on foo's page we only want foo's message
+    get '/foo'
+    expect(last_response.body).to include('the message by foo')
+    expect(last_response.body).not_to include('the message by bar')
   end
 end

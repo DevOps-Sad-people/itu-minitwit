@@ -188,6 +188,10 @@ post '/register' do
     erb :register
 end
 
+get '/test' do 
+    "hello world"
+end
+
 get '/logout' do
     """Logs the user out."""
     puts "Logging out user: #{@user}"

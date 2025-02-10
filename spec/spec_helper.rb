@@ -1,8 +1,10 @@
 require 'rack/test'
 require 'rspec'
 require 'factory_bot'
-require_relative '../minitwit'
 require 'tempfile'
+require_relative '../minitwit'
+
+set :environment, :test
 
 def app
   Sinatra::Application
@@ -12,15 +14,15 @@ RSpec.configure do |config|
   config.include Rack::Test::Methods
   config.expect_with(:rspec) { |c| c.syntax = :expect }
 
-  config.before(:suite) do
-    $temp_db = Tempfile.new('test.db')
-    ENV['DATABASE_PATH'] = $temp_db.path
+  # config.before(:suite) do
+  #  $temp_db = Tempfile.new('test.db')
+  #  ENV['DATABASE_PATH'] = $temp_db.path
 
-    init_db
-  end
+  #  init_db
+  #end
 
-  config.after(:suite) do
-    $temp_db.close
-    $temp_db.unlink
-  end
+  #config.after(:suite) do
+  #  $temp_db.close
+  #  $temp_db.unlink
+  #end
 end

@@ -14,15 +14,15 @@ RSpec.configure do |config|
   config.include Rack::Test::Methods
   config.expect_with(:rspec) { |c| c.syntax = :expect }
 
-  # config.before(:suite) do
-  #  $temp_db = Tempfile.new('test.db')
-  #  ENV['DATABASE_PATH'] = $temp_db.path
+  config.before(:each) do
+    $temp_db = Tempfile.new('test.db')
+    ENV['DATABASE_PATH'] = $temp_db.path
 
-  #  init_db
-  #end
+    init_db
+  end
 
-  #config.after(:suite) do
-  #  $temp_db.close
-  #  $temp_db.unlink
-  #end
+  config.after(:each) do
+    $temp_db.close
+    $temp_db.unlink
+  end
 end

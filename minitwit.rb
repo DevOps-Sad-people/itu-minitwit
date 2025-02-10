@@ -168,11 +168,11 @@ post '/register' do
     if @user
         redirect '/'
     end
-    if not params[:username]
+    if not params[:username] or params[:username] == ''
         @error = 'You have to enter a username'
     elsif not params[:email] or not params[:email].include? '@'
         @error = 'You have to enter a valid email address'
-    elsif not params[:password]
+    elsif not params[:password] or params[:password] == ''
         @error = 'You have to enter a password'
     elsif params[:password] != params[:password2]
         @error = 'The two passwords do not match'
@@ -216,7 +216,6 @@ get '/:username/follow' do
     flash[:notice] = 'You are now following ' + username
     redirect "/#{username}"
 end
-
 
 get '/:username/unfollow' do 
     username = params[:username]
@@ -277,4 +276,3 @@ get '/:username' do
     @show_follow_unfollow = true
     erb :timeline
 end
-

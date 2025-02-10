@@ -9,8 +9,8 @@
 - Install `docker build -t my-ruby-app .`
 - Run `docker run -it -p 4567:4567 my-ruby-app`
 
-### To develop
-
+### Interactive development
+**A single start**
 `docker run -it --rm \
     --name my-ruby-server \
     -v $(pwd)/:/app \
@@ -18,15 +18,26 @@
     -w /app \
     ruby:3.3 bash -c "bundle install; ruby minitwit.rb"`
 
-### To test
-
+**A single test-run**
 `docker run -it --rm \
     --name my-ruby-server \
     -v $(pwd)/:/app \
     -w /app \
     ruby:3.3 bash -c "bundle install; rspec"`
 
-### developing erb files
+**Interactive and reusable environment (Recommended)**
+1. `docker run -it --rm \
+    --name my-ruby-server \
+    -v $(pwd)/:/app \
+    -w /app \
+    ruby:3.3 bash`
+2. `bundle install`
+3. Run `rspec` to test. `ruby minitwit.rb` to start app.
+
+## Testing
+All tests are performed using RSpec, which is a great DSL for expressing tests. To add tests, use `spec/minitwit_spec.rb` as inspiration. Add `XXXX_spec.rb` to the `spec/` folder, import `spec_helper`, and write as many tests as you should require.
+
+## developing erb files
 
 The `.erb` files are in folder `templates/`
 

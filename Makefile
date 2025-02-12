@@ -1,5 +1,5 @@
 init:
-	python -c"from minitwit import init_db; init_db()"
+	ruby -r "./minitwit.rb" -e "init_db"
 
 build:
 	gcc flag_tool.c -l sqlite3 -o flag_tool

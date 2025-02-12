@@ -1,6 +1,5 @@
 require 'rack/test'
 require 'rspec'
-require 'factory_bot'
 require 'tempfile'
 require_relative '../minitwit'
 

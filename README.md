@@ -1,8 +1,11 @@
 # itu-minitwit
-## Start developing:
+## Setup:
 
 - Install Ruby version 3.3
-- run `bundle install`
+- Setup .env file (Copy .env.example)
+- `bundle install` to install packages
+- `sh control.sh init` to init db.
+- `ruby minitwit.rb` to run program.
 
 ## Using Docker
 

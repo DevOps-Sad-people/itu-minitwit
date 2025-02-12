@@ -12,9 +12,11 @@
       <% if @profile_user != nil and @user["user_id"] == @profile_user['user_id'] %>
         This is you!
       <% elsif @followed %>
-          <a href="/<%= @profile_user['username']%>/unfollow">Unfollow</a>
+        You are currently following this user.
+        <a href="/<%= @profile_user['username']%>/unfollow">Unfollow</a>
       <% else %>
-          <a href="/<%= @profile_user['username']%>/follow">Follow</a>
+        You are not yet following this user.
+        <a href="/<%= @profile_user['username']%>/follow">Follow</a>
       <% end %>
     </div>
   <% end %>

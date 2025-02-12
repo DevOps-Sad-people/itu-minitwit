@@ -7,10 +7,9 @@ gem "rackup", "2.2.1"
 gem "puma", "6.6.0"
 gem "sqlite3", "1.4.2"
 gem 'dotenv'
+gem 'htmlbeautifier'
 
 group :test do
   gem "rspec"
   gem "rack-test", "2.2.0" # For testing Sinatra routes
-  gem "database_cleaner-active_record" # Keep DB clean between tests
-  gem "factory_bot" # Manage test data
 end

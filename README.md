@@ -32,6 +32,7 @@
 1. `docker run -it --rm \
     --name my-ruby-server \
     -v $(pwd)/:/app \
+    -p 4567:4567 \
     -w /app \
     ruby:3.3 bash`
 2. `bundle install`

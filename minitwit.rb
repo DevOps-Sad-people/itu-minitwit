@@ -64,6 +64,17 @@ def generate_pw_hash(password)
     "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
 end
 
+def update_latest(params)
+    parsed_command_id = params['latest'] ? params['latest'].to_i : -1
+    if parsed_command_id == -1
+        return
+    end
+
+    file = File.new(ENV.fetch('SIM_TRACKER_FILE'), "w")
+    file.puts(parsed_command_id)
+    file.close
+end
+
 # before each request, make sure the database is connected
 before do
     @db = connect_db
@@ -108,6 +119,7 @@ get '/' do
 end
 
 get '/public' do
+    update_latest(params)
     """Displays the latest messages of all users."""
     puts "Getting public messages"
     @messages = query_db('''

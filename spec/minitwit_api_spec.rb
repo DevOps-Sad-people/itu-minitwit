@@ -10,6 +10,73 @@ describe 'API test' do
     post '/register?latest=1', payload.to_json, headers
     expect(last_response.status).to eq(204)
 
-    # Check if /latest return 1
+    get '/latest', headers
+    expect(JSON.parse(last_response.body)['latest']).to eq(1)
+  end
+
+  it 'Latest' do
+    payload = {'username': 'test', 'email': 'test@test', 'pwd': 'foo'}
+    post '/register?latest=1337', payload.to_json, headers
+    expect(last_response.status).to eq(204)
+
+    get '/latest', headers
+    expect(last_response).to be_successful
+    expect(JSON.parse(last_response.body)['latest']).to eq(1337)
+  end
+
+  it 'Follows' do
+    payload = {'username': 'a', 'email': 'a@a.a', 'pwd': 'a'}
+    post '/register?latest=1', payload.to_json, headers
+    payload = {'username': 'b', 'email': 'b@b.b', 'pwd': 'b'}
+    post '/register?latest=1', payload.to_json, headers
+    payload = {'username': 'c', 'email': 'c@c.c', 'pwd': 'c'}
+    post '/register?latest=1', payload.to_json, headers
+
+    username = 'a'
+    payload = {'follow': 'b'}
+
+    post "/fllws/#{username}?latest=7", payload.to_json, headers
+    expect(last_response.status).to eq(204)
+
+    payload = {'follow': 'c'}
+    post "/fllws/#{username}?latest=8", payload.to_json, headers
+    expect(last_response.status).to eq(204)
+
+    get "/fllws/#{username}?latest=9&no=20", nil, headers
+    expect(last_response).to be_successful
+
+    json_response = JSON.parse(last_response.body)
+    expect(json_response['follows']).to include('b', 'c')
+
+
+    get '/latest', headers
+    expect(last_response).to be_successful
+    expect(JSON.parse(last_response.body)['latest']).to eq(9)
+  end
+
+  it 'Unfollows' do
+    payload = {'username': 'a', 'email': 'a@a.a', 'pwd': 'a'}
+    post '/register?latest=1', payload.to_json, headers
+    payload = {'username': 'b', 'email': 'b@b.b', 'pwd': 'b'}
+    post '/register?latest=1', payload.to_json, headers
+
+    username = 'a'
+    payload = {'follow': 'b'}
+    post "/fllws/#{username}?latest=10", payload.to_json, headers
+    
+    payload = {'unfollow': 'b'}
+    post "/fllws/#{username}?latest=11", payload.to_json, headers
+    expect(last_response.status).to eq(204)
+
+    get "/fllws/#{username}?latest=12&no=20", nil, headers
+    expect(last_response).to be_successful
+
+    json_response = JSON.parse(last_response.body)
+    expect(json_response['follows']).not_to include('b')
+
+
+    get '/latest', headers
+    expect(last_response).to be_successful
+    expect(JSON.parse(last_response.body)['latest']).to eq(12)
   end
 end

@@ -266,31 +266,78 @@ get '/logout' do
     redirect '/public'
 end
 
+def follow(user_id, follows_username)
+    follows_user_id = get_user_id(follows_username)
+    halt 404, "User not found" unless user_id and follows_user_id
+    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [user_id, follows_user_id])
+end
+
+def unfollow(user_id, unfollows_username)
+    unfollows_user_id = get_user_id(unfollows_username)
+    halt 404, "User not found" unless user_id and unfollows_user_id
+    @db.execute('DELETE FROM follower WHERE who_id=? AND whom_id=?', [user_id, unfollows_user_id])
+end
+
 get '/:username/follow' do 
-    username = params[:username]
     # halt 401, "Unauthorized" unless current_user
     # who_to_do_the_following = @user['user_id']
-    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
-    halt 404, "User not found" unless @profile_user
-  
-    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [@user["user_id"], @profile_user['user_id']])
-
+    username = params[:username]
+    follow(@user["user_id"], username)
 
     flash[:notice] = "You are now following &#34;#{username}&#34;"
     redirect "/#{username}"
 end
 
 get '/:username/unfollow' do 
-    username = params[:username]
     # halt 401, "Unauthorized" unless current_user
     # who_to_do_the_following = @user['user_id']
-    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
-    halt 404, "User not found" unless @profile_user
-    
-    @db.execute('delete from follower where who_id=? and whom_id=?', [@user["user_id"], @profile_user['user_id']])
+    username = params[:username]
+    unfollow(@user["user_id"], username)
 
     flash[:notice] = "You are no longer following #{username}"
     redirect "/#{username}"
+end
+
+get '/fllws/:username' do
+    update_latest(params)
+    req_from_simulator = not_req_from_simulator(request)
+    if (req_from_simulator)
+        return req_from_simulator
+    end
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    limit = params["no"] ? params["no"] : 100
+    followers = query_db('''
+        SELECT user.username FROM user
+        INNER JOIN follower ON follower.whom_id=user.user_id
+        WHERE follower.who_id=?
+        LIMIT ?
+        ''', [user_id, limit])
+    follower_names = followers.map { |f| f["username"] }
+    {"follows": follower_names}.to_json
+end
+
+post '/fllws/:username' do
+    update_latest(params)
+    req_from_simulator = not_req_from_simulator(request)
+    if (req_from_simulator)
+        return req_from_simulator
+    end
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    body = JSON.parse request.body.read
+    follows_username = body['follow']
+    unfollows_username = body['unfollow']
+    
+    if follows_username
+        follow(user_id, follows_username)
+        return status 204
+    elsif unfollows_username
+        unfollow(user_id, unfollows_username)
+        return status 204
+    end
 end
 
 post '/add_message' do

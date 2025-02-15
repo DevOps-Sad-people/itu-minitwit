@@ -308,6 +308,18 @@ post '/add_message' do
     redirect '/'
 end
 
+get '/latest' do
+    path = ENV.fetch('SIM_TRACKER_FILE')
+
+    latest_processed_command_id = begin
+        file_content = File.read(path).strip
+        file_content.match?(/^\d+$/) ? file_content.to_i : -1
+    rescue
+        -1
+    end
+    
+    {latest: latest_processed_command_id}.to_json
+end
 
 # Place this in buttom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout

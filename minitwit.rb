@@ -75,6 +75,19 @@ def update_latest(params)
     file.close
 end
 
+def not_req_from_simulator(request)
+    authorization = request.env["HTTP_AUTHORIZATION"]
+    if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
+        status 403
+        content_type :json
+        {
+            error_msg: "You are not authorized to use this resource!",
+            status: 403
+        }.to_json
+    end
+end
+
+
 # before each request, make sure the database is connected
 before do
     @db = connect_db
@@ -93,6 +106,11 @@ end
 # close the database after each request
 after do
     @db.close if @db
+end
+
+post '/illegal-route' do
+    x = not_req_from_simulator(request)
+    x ? x : 'ok'
 end
 
 # Root

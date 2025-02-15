@@ -10,6 +10,17 @@ describe 'API test' do
     post '/register?latest=1', payload.to_json, headers
     expect(last_response.status).to eq(204)
 
-    # Check if /latest return 1
+    get '/latest', headers
+    expect(JSON.parse(last_response.body)['latest']).to eq(1)
+  end
+
+  it 'Latest' do
+    payload = {'username': 'test', 'email': 'test@test', 'pwd': 'foo'}
+    post '/register?latest=1337', payload.to_json, headers
+    expect(last_response.status).to eq(204)
+
+    get '/latest', headers
+    expect(last_response).to be_successful
+    expect(JSON.parse(last_response.body)['latest']).to eq(1337)
   end
 end

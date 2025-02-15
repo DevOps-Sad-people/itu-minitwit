@@ -16,12 +16,15 @@ RSpec.configure do |config|
   config.before(:each) do
     $temp_db = Tempfile.new('test.db')
     ENV['DATABASE_PATH'] = $temp_db.path
-
+    $temp_track = Tempfile.new('test.txt')
+    ENV['SIM_TRACKER_FILE'] = $temp_track.path
     init_db
   end
 
   config.after(:each) do
     $temp_db.close
     $temp_db.unlink
+    $temp_track.close
+    $temp_track.unlink
   end
 end

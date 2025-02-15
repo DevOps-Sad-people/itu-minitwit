@@ -195,28 +195,103 @@ get '/register' do
     erb :register
 end
 
+=begin 
+@app.route("/register", methods=["POST"])
+def register():
+    update_latest(request, params)
+
+    request_data = request.json
+
+    error = None
+    if request.method == "POST":
+        if not request_data["username"]:
+            error = "You have to enter a username"
+        elif not request_data["email"] or "@" not in request_data["email"]:
+            error = "You have to enter a valid email address"
+        elif not request_data["pwd"]:
+            error = "You have to enter a password"
+        elif get_user_id(request_data["username"]) is not None:
+            error = "The username is already taken"
+        else:
+            query = """INSERT INTO user
+                       (username, email, pw_hash) VALUES (?, ?, ?)"""
+            g.db.execute(
+                query,
+                [
+                    request_data["username"],
+                    request_data["email"],
+                    generate_password_hash(request_data["pwd"]),
+                ],
+            )
+            g.db.commit()
+
+    if error:
+        return jsonify({"status": 400, "error_msg": error}), 400
+    else:
+        return "", 204
+=end
+
+
+
+def get_register_payload(request, is_simulator)
+    if is_simulator
+        body = JSON.parse request.body.read
+        return {
+            username: body['username'],
+            email: body['email'],
+            password: body['pwd'],
+            password2: body['pwd']
+        }
+    end
+
+    return {
+        username: params[:username],
+        email: params[:email],
+        password: params[:password],
+        password2: params[:password2]
+    }
+end
+
+
 post '/register' do
-    if @user
+    is_simulator = request.content_type == "application/json"
+    payload = get_register_payload(request, is_simulator)
+    username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
+
+    if is_simulator
+        update_latest(params)
+    elsif @user
         redirect '/'
     end
-    if not params[:username] or params[:username] == ''
+
+    if not username or username == ''
         @error = 'You have to enter a username'
-    elsif not params[:email] or not params[:email].include? '@'
+    elsif not email or not email.include? '@'
         @error = 'You have to enter a valid email address'
-    elsif not params[:password] or params[:password] == ''
+    elsif not password or password == ''
         @error = 'You have to enter a password'
-    elsif params[:password] != params[:password2]
+    elsif not is_simulator and password != password2
         @error = 'The two passwords do not match'
-    elsif get_user_id(params[:username]) != nil
+    elsif get_user_id(username) != nil
         @error = 'The username is already taken'
     else
         @db.execute('''
             insert into user (username, email, pw_hash) values (?, ?, ?)
-        ''', [params[:username], params[:email], generate_pw_hash(params[:password])])
-        flash[:notice] = 'You were successfully registered and can login now'
-        redirect '/login'
+        ''', [username, email, generate_pw_hash(password)])
+
+        if is_simulator
+            status 204
+        else
+            flash[:notice] = 'You were successfully registered and can login now'
+            redirect '/login'
+        end
     end
-    erb :register
+
+    if is_simulator
+        return {status: 400, error_msg: @error}.to_json
+    else
+        erb :register
+    end
 end
 
 get '/logout' do

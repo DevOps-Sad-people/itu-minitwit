@@ -137,7 +137,6 @@ get '/' do
 end
 
 get '/public' do
-    update_latest(params)
     """Displays the latest messages of all users."""
     puts "Getting public messages"
     @messages = query_db('''
@@ -195,44 +194,6 @@ get '/register' do
     erb :register
 end
 
-=begin 
-@app.route("/register", methods=["POST"])
-def register():
-    update_latest(request, params)
-
-    request_data = request.json
-
-    error = None
-    if request.method == "POST":
-        if not request_data["username"]:
-            error = "You have to enter a username"
-        elif not request_data["email"] or "@" not in request_data["email"]:
-            error = "You have to enter a valid email address"
-        elif not request_data["pwd"]:
-            error = "You have to enter a password"
-        elif get_user_id(request_data["username"]) is not None:
-            error = "The username is already taken"
-        else:
-            query = """INSERT INTO user
-                       (username, email, pw_hash) VALUES (?, ?, ?)"""
-            g.db.execute(
-                query,
-                [
-                    request_data["username"],
-                    request_data["email"],
-                    generate_password_hash(request_data["pwd"]),
-                ],
-            )
-            g.db.commit()
-
-    if error:
-        return jsonify({"status": 400, "error_msg": error}), 400
-    else:
-        return "", 204
-=end
-
-
-
 def get_register_payload(request, is_simulator)
     if is_simulator
         body = JSON.parse request.body.read
@@ -257,7 +218,7 @@ post '/register' do
     is_simulator = request.content_type == "application/json"
     payload = get_register_payload(request, is_simulator)
     username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
-
+    
     if is_simulator
         update_latest(params)
     elsif @user

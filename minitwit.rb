@@ -95,6 +95,18 @@ def public_msgs(per_page)
     ''', [per_page])
 end
 
+def filtered_msgs(messages)
+    filtered_msgs = []
+    messages.each do |message|
+        filtered_msg = {}
+        filtered_msg["content"] = message["text"]
+        filtered_msg["pub_date"] = message["pub_date"]
+        filtered_msg["user"] = message["username"]
+        filtered_msgs << filtered_msg
+    end
+    filtered_msgs
+end
+
 
 # before each request, make sure the database is connected
 before do
@@ -164,16 +176,7 @@ get '/msgs' do
 
     messages = public_msgs(no_msgs)
 
-    filtered_msgs = []
-    messages.each do |message|
-        filtered_msg = {}
-        filtered_msg["content"] = message["text"]
-        filtered_msg["pub_date"] = message["pub_date"]
-        filtered_msg["user"] = message["username"]
-        filtered_msgs << filtered_msg
-    end
-
-    filtered_msgs.to_json
+    filtered_msgs(messages).to_json
 end
 
 post '/msgs/:username' do
@@ -216,16 +219,7 @@ get '/msgs/:username' do
         order by message.pub_date desc limit ?
     ''', [user_id, no_msgs])
 
-    filtered_msgs = []
-    messages.each do |message|
-        filtered_msg = {}
-        filtered_msg["content"] = message["text"]
-        filtered_msg["pub_date"] = message["pub_date"]
-        filtered_msg["user"] = message["username"]
-        filtered_msgs << filtered_msg
-    end
-
-    filtered_msgs.to_json
+    filtered_msgs(messages).to_json
 end
 
 

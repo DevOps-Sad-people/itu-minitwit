@@ -87,6 +87,26 @@ def not_req_from_simulator(request)
     end
 end
 
+def public_msgs(per_page)
+    query_db('''
+        select message.*, user.* from message, user
+        where message.flagged = 0 and message.author_id = user.user_id
+        order by message.pub_date desc limit ?
+    ''', [per_page])
+end
+
+def filtered_msgs(messages)
+    filtered_msgs = []
+    messages.each do |message|
+        filtered_msg = {}
+        filtered_msg["content"] = message["text"]
+        filtered_msg["pub_date"] = message["pub_date"]
+        filtered_msg["user"] = message["username"]
+        filtered_msgs << filtered_msg
+    end
+    filtered_msgs
+end
+
 
 # before each request, make sure the database is connected
 before do
@@ -139,12 +159,69 @@ end
 get '/public' do
     """Displays the latest messages of all users."""
     puts "Getting public messages"
-    @messages = query_db('''
-        select message.*, user.* from message, user
-        where message.flagged = 0 and message.author_id = user.user_id
-        order by message.pub_date desc limit ?''', [PER_PAGE])
+    @messages = public_msgs(PER_PAGE)
     erb :timeline
 end
+
+
+get '/msgs' do
+    update_latest(params)
+    not_from_sim_response = not_req_from_simulator(request)
+    if (not_from_sim_response)
+        return not_from_sim_response
+    end
+
+    # get the number of messages to return
+    no_msgs = params["no"] ? params["no"] : 100
+
+    messages = public_msgs(no_msgs)
+
+    filtered_msgs(messages).to_json
+end
+
+post '/msgs/:username' do
+    update_latest(params)
+    not_from_sim_response = not_req_from_simulator(request)
+    if (not_from_sim_response)
+        return not_from_sim_response
+    end
+
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    body = JSON.parse request.body.read
+    message = body['message']
+    if message
+        @db.execute('''
+            insert into message (author_id, text, pub_date, flagged)
+            values (?, ?, ?, 0)
+        ''', [user_id, Rack::Utils.escape_html(message), Time.now.to_i])
+    end
+    status 204
+end
+
+get '/msgs/:username' do
+    update_latest(params)
+    not_from_sim_response = not_req_from_simulator(request)
+    if (not_from_sim_response)
+        return not_from_sim_response
+    end
+
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    # get the number of messages to return
+    no_msgs = params["no"] ? params["no"] : 100
+
+    messages = query_db('''
+        select message.*, user.* from message, user
+        where message.flagged = 0 and message.author_id = user.user_id and user.user_id = ?
+        order by message.pub_date desc limit ?
+    ''', [user_id, no_msgs])
+
+    filtered_msgs(messages).to_json
+end
+
 
 get '/login' do
     """Logs the user in."""

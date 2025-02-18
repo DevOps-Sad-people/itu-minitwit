@@ -106,18 +106,28 @@ e.g. /:username would match /login or /logout
 ### Methods
 | Method               |Parameters                 | Returns       | Description                |
 |----------------------|---------------------------|---------------|----------------------------|
-| `connect_db`         | None                      |`db`           |              |
-| `init_db`            | None                      | void          |              |
-| `query_db`           | query, args=[], one=false |`results`           |              |
-| `get_user_id`        | username: string          |`user_id`/`nil`|              |
+| `connect_db`         | None                      |`db`           | Connect to db |
+| `init_db`            | None                      | void          | init database|
+| `query_db`           | query, args=[], one=false |`results`      | query the database|
+| `get_user_id`        | username: string          |`user_id`/`nil`| get user_id from username|
 
 ### Helper methods
-| Method               |Parameters| Returns      | Description                |
-|----------------------|----------|------------- |----------------------------|
-| `generate_pw_hash`   | password |`hashed_password`          |              |
-| `update_latest`      | params   | void          |              |
+| Method               |Parameters      | Returns      | Description                |
+|----------------------|----------------|------------- |----------------------------|
+| `generate_pw_hash`   | password       |`hashed_password`| Generate hashed password|
+| `update_latest`      | params         | void          | update latest command ID |
+| `format_datetime`    | timestamp      | `formatted_time` | Formats datetime to 'Y-m-d @ H:M'|
+| `gravatar_url`       | email, size=80 | `url_to_image` | generate the url to image |
 
 
+def format_datetime(timestamp)
+    Time.at(timestamp).utc.strftime('%Y-%m-%d @ %H:%M')
+end
+
+def gravatar_url(email, size = 80)
+    hash = Digest::MD5.hexdigest(email.strip.downcase)
+    "http://www.gravatar.com/avatar/#{hash}?d=identicon&s=#{size}"
+end
 
 ### Other observations 
 - Hashing md5

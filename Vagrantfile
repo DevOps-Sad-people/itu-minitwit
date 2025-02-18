@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = 'digital_ocean'
   config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
   config.ssh.private_key_path = '~/.ssh/id_ed25519'
-  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync_args: ["--include=.env", "--include=.rspec", "--exclude=.*"]
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [".env.example", ".git", ".gitignore"]
 
   config.vm.define "itu-minitwit", primary: false do |server|
     server.vm.provider :digital_ocean do |provider|

@@ -68,6 +68,37 @@ controlkey <%= @keys_controlkey %>
 <% end -%>
 ``` 
 
+## Endpoints
+`:username` in a route means it is a dynamic route parameter - this means `:username` is placeholder for a real username.
+E.g the username `nicra` - the route `/nicra` would show the profile of `nicra`
+
+**Note**:   
+You should place route with dynamic route parameters in the buttom of files, because the routes are evaluated from top to bottom.
+e.g. /:username would match /login or /logout
+
+### Minitwit endpoints (returns html)
+| Endpoint             | Method       | Description                |
+|----------------------|------------- |----------------------------|
+| `/`                  | `GET`        | Root/Home page. Shows timeline.             |
+| `/login`             | `GET, POST`  | User login                 |
+| `/register`          | `GET, POST`  | User registration          |
+| `/logout`            | `GET`        | User logout                |
+| `/public`            | `GET`        | Displays the latest messages of all users.       |
+| `/:username/follow`  | `GET`        | Follow a user              |
+| `/:username/unfollow`| `GET`        | Unfollow a user            |
+| `/add_message`       | `POST`       | Add a new message          |
+| `/:username`         | `GET`        | View user profile/messages |
+
+
+### Api Endpoints (GET returns JSON and POST status code)
+
+| Endpoint             | Method       | Description                |
+|----------------------|------------- |----------------------------|
+| `/msgs`              | `GET`        | Get public messages        |
+| `/msgs/:username`    | `GET, POST`  | GET: Public messages for a specific user. POST: post a new message for a specific username.                 |
+| `/fllws/:username`   | `GET, POST`  | GET: Returns a list of users whom the given user follows. POST: Allows a user to follow or unfollow another user                 |
+| `/latest`            | `GET`  | Retrieves the latest processed command ID                 |
+
 
 
 ## Observations
@@ -85,6 +116,7 @@ controlkey <%= @keys_controlkey %>
 - Flagging system. 
 - time: Unix seconds
 - Requests return HTML
+
 
 
 ### POST/GET Features

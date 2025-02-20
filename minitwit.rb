@@ -64,6 +64,50 @@ def generate_pw_hash(password)
     "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
 end
 
+def update_latest(params)
+    parsed_command_id = params['latest'] ? params['latest'].to_i : -1
+    if parsed_command_id == -1
+        return
+    end
+
+    file = File.new(ENV.fetch('SIM_TRACKER_FILE'), "w")
+    file.puts(parsed_command_id)
+    file.close
+end
+
+def not_req_from_simulator(request)
+    authorization = request.env["HTTP_AUTHORIZATION"]
+    if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
+        status 403
+        content_type :json
+        {
+            error_msg: "You are not authorized to use this resource!",
+            status: 403
+        }.to_json
+    end
+end
+
+def public_msgs(per_page)
+    query_db('''
+        select message.*, user.* from message, user
+        where message.flagged = 0 and message.author_id = user.user_id
+        order by message.pub_date desc limit ?
+    ''', [per_page])
+end
+
+def filtered_msgs(messages)
+    filtered_msgs = []
+    messages.each do |message|
+        filtered_msg = {}
+        filtered_msg["content"] = message["text"]
+        filtered_msg["pub_date"] = message["pub_date"]
+        filtered_msg["user"] = message["username"]
+        filtered_msgs << filtered_msg
+    end
+    filtered_msgs
+end
+
+
 # before each request, make sure the database is connected
 before do
     @db = connect_db
@@ -82,6 +126,11 @@ end
 # close the database after each request
 after do
     @db.close if @db
+end
+
+post '/illegal-route' do
+    x = not_req_from_simulator(request)
+    x ? x : 'ok'
 end
 
 # Root
@@ -110,12 +159,69 @@ end
 get '/public' do
     """Displays the latest messages of all users."""
     puts "Getting public messages"
-    @messages = query_db('''
-        select message.*, user.* from message, user
-        where message.flagged = 0 and message.author_id = user.user_id
-        order by message.pub_date desc limit ?''', [PER_PAGE])
+    @messages = public_msgs(PER_PAGE)
     erb :timeline
 end
+
+
+get '/msgs' do
+    update_latest(params)
+    not_from_sim_response = not_req_from_simulator(request)
+    if (not_from_sim_response)
+        return not_from_sim_response
+    end
+
+    # get the number of messages to return
+    no_msgs = params["no"] ? params["no"] : 100
+
+    messages = public_msgs(no_msgs)
+
+    filtered_msgs(messages).to_json
+end
+
+post '/msgs/:username' do
+    update_latest(params)
+    not_from_sim_response = not_req_from_simulator(request)
+    if (not_from_sim_response)
+        return not_from_sim_response
+    end
+
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    body = JSON.parse request.body.read
+    message = body['message']
+    if message
+        @db.execute('''
+            insert into message (author_id, text, pub_date, flagged)
+            values (?, ?, ?, 0)
+        ''', [user_id, Rack::Utils.escape_html(message), Time.now.to_i])
+    end
+    status 204
+end
+
+get '/msgs/:username' do
+    update_latest(params)
+    not_from_sim_response = not_req_from_simulator(request)
+    if (not_from_sim_response)
+        return not_from_sim_response
+    end
+
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    # get the number of messages to return
+    no_msgs = params["no"] ? params["no"] : 100
+
+    messages = query_db('''
+        select message.*, user.* from message, user
+        where message.flagged = 0 and message.author_id = user.user_id and user.user_id = ?
+        order by message.pub_date desc limit ?
+    ''', [user_id, no_msgs])
+
+    filtered_msgs(messages).to_json
+end
+
 
 get '/login' do
     """Logs the user in."""
@@ -165,28 +271,65 @@ get '/register' do
     erb :register
 end
 
+def get_register_payload(request, is_simulator)
+    if is_simulator
+        body = JSON.parse request.body.read
+        return {
+            username: body['username'],
+            email: body['email'],
+            password: body['pwd'],
+            password2: body['pwd']
+        }
+    end
+
+    return {
+        username: params[:username],
+        email: params[:email],
+        password: params[:password],
+        password2: params[:password2]
+    }
+end
+
+
 post '/register' do
-    if @user
+    is_simulator = request.content_type == "application/json"
+    payload = get_register_payload(request, is_simulator)
+    username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
+    
+    if is_simulator
+        update_latest(params)
+    elsif @user
         redirect '/'
     end
-    if not params[:username] or params[:username] == ''
+
+    if not username or username == ''
         @error = 'You have to enter a username'
-    elsif not params[:email] or not params[:email].include? '@'
+    elsif not email or not email.include? '@'
         @error = 'You have to enter a valid email address'
-    elsif not params[:password] or params[:password] == ''
+    elsif not password or password == ''
         @error = 'You have to enter a password'
-    elsif params[:password] != params[:password2]
+    elsif not is_simulator and password != password2
         @error = 'The two passwords do not match'
-    elsif get_user_id(params[:username]) != nil
+    elsif get_user_id(username) != nil
         @error = 'The username is already taken'
     else
         @db.execute('''
             insert into user (username, email, pw_hash) values (?, ?, ?)
-        ''', [params[:username], params[:email], generate_pw_hash(params[:password])])
-        flash[:notice] = 'You were successfully registered and can login now'
-        redirect '/login'
+        ''', [username, email, generate_pw_hash(password)])
+
+        if is_simulator
+            status 204
+        else
+            flash[:notice] = 'You were successfully registered and can login now'
+            redirect '/login'
+        end
     end
-    erb :register
+
+    if is_simulator
+        return {status: 400, error_msg: @error}.to_json
+    else
+        erb :register
+    end
 end
 
 get '/logout' do
@@ -200,31 +343,78 @@ get '/logout' do
     redirect '/public'
 end
 
+def follow(user_id, follows_username)
+    follows_user_id = get_user_id(follows_username)
+    halt 404, "User not found" unless user_id and follows_user_id
+    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [user_id, follows_user_id])
+end
+
+def unfollow(user_id, unfollows_username)
+    unfollows_user_id = get_user_id(unfollows_username)
+    halt 404, "User not found" unless user_id and unfollows_user_id
+    @db.execute('DELETE FROM follower WHERE who_id=? AND whom_id=?', [user_id, unfollows_user_id])
+end
+
 get '/:username/follow' do 
-    username = params[:username]
     # halt 401, "Unauthorized" unless current_user
     # who_to_do_the_following = @user['user_id']
-    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
-    halt 404, "User not found" unless @profile_user
-  
-    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [@user["user_id"], @profile_user['user_id']])
-
+    username = params[:username]
+    follow(@user["user_id"], username)
 
     flash[:notice] = "You are now following &#34;#{username}&#34;"
     redirect "/#{username}"
 end
 
 get '/:username/unfollow' do 
-    username = params[:username]
     # halt 401, "Unauthorized" unless current_user
     # who_to_do_the_following = @user['user_id']
-    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
-    halt 404, "User not found" unless @profile_user
-    
-    @db.execute('delete from follower where who_id=? and whom_id=?', [@user["user_id"], @profile_user['user_id']])
+    username = params[:username]
+    unfollow(@user["user_id"], username)
 
     flash[:notice] = "You are no longer following #{username}"
     redirect "/#{username}"
+end
+
+get '/fllws/:username' do
+    update_latest(params)
+    req_from_simulator = not_req_from_simulator(request)
+    if (req_from_simulator)
+        return req_from_simulator
+    end
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    limit = params["no"] ? params["no"] : 100
+    followers = query_db('''
+        SELECT user.username FROM user
+        INNER JOIN follower ON follower.whom_id=user.user_id
+        WHERE follower.who_id=?
+        LIMIT ?
+        ''', [user_id, limit])
+    follower_names = followers.map { |f| f["username"] }
+    {"follows": follower_names}.to_json
+end
+
+post '/fllws/:username' do
+    update_latest(params)
+    req_from_simulator = not_req_from_simulator(request)
+    if (req_from_simulator)
+        return req_from_simulator
+    end
+    user_id = get_user_id(params[:username])
+    halt 404, "User not found" unless user_id
+
+    body = JSON.parse request.body.read
+    follows_username = body['follow']
+    unfollows_username = body['unfollow']
+    
+    if follows_username
+        follow(user_id, follows_username)
+        return status 204
+    elsif unfollows_username
+        unfollow(user_id, unfollows_username)
+        return status 204
+    end
 end
 
 post '/add_message' do
@@ -242,6 +432,18 @@ post '/add_message' do
     redirect '/'
 end
 
+get '/latest' do
+    path = ENV.fetch('SIM_TRACKER_FILE')
+
+    latest_processed_command_id = begin
+        file_content = File.read(path).strip
+        file_content.match?(/^\d+$/) ? file_content.to_i : -1
+    rescue
+        -1
+    end
+    
+    {latest: latest_processed_command_id}.to_json
+end
 
 # Place this in buttom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout

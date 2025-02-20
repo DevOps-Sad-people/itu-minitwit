@@ -32,6 +32,7 @@
 1. `docker run -it --rm \
     --name my-ruby-server \
     -v $(pwd)/:/app \
+    -p 4567:4567 \
     -w /app \
     ruby:3.3 bash`
 2. `bundle install`
@@ -67,6 +68,11 @@ controlkey <%= @keys_controlkey %>
 <% end -%>
 ``` 
 
+## Deployment
+It is assumed that your SSH keys are located in your home directory in the hidden directory ~/.ssh/id_ed25519. In case you have them stored somewhere else, you have to modify the line config.ssh.private_key_path = '~/.ssh/id_ed25519' in the Vagrantfile accordingly.
+
+### Excluding files from deployment
+If you want to exclude a file/folder from the deployment process, you need to modify the config.vm.synced_folder line in the Vagrantfile and add it to the rsync__exclude option.
 
 
 ## Observations

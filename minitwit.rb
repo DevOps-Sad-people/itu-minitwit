@@ -456,7 +456,6 @@ get '/:username' do
     halt 404, "User not found" unless @profile_user
     puts "Getting profile_user: #{@profile_user}"
 
-    # TODO: I dont know how to use this followed yet
     @followed = false
     if @user
       @followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = ? AND follower.whom_id = ?',

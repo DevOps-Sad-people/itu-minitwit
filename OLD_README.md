@@ -98,42 +98,74 @@ e.g. /:username would match /login or /logout
 | `/msgs/:username`    | `GET, POST`  | GET: Public messages for a specific user. POST: post a new message for a specific username.                 |
 | `/fllws/:username`   | `GET, POST`  | GET: Returns a list of users whom the given user follows. POST: Allows a user to follow or unfollow another user                 |
 | `/latest`            | `GET`  | Retrieves the latest processed command ID                 |
-| `/illegal-route'`    | `POST`  | Request validation check, if from simulator or not                |
 
 
-## Database
 
-### Methods
-| Method               |Parameters                 | Returns       | Description                |
-|----------------------|---------------------------|---------------|----------------------------|
-| `connect_db`         | None                      |`db`           | Connect to db |
-| `init_db`            | None                      | void          | init database|
-| `query_db`           | query, args=[], one=false |`results`      | query the database|
-| `get_user_id`        | username: string          |`user_id`/`nil`| get user_id from username|
-
-### Helper methods
-| Method               |Parameters      | Returns      | Description                |
-|----------------------|----------------|------------- |----------------------------|
-| `generate_pw_hash`   | password       |`hashed_password`| Generate hashed password|
-| `update_latest`      | params         | void          | update latest command ID |
-| `format_datetime`    | timestamp      | `formatted_time` | Formats datetime to 'Y-m-d @ H:M'|
-| `gravatar_url`       | email, size=80 | `url_to_image` | generate the url to image |
+## Observations
 
 
-## Deployment
-It is assumed that your SSH keys are located in your home directory in the hidden directory `~/.ssh/id_ed25519`. In case you have them stored somewhere else, you have to modify the line `config.ssh.private_key_path = '~/.ssh/id_ed25519'` in the Vagrantfile accordingly.
+### DB
 
-### Excluding files from deployment
-If you want to exclude a file/folder from the deployment process, you need to modify the config.vm.synced_folder line in the Vagrantfile and add it to the rsync__exclude option.
-
+- `init_db()`
+- `connect_db()`
+- `query_db()`
 
 ### Other observations 
-- Hashing sha256
+- Hashing md5
 - Opens and closes db connection for each request
 - Flagging system. 
 - time: Unix seconds
 - Requests return HTML
 
+
+
+### POST/GET Features
+- (un)follow
+    - route(/<username>/follow)
+    - route(/<username>/unfollow)
+- `timeline` 
+    - (shows tweets)
+    - route('/')
+    - tweets from those you follow  
+- `public_timeline()`
+    - route('/public')
+    - Show every tweet
+- `user_timeline(username)`
+    - route('/<username>')
+    - displays a users tweet
+- `add_message()`
+    - route(/add_message) POST
+- `login`
+- `logout`
+- `register`
+### Other problems
+
+
+## Set up env
+Create env
+```bash
+python3 -m venv venv
+```
+Activate env
+```bash
+source venv/bin/activate
+```
+Deactivate env
+```bash
+deactivate
+```
+
+## Install requirements
+This is used to install all the required packages from the requirements file
+```bash
+pip install -r requirements.txt
+```
+
+## Update requirements file
+This is used to update the requirements file with the current packages.
+```bash
+pip freeze > requirements.txt
+```
 
 ## Compile flag tool
 ```bash

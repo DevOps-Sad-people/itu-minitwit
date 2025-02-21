@@ -120,6 +120,13 @@ e.g. /:username would match /login or /logout
 | `gravatar_url`       | email, size=80 | `url_to_image` | generate the url to image |
 
 
+## Deployment
+It is assumed that your SSH keys are located in your home directory in the hidden directory ~/.ssh/id_ed25519. In case you have them stored somewhere else, you have to modify the line config.ssh.private_key_path = '~/.ssh/id_ed25519' in the Vagrantfile accordingly.
+
+### Excluding files from deployment
+If you want to exclude a file/folder from the deployment process, you need to modify the config.vm.synced_folder line in the Vagrantfile and add it to the rsync__exclude option.
+
+
 ### Other observations 
 - Hashing sha256
 - Opens and closes db connection for each request

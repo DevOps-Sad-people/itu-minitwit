@@ -120,17 +120,8 @@ e.g. /:username would match /login or /logout
 | `gravatar_url`       | email, size=80 | `url_to_image` | generate the url to image |
 
 
-def format_datetime(timestamp)
-    Time.at(timestamp).utc.strftime('%Y-%m-%d @ %H:%M')
-end
-
-def gravatar_url(email, size = 80)
-    hash = Digest::MD5.hexdigest(email.strip.downcase)
-    "http://www.gravatar.com/avatar/#{hash}?d=identicon&s=#{size}"
-end
-
 ### Other observations 
-- Hashing md5
+- Hashing sha256
 - Opens and closes db connection for each request
 - Flagging system. 
 - time: Unix seconds

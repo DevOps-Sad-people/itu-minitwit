@@ -40,18 +40,17 @@ def init_db
 end
 
 def query_db(query, args=[], one=false)
-    # define results before execute to be in the right scope
-    results = []
-    @db.exec_params(query, args) do |row|
-        return row if one
-        results << row
+    result = @db.exec_params(query, args)
+    if one
+      return result[0] ? result[0] : {}
+    else
+      return result.map { |row| row }
     end
-    results
-end
+  end
 
 def get_user_id(username)
     db = connect_db
-    row = db.get_first_row("select user_id from user where username = $1", username)
+    row = db.get_first_row("SELECT user_id FROM user WHERE username = $1", username)
     row ? row['user_id'] : nil
 end
 

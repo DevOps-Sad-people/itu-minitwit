@@ -55,7 +55,9 @@ def get_user_id(username)
 end
 
 def format_datetime(timestamp)
-    Time.at(timestamp).utc.strftime('%Y-%m-%d @ %H:%M')
+  timestamp = timestamp.to_i if timestamp.is_a?(String)
+  return nil unless timestamp.is_a?(Numeric) && timestamp >= 0
+  Time.at(timestamp).utc.strftime('%Y-%m-%d @ %H:%M')
 end
 
 def gravatar_url(email, size = 80)

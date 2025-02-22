@@ -1,5 +1,6 @@
 # itu-minitwit
 ## Setup & Run:
+(NOT RECOMMENDED - USE DOCKER INSTEAD)
 
 - Install Ruby version 3.3
 - Setup .env file (Copy .env.example)

@@ -43,6 +43,10 @@ jobs:
       - name: Print SHA
         run: echo $GITHUB_SHA
 
+      # check rate limit
+      - name: Check rate limit
+        run: doctl account ratelimit --format Remaining
+
       # BUILD AND PUSH MINITWIT IMAGE
       - name: Build container image
         run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .

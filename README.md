@@ -1,42 +1,25 @@
 # itu-minitwit
-## Setup:
+## Setup & Run:
+*NOT RECOMMENDED - USE DOCKER INSTEAD*
 
 - Install Ruby version 3.3
 - Setup .env file (Copy .env.example)
+- Setup postgres (Add postgres credentials to the .env file)
 - `bundle install` to install packages
 - `sh control.sh init` to init db.
 - `ruby minitwit.rb` to run program.
 
-## Using Docker
+## Run using Docker
 
-- Install `docker build -t my-ruby-app .`
-- Run `docker run -it -p 4567:4567 my-ruby-app`
+`docker compose up -d`
 
 ### Interactive development
-**A single start**
-`docker run -it --rm \
-    --name my-ruby-server \
-    -v $(pwd)/:/app \
-    -p 4567:4567 \
-    -w /app \
-    ruby:3.3 bash -c "bundle install; ruby minitwit.rb"`
 
-**A single test-run**
-`docker run -it --rm \
-    --name my-ruby-server \
-    -v $(pwd)/:/app \
-    -w /app \
-    ruby:3.3 bash -c "bundle install; rspec"`
+1. `docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash`
+2. Run `rspec` to test or `ruby minitwit.rb` to start the app.
 
-**Interactive and reusable environment (Recommended)**
-1. `docker run -it --rm \
-    --name my-ruby-server \
-    -v $(pwd)/:/app \
-    -p 4567:4567 \
-    -w /app \
-    ruby:3.3 bash`
-2. `bundle install`
-3. Run `rspec` to test. `ruby minitwit.rb` to start app.
+Clean up database afterwards:
+`docker compose -f docker-compose.dev.yml down --volumes`
 
 ## Testing
 All tests are performed using RSpec, which is a great DSL for expressing tests. To add tests, use `spec/minitwit_spec.rb` as inspiration. Add `XXXX_spec.rb` to the `spec/` folder, import `spec_helper`, and write as many tests as you should require.
@@ -102,6 +85,22 @@ e.g. /:username would match /login or /logout
 
 
 ## Database
+
+### Setup
+Create and run a Postgresql docker container:
+`docker run --name minitwit-postgres --network=minitwit -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`
+
+Restoring from a dump file:
+```
+docker exec -it minitwit-postgres /bin/bash
+psql -U postgres -d minitwit -f minitwit_db.sql
+
+```
+
+Creating a dump file:
+`docker exec minitwit-postgres pg_dump -U postgres -F t postgres > db_dump.sql`
+
+
 
 ### Methods
 | Method               |Parameters                 | Returns       | Description                |

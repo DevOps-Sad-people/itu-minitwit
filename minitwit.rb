@@ -32,12 +32,11 @@ def connect_db
     db
 end
 
-def init_db
-    db = connect_db
-    schema = File.read(File.join(File.dirname(__FILE__), 'schema.sql'))
-    # TODO
-    #db.execute_batch(schema)
-end
+#def init_db
+#    db = connect_db
+#    schema = File.read(File.join(File.dirname(__FILE__), 'schema.sql'))
+#    db.execute_batch(schema)
+#end
 
 def query_db(query, args=[], one=false)
     result = @db.exec_params(query, args)

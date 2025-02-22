@@ -16,6 +16,7 @@
 **A single start**
 `docker run -it --rm \
     --name my-ruby-server \
+    --network=minitwit \
     -v $(pwd)/:/app \
     -p 4567:4567 \
     -w /app \
@@ -31,6 +32,7 @@
 **Interactive and reusable environment (Recommended)**
 1. `docker run -it --rm \
     --name my-ruby-server \
+    --network=minitwit \
     -v $(pwd)/:/app \
     -p 4567:4567 \
     -w /app \
@@ -102,6 +104,22 @@ e.g. /:username would match /login or /logout
 
 
 ## Database
+
+### Setup
+Create and run a Postgresql docker container:
+`docker run --name minitwit-postgres --network=minitwit -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`
+
+Restoring from a dump file:
+```
+docker exec -it minitwit-postgres /bin/bash
+psql -U postgres -d minitwit -f minitwit_db.sql
+
+```
+
+Creating a dump file:
+`docker exec minitwit-postgres pg_dump -U postgres -F t postgres > db_dump.sql`
+
+
 
 ### Methods
 | Method               |Parameters                 | Returns       | Description                |

@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/flash'
 require 'sinatra/content_for'
-require 'sqlite3'
+require 'pg'
 require 'digest/md5'
 require 'digest/sha2'
 require 'json'
@@ -22,22 +22,27 @@ configure do
 end
 
 def connect_db
-    path = ENV.fetch('DATABASE_PATH')
-    db = SQLite3::Database.new(path)
-    db.results_as_hash = true
+    db = PG.connect(
+        host: ENV.fetch('DB_HOST'),
+        port: ENV.fetch('DB_PORT'),
+        dbname: ENV.fetch('DB_NAME'),
+        user: ENV.fetch('DB_USER'),
+        password: ENV.fetch('DB_PASSWORD')
+    )
     db
 end
 
 def init_db
     db = connect_db
     schema = File.read(File.join(File.dirname(__FILE__), 'schema.sql'))
-    db.execute_batch(schema)
+    # TODO
+    #db.execute_batch(schema)
 end
 
 def query_db(query, args=[], one=false)
     # define results before execute to be in the right scope
     results = []
-    @db.execute(query, args) do |row|
+    @db.exec_params(query, args) do |row|
         return row if one
         results << row
     end
@@ -46,7 +51,7 @@ end
 
 def get_user_id(username)
     db = connect_db
-    row = db.get_first_row("select user_id from user where username = ?", username)
+    row = db.get_first_row("select user_id from user where username = $1", username)
     row ? row['user_id'] : nil
 end
 
@@ -89,9 +94,11 @@ end
 
 def public_msgs(per_page)
     query_db('''
-        select message.*, user.* from message, user
-        where message.flagged = 0 and message.author_id = user.user_id
-        order by message.pub_date desc limit ?
+        SELECT *
+        FROM message JOIN "user"
+        ON message.author_id = "user".user_id
+        WHERE message.flagged = 0
+        ORDER BY message.pub_date DESC LIMIT $1
     ''', [per_page])
 end
 
@@ -118,7 +125,7 @@ before do
     @show_follow_unfollow = false
     # check if the user is logged in
     if session[:user]
-        @user = query_db('select * from user where user_id = ?', [session[:user]], true)
+        @user = query_db('SELECT * FROM user WHERE user_id = $1', [session[:user]], true)
     end
 end
 
@@ -144,12 +151,14 @@ get '/' do
     end
     puts "Getting messages User: #{@user}"
     @messages = query_db('''
-        select message.*, user.* from message, user
-        where message.flagged = 0 and message.author_id = user.user_id and (
-            user.user_id = ? or
-            user.user_id in (select whom_id from follower
-                                    where who_id = ?))
-        order by message.pub_date desc limit ?''', 
+        SELECT *
+        FROM message JOIN "user"
+        ON message.author_id = "user".user_id
+        WHERE message.flagged = 0 AND (
+            "user".user_id = $1 OR
+            "user".user_id IN (SELECT whom_id FROM follower
+                                    WHERE who_id = $2))
+        ORDER BY message.pub_date DESC LIMIT $3''', 
         [session[:user], session[:user], PER_PAGE])
     
     # render the timeline
@@ -192,9 +201,9 @@ post '/msgs/:username' do
     body = JSON.parse request.body.read
     message = body['message']
     if message
-        @db.execute('''
-            insert into message (author_id, text, pub_date, flagged)
-            values (?, ?, ?, 0)
+        @db.exec_params('''
+            INSERT INTO message (author_id, text, pub_date, flagged)
+            VALUES ($1, $2, $3, 0)
         ''', [user_id, Rack::Utils.escape_html(message), Time.now.to_i])
     end
     status 204
@@ -214,9 +223,11 @@ get '/msgs/:username' do
     no_msgs = params["no"] ? params["no"] : 100
 
     messages = query_db('''
-        select message.*, user.* from message, user
-        where message.flagged = 0 and message.author_id = user.user_id and user.user_id = ?
-        order by message.pub_date desc limit ?
+        SELECT *
+        FROM message JOIN "user"
+        ON message.author_id = "user".user_id
+        WHERE message.flagged = 0 and "user".user_id = $1
+        ORDER BY message.pub_date DESC LIMIT $2
     ''', [user_id, no_msgs])
 
     filtered_msgs(messages).to_json
@@ -241,7 +252,7 @@ post '/login' do
     puts "Username: #{params[:username]}"
     # get the user
     result = query_db('''
-        select * from user where username = ?
+        SELECT * FROM user WHERE username = $1
     ''', [params[:username]], true)
 
     if result.length <= 0
@@ -313,8 +324,8 @@ post '/register' do
     elsif get_user_id(username) != nil
         @error = 'The username is already taken'
     else
-        @db.execute('''
-            insert into user (username, email, pw_hash) values (?, ?, ?)
+        @db.exec_params('''
+            INSERT INTO user (username, email, pw_hash) VALUES ($1, $2, $3)
         ''', [username, email, generate_pw_hash(password)])
 
         if is_simulator
@@ -346,13 +357,13 @@ end
 def follow(user_id, follows_username)
     follows_user_id = get_user_id(follows_username)
     halt 404, "User not found" unless user_id and follows_user_id
-    @db.execute('INSERT INTO follower (who_id, whom_id) VALUES (?, ?)', [user_id, follows_user_id])
+    @db.exec_params('INSERT INTO follower (who_id, whom_id) VALUES ($1, $2)', [user_id, follows_user_id])
 end
 
 def unfollow(user_id, unfollows_username)
     unfollows_user_id = get_user_id(unfollows_username)
     halt 404, "User not found" unless user_id and unfollows_user_id
-    @db.execute('DELETE FROM follower WHERE who_id=? AND whom_id=?', [user_id, unfollows_user_id])
+    @db.exec_params('DELETE FROM follower WHERE who_id=$1 AND whom_id=$2', [user_id, unfollows_user_id])
 end
 
 get '/:username/follow' do 
@@ -386,10 +397,11 @@ get '/fllws/:username' do
 
     limit = params["no"] ? params["no"] : 100
     followers = query_db('''
-        SELECT user.username FROM user
-        INNER JOIN follower ON follower.whom_id=user.user_id
-        WHERE follower.who_id=?
-        LIMIT ?
+        SELECT "user".username
+        FROM "user"
+        INNER JOIN follower ON follower.whom_id = "user".user_id
+        WHERE follower.who_id=$1
+        LIMIT $2
         ''', [user_id, limit])
     follower_names = followers.map { |f| f["username"] }
     {"follows": follower_names}.to_json
@@ -423,9 +435,9 @@ post '/add_message' do
         halt 401, "Unauthorized"
     end
     if params[:message]
-        @db.execute('''
-            insert into message (author_id, text, pub_date, flagged)
-            values (?, ?, ?, 0)
+        @db.exec_params('''
+            INSERT INTO message (author_id, text, pub_date, flagged)
+            VALUES ($1, $2, $3, 0)
         ''', [@user["user_id"], Rack::Utils.escape_html(params[:message]), Time.now.to_i])
         flash[:notice] = 'Your message was recorded'
     end
@@ -452,22 +464,24 @@ get '/:username' do
     username = params[:username]
     puts "Getting profile for user: #{username}"
     # # Fetch the user's profile from the database
-    @profile_user = query_db('SELECT * FROM user WHERE username = ?', [username]).first
+    @profile_user = query_db('SELECT * FROM "user" WHERE username = $1', [username]).first
     halt 404, "User not found" unless @profile_user
     puts "Getting profile_user: #{@profile_user}"
 
     @followed = false
     if @user
-      @followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = ? AND follower.whom_id = ?',
+      @followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = $1 AND follower.whom_id = $2',
                           [@user["user_id"], @profile_user['user_id']]).any?
         puts "#{@user["username"]} Follows #{@profile_user['username']}: #{@followed}"
     end
   
     # # Fetch the user's messages from the database
     @messages = query_db('''
-      SELECT message.*, user.* FROM message, user 
-      WHERE user.user_id = message.author_id AND user.user_id = ?
-      ORDER BY message.pub_date DESC LIMIT ?
+      SELECT *
+      FROM message JOIN "user"
+      ON message.author_id = "user".user_id 
+      WHERE "user".user_id = $1
+      ORDER BY message.pub_date DESC LIMIT $2
     ''', [@profile_user['user_id'], PER_PAGE])
   
     # Render the timeline template (timeline.erb)

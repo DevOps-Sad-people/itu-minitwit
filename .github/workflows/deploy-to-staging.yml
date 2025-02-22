@@ -6,6 +6,7 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
+      - 67_github_action_setup_and_login
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions

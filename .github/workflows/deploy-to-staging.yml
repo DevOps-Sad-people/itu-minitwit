@@ -49,14 +49,14 @@ jobs:
 
       # BUILD AND PUSH MINITWIT IMAGE
       - name: Build container image
-        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
+        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:123 .
 
       # get image size in mib
       - name: Get image size
-        run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
+        run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:123 --format "{{.Size}}"
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) 
+        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:123
 
 
       

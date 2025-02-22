@@ -9,13 +9,7 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 # Copy the application code to the container
-# only copy the files that are needed
-COPY minitwit.rb ./
-COPY templates ./templates
-COPY public ./public
-COPY spec ./spec
-
-
+COPY . .
 
 EXPOSE 4567
 

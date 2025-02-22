@@ -1,0 +1,37 @@
+services:
+  dev:
+    image: ruby:3.3
+    container_name: minitwit_dev
+    volumes:
+      - .:/app # Mount your project directory into the container
+    working_dir: /app
+    entrypoint: ["bash"] # Start in an interactive shell
+    depends_on:
+      - db
+    networks:
+      - my_network
+    ports:
+      - "4567:4567" # Exposing the default Sinatra port, adjust as needed
+
+  db:
+    image: postgres:15
+    container_name: minitwit_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: minitwit
+    ports:
+      - "5432:5432"
+    networks:
+      - minitwit_network
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+
+networks:
+  minitwit_network:
+    driver: bridge
+
+volumes:
+  pg_data:

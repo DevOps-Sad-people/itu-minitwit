@@ -3,17 +3,21 @@
 
 - Install Ruby version 3.3
 - Setup .env file (Copy .env.example)
+- Setup postgres (Add postgres credentials to the .env file)
 - `bundle install` to install packages
 - `sh control.sh init` to init db.
 - `ruby minitwit.rb` to run program.
 
 ## Using Docker
 
-- Install `docker build -t my-ruby-app .`
-- Run `docker run -it -p 4567:4567 my-ruby-app`
+`docker compose up -d`
 
 ### Interactive development
 **A single start**
+Create network:
+`docker network create minitwit`
+
+Run ruby:
 `docker run -it --rm \
     --name my-ruby-server \
     --network=minitwit \
@@ -30,6 +34,9 @@
     ruby:3.3 bash -c "bundle install; rspec"`
 
 **Interactive and reusable environment (Recommended)**
+Create network:
+`docker network create minitwit`
+
 1. `docker run -it --rm \
     --name my-ruby-server \
     --network=minitwit \

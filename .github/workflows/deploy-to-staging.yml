@@ -6,9 +6,6 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
-  # allow manual triggers for now too
-  workflow_dispatch:
-    manual: true
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -42,8 +39,6 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       # BUILD AND PUSH MINITWIT IMAGE
-
-      # BUILD AND PUSH POSTGRES IMAGE
 
   test:
     runs-on: ubuntu-latest

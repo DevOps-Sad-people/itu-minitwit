@@ -42,15 +42,15 @@ end
 def query_db(query, args=[], one=false)
     result = @db.exec_params(query, args)
     if one
-      return result[0] ? result[0] : {}
+        return result.any? ? result[0] : {}
     else
-      return result.map { |row| row }
+        return result.any? ? result.map { |row| row } : []
     end
   end
 
 def get_user_id(username)
     db = connect_db
-    row = db.get_first_row("SELECT user_id FROM user WHERE username = $1", username)
+    row = query_db('''SELECT user_id FROM "user" WHERE username = $1''', [username], true)
     row ? row['user_id'] : nil
 end
 
@@ -126,7 +126,7 @@ before do
     @show_follow_unfollow = false
     # check if the user is logged in
     if session[:user]
-        @user = query_db('SELECT * FROM user WHERE user_id = $1', [session[:user]], true)
+        @user = query_db('SELECT * FROM "user" WHERE user_id = $1', [session[:user]], true)
     end
 end
 
@@ -253,7 +253,7 @@ post '/login' do
     puts "Username: #{params[:username]}"
     # get the user
     result = query_db('''
-        SELECT * FROM user WHERE username = $1
+        SELECT * FROM "user" WHERE username = $1
     ''', [params[:username]], true)
 
     if result.length <= 0
@@ -326,7 +326,7 @@ post '/register' do
         @error = 'The username is already taken'
     else
         @db.exec_params('''
-            INSERT INTO user (username, email, pw_hash) VALUES ($1, $2, $3)
+            INSERT INTO "user" (username, email, pw_hash) VALUES ($1, $2, $3)
         ''', [username, email, generate_pw_hash(password)])
 
         if is_simulator

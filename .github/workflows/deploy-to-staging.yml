@@ -40,6 +40,15 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       # BUILD AND PUSH MINITWIT IMAGE
+      - name: Build container image
+        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit .
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:lastest
+
+
+      
+
 
   test:
     runs-on: ubuntu-latest

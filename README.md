@@ -1,5 +1,5 @@
 # itu-minitwit
-## Setup:
+## Setup & Run:
 
 - Install Ruby version 3.3
 - Setup .env file (Copy .env.example)
@@ -8,44 +8,17 @@
 - `sh control.sh init` to init db.
 - `ruby minitwit.rb` to run program.
 
-## Using Docker
+## Run using Docker
 
 `docker compose up -d`
 
 ### Interactive development
-**A single start**
-Create network:
-`docker network create minitwit`
 
-Run ruby:
-`docker run -it --rm \
-    --name my-ruby-server \
-    --network=minitwit \
-    -v $(pwd)/:/app \
-    -p 4567:4567 \
-    -w /app \
-    ruby:3.3 bash -c "bundle install; ruby minitwit.rb"`
+1. `docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash`
+2. Run `rspec` to test or `ruby minitwit.rb` to start the app.
 
-**A single test-run**
-`docker run -it --rm \
-    --name my-ruby-server \
-    -v $(pwd)/:/app \
-    -w /app \
-    ruby:3.3 bash -c "bundle install; rspec"`
-
-**Interactive and reusable environment (Recommended)**
-Create network:
-`docker network create minitwit`
-
-1. `docker run -it --rm \
-    --name my-ruby-server \
-    --network=minitwit \
-    -v $(pwd)/:/app \
-    -p 4567:4567 \
-    -w /app \
-    ruby:3.3 bash`
-2. `bundle install`
-3. Run `rspec` to test. `ruby minitwit.rb` to start app.
+Clean up database afterwards:
+`docker compose -f docker-compose.dev.yml down --volumes`
 
 ## Testing
 All tests are performed using RSpec, which is a great DSL for expressing tests. To add tests, use `spec/minitwit_spec.rb` as inspiration. Add `XXXX_spec.rb` to the `spec/` folder, import `spec_helper`, and write as many tests as you should require.

@@ -1,0 +1,84 @@
+---
+name: Continuous Deployment
+
+on:
+  push:
+    # Run workflow every time something is pushed to the main branch
+    branches:
+      - main
+  # allow manual triggers for now too
+  workflow_dispatch:
+    manual: true
+
+# Remember to set the following secrets in your repository's settings:
+# https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
+# DOCKER_USERNAME
+# DOCKER_PASSWORD
+# SSH_USER
+# SSH_KEY
+# SSH_HOST
+
+# env variables
+env:
+  DROPLET_NAME: "itu-minitwit"
+
+# I've split the workflow into three jobs: build_and_push, test, and deploy.
+# The three jobs makes it easy to see which part fails in the Github Actions UI.
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      # BUILD AND PUSH MINITWIT IMAGE
+
+      # BUILD AND PUSH POSTGRES IMAGE
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+        # Pull the images from the registry
+
+        # Run the tests
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      # SSH INTO MACHINE AND RUN deploy.sh

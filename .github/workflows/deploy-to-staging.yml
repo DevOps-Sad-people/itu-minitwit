@@ -39,6 +39,10 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
+        # print the SHA of the commit
+      - name: Print SHA
+        run: echo $GITHUB_SHA
+
       # BUILD AND PUSH MINITWIT IMAGE
       - name: Build container image
         run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
@@ -87,3 +91,6 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       # SSH INTO MACHINE AND RUN deploy.sh
+
+      - name: SSH into the machine and run deploy.sh
+        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh

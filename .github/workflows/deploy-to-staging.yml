@@ -41,10 +41,10 @@ jobs:
 
       # BUILD AND PUSH MINITWIT IMAGE
       - name: Build container image
-        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit .
+        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:lastest
+        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) 
 
 
       

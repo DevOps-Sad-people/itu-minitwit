@@ -1,0 +1,30 @@
+name: Continuous Deployment
+
+on:
+  push:
+    # Run workflow every time something is pushed
+    branches:
+      - main
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+        
+  

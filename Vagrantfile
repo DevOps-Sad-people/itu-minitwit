@@ -31,16 +31,12 @@ Vagrant.configure("2") do |config|
     sudo apt-get update
 
     # The following address an issue in DO's Ubuntu images, which still contain a lock file
-    sudo killall apt apt-get
+    sudo killall apt-get
     sudo rm /var/lib/dpkg/lock-frontend
 
     # Install docker and docker compose
     sudo apt-get install -y docker.io docker-compose-v2
     sudo systemctl status docker
-
-    echo -e "\nVerifying that docker works ...\n"
-    docker run --rm hello-world
-    docker rmi hello-world
 
     echo -e "\nOpening port for minitwit and SSH ...\n"
     ufw allow 4567 && \
@@ -65,7 +61,9 @@ Vagrant.configure("2") do |config|
     sudo snap connect doctl:dot-docker
 
     # 
-    doctl auth init -t #{ENV['DIGITAL_OCEAN_TOKEN']} --never-expire
+    doctl auth init -t #{ENV['DIGITAL_OCEAN_TOKEN']}
+
+    doctl registry login --never-expire
 
     # run the deploy.sh script
     sh /minitwit/deploy.sh

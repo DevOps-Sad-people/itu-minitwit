@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - 67_github_action_setup_and_login
+      - 71-github-actions-ssh-into-machine-pull-latest-images-and-restart
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -19,6 +20,7 @@ on:
 # env variables
 env:
   DROPLET_NAME: "itu-minitwit"
+  REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
@@ -49,18 +51,14 @@ jobs:
 
       # BUILD AND PUSH MINITWIT IMAGE - works now?
       - name: Build container image
-        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest .
 
       # get image size in mib
       - name: Get image size
-        run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
+        run: docker images ${{ env.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
-
-
-      
-
+        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
 
   test:
     runs-on: ubuntu-latest
@@ -90,15 +88,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-      # SSH INTO MACHINE AND RUN deploy.sh
-
-      - name: SSH into the machine and run deploy.sh
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh
+      - name: Pull and deploy the images
+        run: >
+          ssh $SSH_USER@$SSH_HOST
+          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+          '/minitwit/deploy.sh'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}

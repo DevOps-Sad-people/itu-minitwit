@@ -30,6 +30,10 @@ Vagrant.configure("2") do |config|
 
     sudo apt-get update
 
+    # Replace keys
+    rm -rf /root/.ssh/authorized_keys
+    mv /minitwit/authorized_keys /root/.ssh/authorized_keys
+
     # The following address an issue in DO's Ubuntu images, which still contain a lock file
     sudo killall apt-get
     sudo rm /var/lib/dpkg/lock-frontend

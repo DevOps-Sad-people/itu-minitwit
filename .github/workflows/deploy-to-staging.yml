@@ -19,7 +19,7 @@ on:
 
 # env variables
 env:
-  DROPLET_NAME: "itu-minitwit"
+  DROPLET_NAME: "minitwit"
   REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
@@ -88,11 +88,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Load the SSH key
+        run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+
       - name: Pull and deploy the images
         run: >
-          ssh $SSH_USER@$SSH_HOST
-          -i ~/.ssh/do_ssh_key -o StrictHostKeyChecking=no
+          doctl compute ssh ${{ env.DROPLET_NAME }}
           '/minitwit/deploy.sh'
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}

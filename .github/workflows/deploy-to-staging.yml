@@ -97,9 +97,9 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Load the SSH key
-        run: echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+        run: echo "${{ secrets.SSH_KEY }}" > id_ed25519 && chmod 600 id_ed25519
 
       - name: Pull and deploy the images
         run: >
-          doctl compute ssh ${{ env.DROPLET_NAME }}
+          doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path id_ed25519
           '/minitwit/deploy.sh'

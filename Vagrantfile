@@ -1,6 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+
+
+
+
 Vagrant.configure("2") do |config|
   config.vm.box = 'digital_ocean'
   config.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
@@ -8,6 +12,8 @@ Vagrant.configure("2") do |config|
   
   config.vm.synced_folder "remote_files", "/minitwit", type: "rsync"
   config.vm.synced_folder '.', '/vagrant', disabled: true
+  config.vm.provision "file", source: "schema.sql", destination: "/minitwit/schema.sql"
+  config.vm.provision "file", source: ".env", destination: "/minitwit/.env"
 
   config.vm.define "minitwit", primary: true do |server|
     server.vm.provider :digital_ocean do |provider|
@@ -49,6 +55,22 @@ Vagrant.configure("2") do |config|
     echo -e "\nSelecting Minitwit Folder as default folder when you ssh into the server...\n"
     echo "cd /minitwit" >> ~/.bash_profile
     
+    # INSTALL DOCTL
+    sudo snap install doctl
+
+    # Create missing folders
+    sudo mkdir -p /root/.config /root/.docker
+
+    # Allow doctl to connect to docker
+    sudo snap connect doctl:dot-docker
+
+    # 
+    doctl auth init -t #{ENV['DIGITAL_OCEAN_TOKEN']} --never-expire
+
+    # run the deploy.sh script
+    sh /minitwit/deploy.sh
+
+
     echo "================================================================="
     echo "=                            DONE                               ="
     echo "================================================================="

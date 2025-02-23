@@ -9,14 +9,6 @@ on:
       - 67_github_action_setup_and_login
       - 71-github-actions-ssh-into-machine-pull-latest-images-and-restart
 
-# Remember to set the following secrets in your repository's settings:
-# https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
-# DOCKER_USERNAME
-# DOCKER_PASSWORD
-# SSH_USER
-# SSH_KEY
-# SSH_HOST
-
 # env variables
 env:
   DROPLET_NAME: "minitwit"

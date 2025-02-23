@@ -21,6 +21,8 @@ on:
 env:
   DROPLET_NAME: "minitwit"
   REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
+  SSH_USER: "root"
+  SSH_HOST: "209.38.233.233"
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
@@ -88,18 +90,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-      - name: Load the SSH key
-        run: echo "${{ secrets.SSH_KEY }}" > id_ed25519 && chmod 600 id_ed25519
-
-      - name: Pull and deploy the images
+      - name: Deploy to server
+        # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
         run: >
-          doctl compute ssh ${{ env.DROPLET_NAME }} --ssh-key-path id_ed25519
+          ssh $SSH_USER@$SSH_HOST
+          -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
           '/minitwit/deploy.sh'
+        env:
+          SSH_USER: ${{ env.SSH_USER }}
+          SSH_HOST: ${{ env.SSH_HOST }}

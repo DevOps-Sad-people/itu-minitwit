@@ -1,0 +1,19 @@
+## NOTE THIS IS WORK IN PROGRESS - NOT TESTED
+
+FROM ruby:3.3
+
+# Install dependencies
+RUN apk add --no-cache build-base
+
+# Create and set working directory
+RUN mkdir /app-tests
+WORKDIR /usr/src/app-tests
+
+# Copy test files and dependencies
+COPY Gemfile Gemfile.lock /app-tests/
+RUN bundle install
+
+COPY . /app-tests/
+
+# Set the entrypoint to run RSpec tests
+ENTRYPOINT ["rspec"]

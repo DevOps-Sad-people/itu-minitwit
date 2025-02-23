@@ -103,7 +103,7 @@ jobs:
         run: >
           ssh $SSH_USER@$SSH_HOST
           -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
-          '/minitwit/deploy.sh'
+          'cd /minitwit; ./deploy.sh'
         env:
           SSH_USER: ${{ env.SSH_USER }}
           SSH_HOST: ${{ env.SSH_HOST }}

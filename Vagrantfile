@@ -66,7 +66,8 @@ Vagrant.configure("2") do |config|
     doctl registry login --never-expire
 
     # run the deploy.sh script
-    sh /minitwit/deploy.sh
+    cd /minitwit
+    sh deploy.sh
 
 
     echo "================================================================="

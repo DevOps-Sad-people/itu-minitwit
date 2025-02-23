@@ -47,7 +47,7 @@ jobs:
       - name: Check rate limit
         run: doctl account ratelimit --format Remaining
 
-      # BUILD AND PUSH MINITWIT IMAGE
+      # BUILD AND PUSH MINITWIT IMAGE - works now?
       - name: Build container image
         run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:123 .
 

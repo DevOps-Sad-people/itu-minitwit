@@ -43,7 +43,7 @@ jobs:
       - name: Print SHA
         run: echo $GITHUB_SHA
 
-      # check rate limit
+      # check rate limit for digital ocean
       - name: Check rate limit
         run: doctl account ratelimit --format Remaining
 

@@ -6,6 +6,7 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
+      - 70-build-and-test # will reomve this when I validate that it works (seaa)
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -18,12 +19,6 @@ on:
 # env variables
 env:
   DROPLET_NAME: "itu-minitwit"
-  REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
-  SSH_USER: "root"
-  SSH_HOST: "209.38.233.233"
-  DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-  SECRET_KEY: ${{secrets.SECRET_KEY}}
-  SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.

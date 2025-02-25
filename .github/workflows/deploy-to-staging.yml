@@ -84,7 +84,11 @@ jobs:
       
         # Run the tests
       - name: Run tests with Rspec
-        run: docker run --rm --env-file .env ${{ secrets.REGISTRY_NAME }}/minitwit:latest bash -c "rspec"
+        run: docker run --rm \
+          -e DATABASE_PATH=${{secrets.DATABASE_PATH}} \
+          -e SIM_TRACKER_FILE=${{secrets.SIM_TRACKER_FILE}} \
+          -e SECRET_KEY=${{secrets.SECRET_KEY}} \
+           ${{ secrets.REGISTRY_NAME }}/minitwit:latest bash -c "rspec"
 
   # deploy:
   #   runs-on: ubuntu-latest

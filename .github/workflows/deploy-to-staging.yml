@@ -6,7 +6,7 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
-      - 67_github_action_setup_and_login
+      - 70-build-and-test
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -79,8 +79,12 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
         # Pull the images from the registry
-
+      - name: Pull the image
+        run: docker pull ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
+      
         # Run the tests
+      - name: Run tests with Rspec
+        run: docker run --rm ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) bash -c "rspec"
 
   deploy:
     runs-on: ubuntu-latest

@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 4567
 
 # Set the entrypoint to run RSpec tests
-CMD ["bash"]
+CMD [ "rspec" ] 

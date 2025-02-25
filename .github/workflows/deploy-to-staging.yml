@@ -95,8 +95,9 @@ jobs:
         # docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash / no such service: dev
       - name: Execute tests
         run: |
+            docker build -t testimage -f Dockerfile-tests .
             yes 2>/dev/null | docker compose up -d
-            docker run minitwit rspec
+            docker run --rm testimage
            
           
 

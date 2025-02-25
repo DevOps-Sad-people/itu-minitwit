@@ -84,7 +84,8 @@ jobs:
       
         # Run the tests
       - name: Run tests with Rspec
-        run: docker run --rm \
+        run: |
+          docker run --rm \
           -e DATABASE_PATH=${{secrets.DATABASE_PATH}} \
           -e SIM_TRACKER_FILE=${{secrets.SIM_TRACKER_FILE}} \
           -e SECRET_KEY=${{secrets.SECRET_KEY}} \

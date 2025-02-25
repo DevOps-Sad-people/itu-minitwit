@@ -24,39 +24,39 @@ env:
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
 
 jobs:
-  build_and_push:
-    runs-on: ubuntu-latest
+  # build_and_push:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    # steps:
+    #   - name: Checkout
+    #     uses: actions/checkout@v2
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    #   - name: Install doctl
+    #     uses: digitalocean/action-doctl@v2
+    #     with:
+    #       token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
+    #   - name: Log in to DigitalOcean Container Registry with short-lived credentials
+    #     run: doctl registry login --expiry-seconds 600
 
-        # print the SHA of the commit
-      - name: Print SHA
-        run: echo $GITHUB_SHA
+    #     # print the SHA of the commit
+    #   - name: Print SHA
+    #     run: echo $GITHUB_SHA
 
-      # check rate limit for digital ocean
-      - name: Check rate limit
-        run: doctl account ratelimit --format Remaining
+    #   # check rate limit for digital ocean
+    #   - name: Check rate limit
+    #     run: doctl account ratelimit --format Remaining
 
-      # BUILD AND PUSH MINITWIT IMAGE - works now?
-      - name: Build container image
-        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
+    #   # BUILD AND PUSH MINITWIT IMAGE - works now?
+    #   - name: Build container image
+    #     run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
 
-      # get image size in mib
-      - name: Get image size
-        run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
+    #   # get image size in mib
+    #   - name: Get image size
+    #     run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
 
-      - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
+    #   - name: Push image to DigitalOcean Container Registry
+    #     run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
 
 
       
@@ -80,29 +80,29 @@ jobs:
 
         # Pull the images from the registry
       - name: Pull the image
-        run: docker pull ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
+        run: docker pull ${{ secrets.REGISTRY_NAME }}/minitwit:latest
       
         # Run the tests
       - name: Run tests with Rspec
-        run: docker run --rm ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) bash -c "rspec"
+        run: docker run --rm --env-file .env ${{ secrets.REGISTRY_NAME }}/minitwit:latest bash -c "rspec"
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: test
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+  #     - name: Install doctl
+  #       uses: digitalocean/action-doctl@v2
+  #       with:
+  #         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
+  #     - name: Log in to DigitalOcean Container Registry with short-lived credentials
+  #       run: doctl registry login --expiry-seconds 600
 
-      # SSH INTO MACHINE AND RUN deploy.sh
+  #     # SSH INTO MACHINE AND RUN deploy.sh
 
-      - name: SSH into the machine and run deploy.sh
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh
+  #     - name: SSH into the machine and run deploy.sh
+  #       run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh

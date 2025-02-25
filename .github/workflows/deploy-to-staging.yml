@@ -19,6 +19,12 @@ on:
 # env variables
 env:
   DROPLET_NAME: "itu-minitwit"
+  REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
+  SSH_USER: "root"
+  SSH_HOST: "209.38.233.233"
+  DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+  SECRET_KEY: ${{secrets.SECRET_KEY}}
+  SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
@@ -86,10 +92,7 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose.testing.yml"
-        env:
-          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
+          
         # Run the tests
         # docker compose run --rm --service-ports dev bash -c "rspec"
         # docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash / no such service: dev
@@ -104,10 +107,6 @@ jobs:
       
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
-        env:
-          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
         
         # run: |
         #     docker build -t testimage -f Dockerfile-tests .

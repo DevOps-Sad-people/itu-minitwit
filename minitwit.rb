@@ -83,8 +83,7 @@ end
 def not_req_from_simulator(request)
     authorization = request.env["HTTP_AUTHORIZATION"]
     if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
-        status 403
-        content_type :json
+        halt 403,
         {
             error_msg: "You are not authorized to use this resource!",
             status: 403
@@ -329,7 +328,7 @@ post '/register' do
         ''', [username, email, generate_pw_hash(password)])
 
         if is_simulator
-            status 204
+            return status 204
         else
             flash[:notice] = 'You were successfully registered and can login now'
             redirect '/login'
@@ -337,7 +336,7 @@ post '/register' do
     end
 
     if is_simulator
-        return {status: 400, error_msg: @error}.to_json
+        halt 400, {status: 400, error_msg: @error}.to_json
     else
         erb :register
     end

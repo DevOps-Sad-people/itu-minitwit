@@ -70,6 +70,10 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+      SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
     # needs: build_and_push
 
     steps:
@@ -90,10 +94,6 @@ jobs:
       # Run the tests
       - name: Run tests
         run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec
-        env:
-          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
       
       - name: Run docker compose
         uses: hoverkraft-tech/compose-action@v2.0.1
@@ -114,6 +114,10 @@ jobs:
       
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
+        env:
+          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
         
         # run: |
         #     docker build -t testimage -f Dockerfile-tests .

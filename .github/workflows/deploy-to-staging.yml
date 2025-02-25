@@ -92,9 +92,10 @@ jobs:
           SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
         # Run the tests
         # docker compose run --rm --service-ports dev bash -c "rspec"
+        # docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash / no such service: dev
       - name: Execute tests
         run: |
-          docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash
+            docker compose run --rm dev bundle exec rspec
            
           
 

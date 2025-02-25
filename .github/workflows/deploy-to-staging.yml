@@ -93,7 +93,7 @@ jobs:
         # Run the tests
       - name: Execute tests
         run: |
-          docker compose exec dev rspec
+           docker compose run --rm --service-ports dev bash -c "rspec"
           
 
   # deploy:

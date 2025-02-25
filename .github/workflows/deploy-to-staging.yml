@@ -78,6 +78,10 @@ jobs:
 
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
+        env:
+          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
 
   # deploy:
   #   runs-on: ubuntu-latest

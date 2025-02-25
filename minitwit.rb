@@ -15,7 +15,7 @@ configure do
     set :port, 4567
     set :bind, '0.0.0.0'
     enable :sessions
-    set :session_secret, 'example key example key example key example key example key example key example key'
+    set :session_secret, ENV.fetch('SECRET_KEY')
     set :show_exceptions, DEBUG
     set :views, 'templates'
     set :public_folder, 'public'

@@ -78,8 +78,6 @@ jobs:
 
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
-        env:
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
 
   # deploy:
   #   runs-on: ubuntu-latest

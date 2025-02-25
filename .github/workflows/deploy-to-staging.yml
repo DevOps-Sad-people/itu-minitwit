@@ -96,7 +96,7 @@ jobs:
       - name: Execute tests
         run: |
             yes 2>/dev/null | docker compose up -d
-            docker exec -i minitwit < bash -c "rspec"
+            docker exec minitwit bash -c "rspec"
            
           
 

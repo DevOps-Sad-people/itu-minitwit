@@ -18,6 +18,14 @@ elif [ "$1" = "inspectdb" ]; then
     ./flag_tool -i | less
 elif [ "$1" = "flag" ]; then
     ./flag_tool "${@:2}"
+elif [ "$1" = "build" ]; then
+    docker build . -t "test"
+elif [ "$1" = "test" ]; then
+    docker build -t testimage -f Dockerfile-tests .
+    yes 2>/dev/null |  docker compose up -d
+    docker exec -it minitwit bash -c "rspec"
 else
   echo "I do not know this command..."
 fi
+
+

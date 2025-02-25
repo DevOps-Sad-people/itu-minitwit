@@ -1,19 +1,25 @@
 ## NOTE THIS IS WORK IN PROGRESS - NOT TESTED
 
-FROM ruby:3.3
-
-# Install dependencies
-RUN apk add --no-cache build-base
+FROM ruby:3.3.7-slim-bullseye
 
 # Create and set working directory
-RUN mkdir /app-tests
-WORKDIR /usr/src/app-tests
+# RUN mkdir /app
+WORKDIR /usr/src/app
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 
 # Copy test files and dependencies
-COPY Gemfile Gemfile.lock /app-tests/
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
-COPY . /app-tests/
+COPY . .
+
+EXPOSE 4567
 
 # Set the entrypoint to run RSpec tests
-ENTRYPOINT ["rspec"]
+CMD ["bash"]

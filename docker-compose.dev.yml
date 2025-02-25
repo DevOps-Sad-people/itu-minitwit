@@ -5,12 +5,6 @@ services:
     volumes:
       - .:/app # Mount your project directory into the container
     working_dir: /app
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: minitwit
-      DB_USER: postgres
-      DB_PASSWORD: password
     entrypoint: ["/bin/bash", "-c", "bundle install && /bin/bash"]
     depends_on:
       - db
@@ -18,6 +12,8 @@ services:
       - minitwit_network_dev
     ports:
       - "4567:4567" # Exposing the default Sinatra port, adjust as needed
+    env_file:
+      - .env
 
   db:
     image: postgres:15

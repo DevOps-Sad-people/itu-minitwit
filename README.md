@@ -120,11 +120,33 @@ Creating a dump file:
 
 
 ## Deployment
-It is assumed that your SSH keys are located in your home directory in the hidden directory `~/.ssh/id_ed25519`. In case you have them stored somewhere else, you have to modify the line `config.ssh.private_key_path = '~/.ssh/id_ed25519'` in the Vagrantfile accordingly.
+We use Vagrant to deploy an instance to Digital Ocean. For this to work, a few configuration steps must be taken. Once instantiated, the github workflows must be adjusted in accordance.
 
-### Excluding files from deployment
-If you want to exclude a file/folder from the deployment process, you need to modify the config.vm.synced_folder line in the Vagrantfile and add it to the rsync__exclude option.
+Before starting, you are required to have an [ssh-key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and a [digital ocean token](https://docs.digitalocean.com/reference/api/create-personal-access-token/), with access to the container registry & droplets. Likewise, you are required to have at least the BASIS plan of container registry at Digital Ocean. Add your SSH key to DO, such that it knows your key.
 
+
+### PREPARE FOR DEPLOYMENT
+1. Add following variables to your bash/zsh environment (Or simply run them)
+```bash
+export DIGITAL_OCEAN_TOKEN="your-generated-token"
+export SSH_KEY_NAME="name-of-your-ssh-key-in-DO" # DO > settings > security > name
+export SSH_PRIVATE_KEY_PATH="private-ssh-key-path"
+```
+2. Add your public SSH key to `remote_files/authorized_keys`
+3. Adjust env variables in `.github/workflows/deploy-to-XXXX.yml`
+4. Add secrets to Github, to allow Github Actions to operate on Digital Ocean resources. Specifically add a secret `DIGITALOCEAN_ACCESS_TOKEN` and `SSH_KEY`. The access token requires access to the read/write to the container registry. The SSH_KEY is the private key of some private/public key, that must also be included in `remote_files/authorized_keys`. This should preferably be an isolated key, not available on private machines.
+5. Install [vagrant](https://developer.hashicorp.com/vagrant/install)
+6. Add DO vagrant plugin `vagrant plugin install vagrant-digitalocean`
+
+### COMMANDS:
+- `vagrant up` - Spin up instance
+- `vagrant destroy` - Destroy current instance
+- `doctl compute ssh app-name` - SSH into instance. default app-name is `minitwit`. [Install doctl here](https://docs.digitalocean.com/reference/doctl/how-to/install/)
+
+### Auto deployment
+The `deploy-to-XXX.yml` file is setup to trigger an automatic deployment. Ensure that you have set up the correct env variables and secrets as explained in section `PREPARE FOR DEPLOYMENT`. *Remember to specify which branch you want the action to be triggered by*.
+
+After this, every push should successfully build, test and deploy the application.
 
 ### Other observations 
 - Hashing sha256

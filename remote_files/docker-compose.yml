@@ -1,6 +1,6 @@
 services:
   web:
-    build: .
+    image: registry.digitalocean.com/sad-containers/minitwit:latest
     container_name: minitwit
     depends_on:
       - db

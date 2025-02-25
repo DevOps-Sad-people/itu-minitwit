@@ -88,6 +88,12 @@ jobs:
       - name: Pull the image
         run: docker pull ${{ secrets.REGISTRY_NAME }}/minitwit:latest
 
+      - name: Key
+        run: echo ${{secrets.SECRECT_KEY}}
+      
+      - name: Key pt 2
+        run: echo $SECRET_KEY  
+      
       - name: Run docker compose
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:

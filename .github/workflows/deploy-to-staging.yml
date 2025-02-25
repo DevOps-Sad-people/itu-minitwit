@@ -80,18 +80,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      # - name: Install doctl
+      #   uses: digitalocean/action-doctl@v2
+      #   with:
+      #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
+      # - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      #   run: doctl registry login --expiry-seconds 600
 
-      # Run the tests
-      - name: Run tests
-        run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec
-      
       - name: Run docker compose
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:

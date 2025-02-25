@@ -96,13 +96,13 @@ jobs:
       - name: build test image
         run: docker build -t testimage -f Dockerfile-tests .
 
-      -name: Images
+      - name: Images
         run: docker images
         
       - name: Docker compose up
         run: yes 2>/dev/null | docker compose up -d
       
-      -name Run tests
+      - name: Run tests
         run: |
           docker run --rm -e DATABASE_PATH=${{ secrets.DATABASE_PATH }} \
                       -e SECRET_KEY=${{ secrets.SECRET_KEY }} \

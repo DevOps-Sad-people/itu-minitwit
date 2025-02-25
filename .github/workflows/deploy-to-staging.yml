@@ -88,9 +88,6 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
-      - name: Set up SECRET_KEY
-        run: echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
-
       # Run the tests
       # - name: Run tests
       #   run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec
@@ -99,6 +96,10 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose.testing.yml"
+        env:
+          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
 
         # Run the tests
         # docker compose run --rm --service-ports dev bash -c "rspec"
@@ -109,8 +110,8 @@ jobs:
         # - name: Images
         #   run: docker images
         
-      - name: Docker compose up
-        run: yes 2>/dev/null | docker compose up -d
+      # - name: Docker compose up
+      #   run: yes 2>/dev/null | docker compose up -d
       
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit

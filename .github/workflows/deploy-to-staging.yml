@@ -93,17 +93,21 @@ jobs:
         # Run the tests
         # docker compose run --rm --service-ports dev bash -c "rspec"
         # docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash / no such service: dev
-      # - name: build test image
-      #   run: docker build -t testimage -f Dockerfile-tests .
+        # - name: build test image
+        #   run: docker build -t testimage -f Dockerfile-tests .
 
-      # - name: Images
-      #   run: docker images
+        # - name: Images
+        #   run: docker images
         
       - name: Docker compose up
         run: yes 2>/dev/null | docker compose up -d
       
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
+        env:
+          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
         
         # run: |
         #     docker build -t testimage -f Dockerfile-tests .

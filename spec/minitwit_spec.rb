@@ -123,7 +123,7 @@ describe 'Full application test' do
 
     # and on foo's page we only want foo's message
     get '/foo'
-    expect(last_response.body).to include('the message by foo fhiweuhfwih')
+    expect(last_response.body).to include('the message by foo')
     expect(last_response.body).not_to include('the message by bar')
   end
 end

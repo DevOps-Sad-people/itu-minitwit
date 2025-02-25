@@ -98,6 +98,10 @@ jobs:
             docker build -t testimage -f Dockerfile-tests .
             yes 2>/dev/null | docker compose up -d
             docker run --rm testimage
+        env:
+          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
            
           
 

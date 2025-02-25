@@ -22,8 +22,8 @@ elif [ "$1" = "build" ]; then
     docker build . -t "test"
 elif [ "$1" = "test" ]; then
     docker build -t testimage -f Dockerfile-tests .
-    yes 2>/dev/null |  docker compose up -d
-    docker exec -it minitwit bash -c "rspec"
+    yes 2>/dev/null | docker compose up -d
+    docker run --rm testimage
 else
   echo "I do not know this command..."
 fi

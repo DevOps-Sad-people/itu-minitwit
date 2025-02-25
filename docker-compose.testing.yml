@@ -11,7 +11,7 @@ services:
       DB_NAME: minitwit
       DB_USER: postgres
       DB_PASSWORD: password
-      SECRET_KEY: ${SECRET_KEY}
+      SECRET_KEY: example key example key example key example key example key example key example key
     entrypoint: ["/bin/bash", "-c", "bundle install && rspec"]
     depends_on:
       - db

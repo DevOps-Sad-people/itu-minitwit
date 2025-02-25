@@ -88,11 +88,13 @@ jobs:
       - name: Pull the image
         run: docker pull ${{ secrets.REGISTRY_NAME }}/minitwit:latest
 
-      - name: Key
-        run: echo ${{secrets.SECRECT_KEY}}
-      
-      - name: Key pt 2
-        run: echo $SECRET_KEY  
+      # Pull the images from the registry
+      - name: Pull images
+        run: docker pull ${{ env.REGISTRY_NAME }}/minitwit:latest
+  
+      # Run the tests
+      - name: Run tests
+        run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec
       
       - name: Run docker compose
         uses: hoverkraft-tech/compose-action@v2.0.1

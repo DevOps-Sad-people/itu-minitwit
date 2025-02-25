@@ -86,10 +86,15 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose.dev.yml"
+        env:
+          DATABASE_PATH: ${{secrets.DATABASE_PATH}}
+          SECRET_KEY: ${{secrets.SECRET_KEY}}
+          SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
         # Run the tests
       - name: Execute tests
         run: |
-          docker compose exec rspec
+          docker compose exec dev rspec
+          
 
   # deploy:
   #   runs-on: ubuntu-latest

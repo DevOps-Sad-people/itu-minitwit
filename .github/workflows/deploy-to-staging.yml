@@ -70,10 +70,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-      SECRET_KEY: ${{secrets.SECRET_KEY}}
-      SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
     # needs: build_and_push
 
     steps:
@@ -88,10 +84,10 @@ jobs:
       # - name: Log in to DigitalOcean Container Registry with short-lived credentials
       #   run: doctl registry login --expiry-seconds 600
 
-      - name: Run docker compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: "./docker-compose.testing.yml"
+      # - name: Run docker compose
+      #   uses: hoverkraft-tech/compose-action@v2.0.1
+      #   with:
+      #     compose-file: "./docker-compose.testing.yml"
 
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit

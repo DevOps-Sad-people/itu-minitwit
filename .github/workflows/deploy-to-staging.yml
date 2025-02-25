@@ -23,7 +23,7 @@ env:
   SSH_USER: "root"
   SSH_HOST: "209.38.233.233"
   DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-  SECRET_KEY: ${{secrets.SECRET_KEY}}
+  SECRET_KEY: 'example key example key example key example key example key example key example key'
   SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
@@ -92,7 +92,7 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./docker-compose.testing.yml"
-          
+
         # Run the tests
         # docker compose run --rm --service-ports dev bash -c "rspec"
         # docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash / no such service: dev

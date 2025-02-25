@@ -76,19 +76,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Install doctl
-      #   uses: digitalocean/action-doctl@v2
-      #   with:
-      #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      # - name: Log in to DigitalOcean Container Registry with short-lived credentials
-      #   run: doctl registry login --expiry-seconds 600
-
-      # - name: Run docker compose
-      #   uses: hoverkraft-tech/compose-action@v2.0.1
-      #   with:
-      #     compose-file: "./docker-compose.testing.yml"
-
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
 

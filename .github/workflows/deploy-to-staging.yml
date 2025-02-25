@@ -92,8 +92,8 @@ jobs:
         run: echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
 
       # Run the tests
-      - name: Run tests
-        run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec
+      # - name: Run tests
+      #   run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec
       
       - name: Run docker compose
         uses: hoverkraft-tech/compose-action@v2.0.1

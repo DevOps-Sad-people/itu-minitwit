@@ -6,6 +6,7 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
+      - 67_github_action_setup_and_login
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
@@ -38,7 +39,28 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
-      # BUILD AND PUSH MINITWIT IMAGE
+        # print the SHA of the commit
+      - name: Print SHA
+        run: echo $GITHUB_SHA
+
+      # check rate limit for digital ocean
+      - name: Check rate limit
+        run: doctl account ratelimit --format Remaining
+
+      # BUILD AND PUSH MINITWIT IMAGE - works now?
+      - name: Build container image
+        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
+
+      # get image size in mib
+      - name: Get image size
+        run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
+
+
+      
+
 
   test:
     runs-on: ubuntu-latest
@@ -77,3 +99,6 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       # SSH INTO MACHINE AND RUN deploy.sh
+
+      - name: SSH into the machine and run deploy.sh
+        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh

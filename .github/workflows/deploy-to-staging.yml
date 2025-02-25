@@ -23,7 +23,7 @@ env:
   SSH_USER: "root"
   SSH_HOST: "209.38.233.233"
   DATABASE_PATH: ${{secrets.DATABASE_PATH}}
-  SECRET_KEY: 'example key example key example key example key example key example key example key'
+  SECRET_KEY: ${{secrets.SECRET_KEY}}
   SIM_TRACKER_FILE: ${{secrets.SIM_TRACKER_FILE}}
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
@@ -84,14 +84,6 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
-        # Pull the images from the registry
-      - name: Pull the image
-        run: docker pull ${{ secrets.REGISTRY_NAME }}/minitwit:latest
-
-      # Pull the images from the registry
-      - name: Pull images
-        run: docker pull ${{ env.REGISTRY_NAME }}/minitwit:latest
-  
       # Run the tests
       - name: Run tests
         run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec

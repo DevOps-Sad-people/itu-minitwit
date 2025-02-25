@@ -6,7 +6,6 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
-      - 70-build-and-test # will reomve this when I validate that it works (seaa)
 
 # Remember to set the following secrets in your repository's settings:
 # https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions

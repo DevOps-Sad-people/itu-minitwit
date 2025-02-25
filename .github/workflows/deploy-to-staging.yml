@@ -84,6 +84,9 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
+      - name: Set up SECRET_KEY
+        run: echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+
       # Run the tests
       - name: Run tests
         run: docker run -v $PWD:/minitwit -w /minitwit ${{ env.REGISTRY_NAME }}/minitwit:latest bundle exec rspec

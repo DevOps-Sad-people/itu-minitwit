@@ -12,7 +12,7 @@ env:
   DROPLET_NAME: "minitwit"
   REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
   SSH_USER: "root"
-  SSH_HOST: "209.38.233.233"
+  SSH_HOST: "209.38.114.92"
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.

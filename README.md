@@ -1,4 +1,9 @@
 # itu-minitwit
+
+## Project architecture
+
+![Project architecture](./images/architecture.png)
+
 ## Setup & Run:
 *NOT RECOMMENDED - USE DOCKER INSTEAD*
 

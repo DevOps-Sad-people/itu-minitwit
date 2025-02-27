@@ -1,3 +1,5 @@
+create database minitwit;
+
 drop table if exists "user";
 create table "user" (
   user_id SERIAL primary key,

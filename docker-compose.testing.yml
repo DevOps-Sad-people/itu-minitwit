@@ -1,0 +1,42 @@
+services:
+  test:
+    image: ruby:3.3
+    container_name: minitwit_test
+    volumes:
+      - .:/app # Mount your project directory into the container
+    working_dir: /app
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: minitwit
+      DB_USER: postgres
+      DB_PASSWORD: password
+      SECRET_KEY: example key example key example key example key example key example key example key
+    entrypoint: ["/bin/bash", "-c", "bundle install && rspec"]
+    depends_on:
+      - db
+    networks:
+      - minitwit_network_test
+
+  db:
+    image: postgres:15
+    container_name: minitwit_test_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: minitwit
+    ports:
+      - "5432:5432"
+    networks:
+      - minitwit_network_test
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+
+networks:
+  minitwit_network_test:
+    driver: bridge
+
+volumes:
+  pg_data:

@@ -1,0 +1,39 @@
+services:
+  dev:
+    image: ruby:3.3
+    container_name: minitwit_dev
+    volumes:
+      - .:/app # Mount your project directory into the container
+    working_dir: /app
+    entrypoint: ["/bin/bash", "-c", "bundle install && /bin/bash"]
+    depends_on:
+      - db
+    networks:
+      - minitwit_network_dev
+    ports:
+      - "4567:4567" # Exposing the default Sinatra port, adjust as needed
+    env_file:
+      - .env
+
+  db:
+    image: postgres:15
+    container_name: minitwit_dev_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: minitwit
+    ports:
+      - "5432:5432"
+    networks:
+      - minitwit_network_dev
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+
+networks:
+  minitwit_network_dev:
+    driver: bridge
+
+volumes:
+  pg_data:

@@ -1,0 +1,35 @@
+services:
+  web:
+    image: registry.digitalocean.com/sad-containers/minitwit:latest
+    container_name: minitwit
+    depends_on:
+      - db
+    ports:
+      - "4567:4567"
+    networks:
+      - minitwit_network
+    env_file:
+      - .env
+
+  db:
+    image: postgres:15
+    container_name: minitwit_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: minitwit
+    ports:
+      - "5432:5432"
+    networks:
+      - minitwit_network
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+
+networks:
+  minitwit_network:
+    driver: bridge
+
+volumes:
+  pg_data:

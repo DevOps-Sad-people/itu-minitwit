@@ -6,8 +6,6 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
-      - 67_github_action_setup_and_login
-      - 71-github-actions-ssh-into-machine-pull-latest-images-and-restart
 
 # env variables
 env:
@@ -60,19 +58,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-        # Pull the images from the registry
-
-        # Run the tests
+      - name: Run tests
+        run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
 
   deploy:
     runs-on: ubuntu-latest

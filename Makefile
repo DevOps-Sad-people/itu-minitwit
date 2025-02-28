@@ -1,5 +1,5 @@
-init:
-	ruby -r "./minitwit.rb" -e "init_db"
+run:
+	docker compose up -d
 
 build:
 	gcc flag_tool.c -l sqlite3 -o flag_tool

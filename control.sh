@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-#if [ "$1" = "init" ]; then
-
- #   if [ -f "./tmp/minitwit.db" ]; then 
- #       echo "Database already exists."
- #       exit 1
- #   fi
- #   echo "Putting a database to ./tmp/minitwit.db..."
- #   ruby -r "./minitwit.rb" -e "init_db"
 if [ "$1" = "start" ]; then
     echo "Starting minitwit..."
     nohup "$(which ruby)" minitwit.rb > ./tmp/out.log 2>&1 &

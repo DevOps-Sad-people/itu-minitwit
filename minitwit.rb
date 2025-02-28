@@ -125,18 +125,13 @@ before do
     # check if the user is logged in
     if session[:user]
         @user = query_db('SELECT * FROM "user" WHERE user_id = $1', [session[:user]], true)
+        puts @user
     end
 end
-
 
 # close the database after each request
 after do
     @db.close if @db
-end
-
-post '/illegal-route' do
-    x = not_req_from_simulator(request)
-    x ? x : 'ok'
 end
 
 # Root

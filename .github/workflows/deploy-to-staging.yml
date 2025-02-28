@@ -18,43 +18,8 @@ env:
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
 
 jobs:
-  build_and_push:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-        # print the SHA of the commit
-      - name: Print SHA
-        run: echo $GITHUB_SHA
-
-      # check rate limit for digital ocean
-      - name: Check rate limit
-        run: doctl account ratelimit --format Remaining
-
-      # BUILD AND PUSH MINITWIT IMAGE - works now?
-      - name: Build container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest .
-
-      # get image size in mib
-      - name: Get image size
-        run: docker images ${{ env.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
-
-      - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
-
   test:
     runs-on: ubuntu-latest
-    needs: build_and_push
 
     steps:
       - name: Checkout
@@ -62,29 +27,3 @@ jobs:
 
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-
-      - name: Deploy to server
-        # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
-        run: >
-          ssh $SSH_USER@$SSH_HOST
-          -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
-          'cd /minitwit; ./deploy.sh'
-        env:
-          SSH_USER: ${{ env.SSH_USER }}
-          SSH_HOST: ${{ env.SSH_HOST }}

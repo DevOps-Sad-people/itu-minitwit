@@ -23,8 +23,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: minitwit
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     networks:
       - minitwit_network_dev
     volumes:

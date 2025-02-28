@@ -125,7 +125,6 @@ before do
     # check if the user is logged in
     if session[:user]
         @user = query_db('SELECT * FROM "user" WHERE user_id = $1', [session[:user]], true)
-        puts @user
     end
 end
 

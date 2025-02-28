@@ -18,21 +18,12 @@ env:
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
 
 jobs:
-  test:
+  test_simulator:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install python
-        run: sudo apt-get update && sudo apt-get install -y python3
-
-      - name: Run tests
-        run: |
-          cd simulator
-          sudo pip install -r requirements.txt
-          python3 minitwit_simulator_test.py http://0.0.0.0:4567
 
       - name: Create .env file based on example
         run: cp .env.example .env
@@ -45,3 +36,12 @@ jobs:
           wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait -O /usr/local/bin/wait
           chmod +x /usr/local/bin/wait
           /usr/local/bin/wait
+
+      - name: Install python
+        run: sudo apt-get update && sudo apt-get install -y python3
+
+      - name: Run tests
+        run: |
+          cd simulator
+          sudo pip install -r requirements.txt
+          python3 minitwit_simulator_test.py http://0.0.0.0:4567

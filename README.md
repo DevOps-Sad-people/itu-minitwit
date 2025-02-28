@@ -18,6 +18,10 @@
 
 `docker compose up -d`
 
+### Test in docker
+
+`docker compose -f docker-compose.testing.yml up --abort-on-container-exit`
+
 ### Interactive development
 
 1. `docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash`

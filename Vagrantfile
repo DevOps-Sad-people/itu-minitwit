@@ -67,6 +67,7 @@ Vagrant.configure("2") do |config|
 
     # run the deploy.sh script
     cd /minitwit
+    mkdir tmp
     sh deploy.sh
 
 

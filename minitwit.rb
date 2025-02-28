@@ -45,7 +45,7 @@ def query_db(query, args=[], one=false)
     else
         return result.any? ? result.map { |row| row } : []
     end
-  end
+end
 
 def get_user_id(username)
     db = connect_db

@@ -6,19 +6,13 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main
-      - 67_github_action_setup_and_login
-
-# Remember to set the following secrets in your repository's settings:
-# https://github.com/your_username/itu-minitwit-ci/settings/secrets/actions
-# DOCKER_USERNAME
-# DOCKER_PASSWORD
-# SSH_USER
-# SSH_KEY
-# SSH_HOST
 
 # env variables
 env:
-  DROPLET_NAME: "itu-minitwit"
+  DROPLET_NAME: "minitwit"
+  REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
+  SSH_USER: "root"
+  SSH_HOST: "209.38.114.92"
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
@@ -49,18 +43,14 @@ jobs:
 
       # BUILD AND PUSH MINITWIT IMAGE - works now?
       - name: Build container image
-        run: docker build -t ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) .
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest .
 
       # get image size in mib
       - name: Get image size
-        run: docker images ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
+        run: docker images ${{ env.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7) --format "{{.Size}}"
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ secrets.REGISTRY_NAME }}/minitwit:$(echo $GITHUB_SHA | head -c7)
-
-
-      
-
+        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
 
   test:
     runs-on: ubuntu-latest
@@ -68,19 +58,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-        # Pull the images from the registry
-
-        # Run the tests
+      - name: Run tests
+        run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit
 
   deploy:
     runs-on: ubuntu-latest
@@ -90,15 +71,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-      # SSH INTO MACHINE AND RUN deploy.sh
-
-      - name: SSH into the machine and run deploy.sh
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} 'bash -s' < deploy.sh
+      - name: Deploy to server
+        # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
+        run: >
+          ssh $SSH_USER@$SSH_HOST
+          -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
+          'cd /minitwit; ./deploy.sh'
+        env:
+          SSH_USER: ${{ env.SSH_USER }}
+          SSH_HOST: ${{ env.SSH_HOST }}

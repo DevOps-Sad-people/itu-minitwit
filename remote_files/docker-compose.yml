@@ -1,6 +1,6 @@
 services:
   web:
-    build: .
+    image: registry.digitalocean.com/sad-containers/minitwit:latest
     container_name: minitwit
     depends_on:
       - db
@@ -19,8 +19,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: minitwit
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     networks:
       - minitwit_network
     volumes:

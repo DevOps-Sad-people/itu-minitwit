@@ -1,0 +1,47 @@
+---
+name: Test using simulator
+
+on:
+  push:
+    # Run workflow every time something is pushed to the main branch
+    branches:
+      - 83-add-simulator-test-to-github-actions
+
+# env variables
+env:
+  DROPLET_NAME: "minitwit"
+  REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
+  SSH_USER: "root"
+  SSH_HOST: "209.38.114.92" # refers to the reserved IP address of the droplet
+
+# I've split the workflow into three jobs: build_and_push, test, and deploy.
+# The three jobs makes it easy to see which part fails in the Github Actions UI.
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create .env file based on example
+        run: cp .env.example .env
+
+      - name: Initialize Docker
+        run: docker compose up -d
+
+      - name: Install python
+        run: apt-get update && apt-get install -y python3
+
+      - name: Wait for services to be ready
+        run: |
+          wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait -O /usr/local/bin/wait
+          chmod +x /usr/local/bin/wait
+          /usr/local/bin/wait
+
+      - name: Run tests
+        run: |
+          cd simulator
+          pip install -r requirements.txt
+          python3 minitwit_simulator_test.py http://0.0.0.0:4567

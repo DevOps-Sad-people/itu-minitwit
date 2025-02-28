@@ -26,4 +26,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run tests
-        run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
+        run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test

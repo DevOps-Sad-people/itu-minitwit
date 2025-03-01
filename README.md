@@ -1,4 +1,5 @@
 # itu-minitwit
+![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
 
 ## Project architecture
 
@@ -151,6 +152,11 @@ export SSH_PRIVATE_KEY_PATH="private-ssh-key-path"
 - `vagrant up` - Spin up instance
 - `vagrant destroy` - Destroy current instance
 - `doctl compute ssh app-name` - SSH into instance. default app-name is `minitwit`. [Install doctl here](https://docs.digitalocean.com/reference/doctl/how-to/install/)
+
+If you want to run a specific vagrant file, you can specify it by setting the `VAGRANT_VAGRANTFILE` env variable. E.g.:
+```bash
+VAGRANT_VAGRANTFILE=VagrantfileStaging vagrant up --provider=digital_ocean
+```
 
 ### Auto deployment
 The `deploy-to-XXX.yml` file is setup to trigger an automatic deployment. Ensure that you have set up the correct env variables and secrets as explained in section `PREPARE FOR DEPLOYMENT`. *Remember to specify which branch you want the action to be triggered by*.

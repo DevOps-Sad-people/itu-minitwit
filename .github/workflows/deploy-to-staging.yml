@@ -6,7 +6,6 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - develop
-      - staging-env
 
 # env variables
 env:

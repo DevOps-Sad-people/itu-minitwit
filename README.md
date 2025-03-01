@@ -1,5 +1,7 @@
 # itu-minitwit
-![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-production.yml/badge.svg)
+![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-staging.yml/badge.svg)
+![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/test-on-pull-request.yml/badge.svg)
 
 ## Project architecture
 

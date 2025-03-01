@@ -28,18 +28,8 @@ class User < Sequel::Model(:user); end
 class Follower < Sequel::Model(:follower); end
 class Message < Sequel::Model(:message); end
 
-#def query_db(query, args=[], one=false)
-#    result = @db.exec_params(query, args)
-#    if one
-#        return result.any? ? result[0] : {}
-#    else
-#        return result.any? ? result.map { |row| row } : []
-#    end
-#end
-
 def get_user_id(username)
-    user_id = User.where(username: username).get(:user_id)
-    user_id ? user_id : nil
+    User.where(username: username).get(:user_id)
 end
 
 def format_datetime(timestamp)
@@ -81,11 +71,6 @@ def not_req_from_simulator(request)
 end
 
 def public_msgs(per_page)
-    # SELECT *
-    # FROM message JOIN "user"
-    # ON message.author_id = "user".user_id
-    # WHERE message.flagged = 0
-    # ORDER BY message.pub_date DESC LIMIT $1
     Message.dataset.join(User.dataset, user_id: :author_id).where(flagged: 0).order(Sequel.desc(:pub_date)).limit(per_page).all
 end
 
@@ -125,16 +110,6 @@ get '/' do
         redirect '/public'
     end
     puts "Getting messages User: #{@user}"
-    #@messages = query_db('''
-    #SELECT *
-    #FROM message JOIN "user"
-    #ON message.author_id = "user".user_id
-    #WHERE message.flagged = 0 AND (
-    #    "user".user_id = $1 OR
-    #    "user".user_id IN (SELECT whom_id FROM follower
-    #                            WHERE who_id = $2))
-    #ORDER BY message.pub_date DESC LIMIT $3''', 
-    #[session[:user], session[:user], PER_PAGE])
     @messages = Message
         .join(User.dataset.as(:user), Sequel[:user][:user_id] => :author_id)
         .where(flagged: 0)
@@ -185,10 +160,6 @@ post '/msgs/:username' do
     body = JSON.parse request.body.read
     message = body['message']
     if message
-        # @db.exec_params('''
-        #INSERT INTO message (author_id, text, pub_date, flagged)
-        #VALUES ($1, $2, $3, 0)
-        #''', [user_id, Rack::Utils.escape_html(message), Time.now.to_i])
         Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
     end
     status 204
@@ -206,14 +177,6 @@ get '/msgs/:username' do
 
     # get the number of messages to return
     no_msgs = params["no"] ? params["no"] : 100
-
-   # messages = query_db('''
-   #     SELECT *
-   #     FROM message JOIN "user"
-   #     ON message.author_id = "user".user_id
-   #     WHERE message.flagged = 0 and "user".user_id = $1
-   #     ORDER BY message.pub_date DESC LIMIT $2
-   # ''', [user_id, no_msgs])
 
     messages = Message.dataset.join(User.dataset, user_id: :author_id)
             .where(flagged: 0, user_id: user_id)
@@ -241,9 +204,6 @@ post '/login' do
 
     puts "Username: #{params[:username]}"
     # get the user
-    #result = query_db('''
-    #    SELECT * FROM "user" WHERE username = $1
-    #''', [params[:username]], true)
     result = User.where(username: params[:username]).first
 
     if result == nil or result.username.length <= 0
@@ -315,9 +275,6 @@ post '/register' do
     elsif get_user_id(username) != nil
         @error = 'The username is already taken'
     else
-        #@db.exec_params('''
-        #    INSERT INTO "user" (username, email, pw_hash) VALUES ($1, $2, $3)
-        #''', [username, email, generate_pw_hash(password)])
         User.insert(username: username, email: email, pw_hash: generate_pw_hash(password))
 
         if is_simulator
@@ -349,14 +306,12 @@ end
 def follow(user_id, follows_username)
     follows_user_id = get_user_id(follows_username)
     halt 404, "User not found" unless user_id and follows_user_id
-    #@db.exec_params('INSERT INTO follower (who_id, whom_id) VALUES ($1, $2)', [user_id, follows_user_id])
     Follower.insert(who_id: user_id, whom_id: follows_user_id)
 end
 
 def unfollow(user_id, unfollows_username)
     unfollows_user_id = get_user_id(unfollows_username)
     halt 404, "User not found" unless user_id and unfollows_user_id
-    #@db.exec_params('DELETE FROM follower WHERE who_id=$1 AND whom_id=$2', [user_id, unfollows_user_id])
     Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 
@@ -390,13 +345,6 @@ get '/fllws/:username' do
     halt 404, "User not found" unless user_id
 
     limit = params["no"] ? params["no"] : 100
-    #followers = query_db('''
-    #    SELECT "user".username
-    #    FROM "user"
-    #    INNER JOIN follower ON follower.whom_id = "user".user_id
-    #    WHERE follower.who_id=$1
-    #    LIMIT $2
-    #    ''', [user_id, limit])
     follower_names = User.dataset.join(Follower.dataset, whom_id: :user_id).where(who_id: user_id).limit(limit).map(:username)
 
     {"follows": follower_names}.to_json
@@ -430,10 +378,6 @@ post '/add_message' do
         halt 401, "Unauthorized"
     end
     if params[:message]
-       # @db.exec_params('''
-       #     INSERT INTO message (author_id, text, pub_date, flagged)
-       #     VALUES ($1, $2, $3, 0)
-       # ''', [@user["user_id"], Rack::Utils.escape_html(params[:message]), Time.now.to_i])
         Message.insert(author_id: @user.user_id, text: Rack::Utils.escape_html(params[:message]), pub_date: Time.now.to_i, flagged: 0)
         flash[:notice] = 'Your message was recorded'
     end
@@ -453,34 +397,24 @@ get '/latest' do
     {latest: latest_processed_command_id}.to_json
 end
 
-# Place this in buttom, because the routes are evaluated from top to bottom
+# Place this in bottom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout
 get '/:username' do
     
     username = params[:username]
     puts "Getting profile for user: #{username}"
     # # Fetch the user's profile from the database
-    #@profile_user = query_db('SELECT * FROM "user" WHERE username = $1', [username]).first
     @profile_user = User.where(username: username).first
     halt 404, "User not found" unless @profile_user
     puts "Getting profile_user: #{@profile_user}"
 
     @followed = false
     if @user
-      #@followed = query_db('SELECT 1 FROM follower WHERE follower.who_id = $1 AND follower.whom_id = $2',
-      #                    [@user["user_id"], @profile_user['user_id']]).any?
         @followed = Follower.where(who_id: @user.user_id, whom_id: @profile_user.user_id).first != nil
         puts "#{@user.username} Follows #{@profile_user.username}: #{@followed}"
     end
   
     # # Fetch the user's messages from the database
-    #@messages = query_db('''
-    #  SELECT *
-    #  FROM message JOIN "user"
-    #  ON message.author_id = "user".user_id 
-    #  WHERE "user".user_id = $1
-    #  ORDER BY message.pub_date DESC LIMIT $2
-    #''', [@profile_user['user_id'], PER_PAGE])
     @messages = Message.dataset.join(User.dataset, user_id: :author_id).where(user_id: @profile_user.user_id)
         .order(Sequel.desc(:pub_date)).limit(PER_PAGE).all
 

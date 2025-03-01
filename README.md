@@ -18,6 +18,8 @@
 
 `docker compose up -d`
 
+test that you cannot push directly into this branch
+
 ### Test in docker
 
 `docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test`

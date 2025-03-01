@@ -14,6 +14,8 @@
 - `sh control.sh init` to init db.
 - `ruby minitwit.rb` to run program.
 
+
+can i update with branch protection (test)
 ## Run using Docker
 
 `docker compose up -d`

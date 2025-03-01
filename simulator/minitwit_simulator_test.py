@@ -108,8 +108,8 @@ def main(host):
     i = 0
     for action, delay in get_actions():
         i = i + 1
-        if 500 < i:
-            print("Simulation ran 500 actions successfully. About 20 seconds.")
+        if 2000 < i:
+            print("Simulation ran 2000 actions successfully. About 30 seconds.")
             exit(0)
         try:
             # SWITCH ON TYPE
@@ -360,7 +360,7 @@ def main(host):
             )
             exit(1)
 
-        sleep(delay / (1000 * 100000))
+        # sleep(delay / (1000 * 100000))
 
 
 if __name__ == "__main__":

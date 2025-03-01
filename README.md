@@ -96,7 +96,7 @@ e.g. /:username would match /login or /logout
 ## Database
 
 ### Setup
-Create and run a Postgresql docker container:
+Create and run a PostgreSQL docker container:
 `docker run --name minitwit-postgres --network=minitwit -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`
 
 Restoring from a dump file:
@@ -109,14 +109,12 @@ psql -U postgres -d minitwit -f minitwit_db.sql
 Creating a dump file:
 `docker exec minitwit-postgres pg_dump -U postgres -F t postgres > db_dump.sql`
 
-
+### ORM
+The Ruby application communicates with the PostgreSQL database through the [Sequel](https://sequel.jeremyevans.net/) ORM, which handles the database connection, manages the connection pool, and provides an abstraction for executing SQL queries and mapping their results to Ruby objects.
 
 ### Methods
 | Method               |Parameters                 | Returns       | Description                |
 |----------------------|---------------------------|---------------|----------------------------|
-| `connect_db`         | None                      |`db`           | Connect to db |
-| `init_db`            | None                      | void          | init database|
-| `query_db`           | query, args=[], one=false |`results`      | query the database|
 | `get_user_id`        | username: string          |`user_id`/`nil`| get user_id from username|
 
 ### Helper methods

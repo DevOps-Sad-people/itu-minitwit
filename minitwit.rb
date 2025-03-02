@@ -113,9 +113,8 @@ get '/' do
     @messages = Message
         .join(User.dataset.as(:user), Sequel[:user][:user_id] => :author_id)
         .where(flagged: 0)
-        .where(Sequel[:user][:user_id] => [
-            session[:user], 
-            Follower.where(who_id: session[:user]).select(:whom_id)])
+        .where(Sequel[:user][:user_id] => session[:user])
+        .or(Sequel[:user][:user_id] => Follower.where(who_id: session[:user]).select(:whom_id))
         .order(Sequel.desc(:pub_date))
         .limit(PER_PAGE)
         .all

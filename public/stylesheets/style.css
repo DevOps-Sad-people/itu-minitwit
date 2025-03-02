@@ -12,6 +12,10 @@ a:hover {
     color: #333;
 }
 
+a.active {
+    color: #3baca2 !important;
+}
+
 input[type="text"],
 input[type="password"],
 textarea {

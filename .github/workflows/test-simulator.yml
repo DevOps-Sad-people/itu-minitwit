@@ -40,6 +40,9 @@ jobs:
       - name: Install python
         run: sudo apt-get update && sudo apt-get install -y python3
 
+      - name: Install dependencies
+        run: pip install -r simulator/requirements.txt
+
       - name: Run tests
         run: |
           cd simulator

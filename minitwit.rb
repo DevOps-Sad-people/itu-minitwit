@@ -75,6 +75,11 @@ def update_latest(params)
         return
     end
 
+    # check if temp folder exists
+    if not File.directory?(ENV.fetch('TEMP_FOLDER'))
+        Dir.mkdir(ENV.fetch('TEMP_FOLDER'))
+    end
+
     file = File.new(ENV.fetch('SIM_TRACKER_FILE'), "w")
     file.puts(parsed_command_id)
     file.close

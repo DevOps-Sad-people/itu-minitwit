@@ -127,6 +127,15 @@ The Ruby application communicates with the PostgreSQL database through the [Sequ
 | `format_datetime`    | timestamp      | `formatted_time` | Formats datetime to 'Y-m-d @ H:M'|
 | `gravatar_url`       | email, size=80 | `url_to_image` | generate the url to image |
 
+## Release
+
+Releases are done automatically by Github Actions.  
+The release version is determined by the contents of the last commit message, for every push on main (which will be the merge commit).  
+- If you include `#major` in the commit message, it will bump the major version for the release.
+- If you include `#minor` in the commit message, it will bump the minor version for the release.
+- If you include `#patch` in the commit message, it will bump the patch version for the release.
+- If you include `#none` in the commit message, **no release will be done**.
+- Otherwise, if you don't include any of the above options, the *minor* version will be bumped by default.
 
 ## Deployment
 We use Vagrant to deploy an instance to Digital Ocean. For this to work, a few configuration steps must be taken. Once instantiated, the github workflows must be adjusted in accordance.

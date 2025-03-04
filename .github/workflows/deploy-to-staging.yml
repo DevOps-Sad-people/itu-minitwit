@@ -49,7 +49,7 @@ jobs:
         run: |
           echo "$NEW_TAG"
           echo "$OLD_TAG"
-          if [[ -n "$OLD_TAG" || "$NEW_TAG" == "$OLD_TAG" ]]; then
+          if [[ -n "$OLD_TAG" && "$NEW_TAG" != "$OLD_TAG" ]]; then
             gh release create ${{ steps.create_tag.outputs.new_tag }} --title ${{ steps.create_tag.outputs.new_tag }} --generate-notes --notes-start-tag ${{ steps.create_tag.outputs.old_tag }}
           fi
         env:

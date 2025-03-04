@@ -52,6 +52,8 @@ jobs:
           if [ -n "${{ steps.create_tag.outputs.old_tag }}" ]; then
             gh release create ${{ steps.create_tag.outputs.new_tag }} --title ${{ steps.create_tag.outputs.new_tag }} --generate-notes --notes-start-tag ${{ steps.create_tag.outputs.old_tag }}
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build_and_push:
     runs-on: ubuntu-latest

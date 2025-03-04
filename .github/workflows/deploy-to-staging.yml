@@ -46,7 +46,7 @@ jobs:
           WITH_V: true
       
       - name: Create release
-        run: >
+        run: |
           echo ${{ steps.create_tag.outputs.new_tag }}
           echo ${{ steps.create_tag.outputs.old_tag }}
           if [ -n "${{ steps.create_tag.outputs.old_tag }}" ]; then

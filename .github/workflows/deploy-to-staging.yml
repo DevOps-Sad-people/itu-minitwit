@@ -28,7 +28,7 @@ jobs:
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
 
-  tag:
+  tag_and_release:
     runs-on: ubuntu-latest
     needs: test
 

@@ -12,7 +12,7 @@
                 <% if @user %>
                     | <a href="/">my timeline</a>
                     | <a href="/public">public timeline</a>
-                    | <a href="/logout">sign out [<%= @user["username"] %>]</a>
+                    | <a href="/logout">sign out [<%= @user.username %>]</a>
                 <% else %>
                     <a href="/">public timeline</a> |
                     <a href="/register">sign up</a> |

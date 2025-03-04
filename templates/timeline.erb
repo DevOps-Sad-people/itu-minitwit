@@ -3,20 +3,20 @@
 <% elsif request.path_info == "/" %>
   <% content_for :title do %>My Timeline<% end %>
 <% elsif @profile_user != nil %>
-  <% content_for :title do %><%= @profile_user['username']%>'s Timeline<% end %>
+  <% content_for :title do %><%= @profile_user.username%>'s Timeline<% end %>
 <% end %>
 
 <% if  @user %>
   <% if  @show_follow_unfollow %>
     <div class="followstatues">
-      <% if @profile_user != nil and @user["user_id"] == @profile_user['user_id'] %>
+      <% if @profile_user != nil and @user.user_id == @profile_user.user_id %>
         This is you!
       <% elsif @followed %>
         You are currently following this user.
-        <a href="/<%= @profile_user['username']%>/unfollow">Unfollow</a>
+        <a href="/<%= @profile_user.username%>/unfollow">Unfollow</a>
       <% else %>
         You are not yet following this user.
-        <a href="/<%= @profile_user['username']%>/follow">Follow</a>
+        <a href="/<%= @profile_user.username%>/follow">Follow</a>
       <% end %>
     </div>
   <% end %>
@@ -24,7 +24,7 @@
 
 <% if request.path_info == "/" %>
   <div class="twitbox">
-    <h3>What's on your mind <%= @user["username"] %>?</h3>
+    <h3>What's on your mind <%= @user.username %>?</h3>
     <form action="/add_message" method="post">
       <textarea name="message" rows="3" cols="60"></textarea>
       <input type="submit" value="Share">
@@ -36,16 +36,16 @@
   <% if @messages != [] or @message %>
     <% @messages.each do |message| %>
       <li>
-        <img src="<%= gravatar_url(message['email'], 48) %>" alt="gravatar">
+        <img src="<%= gravatar_url(message.values[:email], 48) %>" alt="gravatar">
           <p>
             <strong>
-              <a href="/<%= message['username'] %>">
-                <%= message['username'] %>
+              <a href="/<%= message.values[:username] %>">
+                <%= message.values[:username] %>
               </a>
             </strong>
-            <%= message['text'] %>
+            <%= message.values[:text] %>
             <small>
-              &mdash; <%= format_datetime(message['pub_date']) %>
+              &mdash; <%= format_datetime(message.values[:pub_date]) %>
             </small>
           </p>
       </li>

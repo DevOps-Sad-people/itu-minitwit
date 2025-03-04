@@ -45,6 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
           DEFAULT_BUMP: minor
+          BRANCH_HISTORY: last
       
       - name: Create release
         run: |

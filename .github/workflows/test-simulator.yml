@@ -2,7 +2,7 @@
 name: Test using simulator
 
 on:
-  push:
+  pull_request:
     # Run workflow every time something is pushed to the main branch
     branches:
       - main

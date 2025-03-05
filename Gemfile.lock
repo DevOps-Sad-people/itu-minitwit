@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     base64 (0.2.0)
+    bigdecimal (3.1.9)
     diff-lcs (1.5.1)
     dotenv (3.1.7)
     htmlbeautifier (1.4.3)
@@ -39,6 +40,8 @@ GEM
       rspec-support (~> 3.13.0)
     rspec-support (3.13.2)
     ruby2_keywords (0.0.5)
+    sequel (5.89.0)
+      bigdecimal
     sinatra (4.1.1)
       logger (>= 1.6.0)
       mustermann (~> 3.0)
@@ -69,6 +72,7 @@ DEPENDENCIES
   rack-test (= 2.2.0)
   rackup (= 2.2.1)
   rspec
+  sequel (= 5.89.0)
   sinatra (= 4.1.1)
   sinatra-contrib (= 4.1.1)
   sinatra-flash (= 0.3.0)

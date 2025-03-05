@@ -126,4 +126,76 @@ describe 'Full application test' do
     expect(last_response.body).to include('the message by foo')
     expect(last_response.body).not_to include('the message by bar')
   end
+
+  # create a test that checks my timeline works when I follow multiple people
+  it 'My timeline works when I follow multiple people' do
+
+    # register and login as user1
+    register_and_login('user1', 'default')
+
+    # add a message
+    add_message('Hello, world! 1')
+
+    # logout
+    logout()
+
+    # register and login as user2
+    register_and_login('user2', 'default')
+
+    # add a message
+    add_message('Hello, world! 2')
+
+    # logout
+    logout()
+
+    # register and login as user3
+    register_and_login('user3', 'default')
+
+    # add a message
+    add_message('Hello, world! 3')
+
+    # logout
+    logout()
+
+    # register and login as user4
+    register_and_login('user4', 'default')
+
+    # add a message
+    add_message('Hello, world! 4')
+
+    # logout
+    logout()
+
+    # sign in as user 1
+    login('user1', 'default')
+
+    # follow user2
+    get '/user2/follow'
+    follow_redirect!
+    expect(last_response.body).to include('You are now following &#34;user2&#34;')
+
+    # follow user3
+    get '/user3/follow'
+    follow_redirect!
+    expect(last_response.body).to include('You are now following &#34;user3&#34;')
+
+    # follow user4
+    get '/user4/follow'
+    follow_redirect!
+    expect(last_response.body).to include('You are now following &#34;user4&#34;')
+
+    # check the timeline
+    get '/'
+
+    # check status code
+    expect(last_response.status).to eq(200)
+
+    # expect to see all the messages
+    expect(last_response.body).to include('Hello, world! 1')
+    expect(last_response.body).to include('Hello, world! 2')
+    expect(last_response.body).to include('Hello, world! 3')
+    expect(last_response.body).to include('Hello, world! 4')
+
+
+  end
 end

@@ -14,6 +14,8 @@
 - `sh control.sh init` to init db.
 - `ruby minitwit.rb` to run program.
 
+
+can i update with branch protection (test)
 ## Run using Docker
 
 `docker compose up -d`
@@ -96,7 +98,7 @@ e.g. /:username would match /login or /logout
 ## Database
 
 ### Setup
-Create and run a Postgresql docker container:
+Create and run a PostgreSQL docker container:
 `docker run --name minitwit-postgres --network=minitwit -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`
 
 Restoring from a dump file:
@@ -109,14 +111,12 @@ psql -U postgres -d minitwit -f minitwit_db.sql
 Creating a dump file:
 `docker exec minitwit-postgres pg_dump -U postgres -F t postgres > db_dump.sql`
 
-
+### ORM
+The Ruby application communicates with the PostgreSQL database through the [Sequel](https://sequel.jeremyevans.net/) ORM, which handles the database connection, manages the connection pool, and provides an abstraction for executing SQL queries and mapping their results to Ruby objects.
 
 ### Methods
 | Method               |Parameters                 | Returns       | Description                |
 |----------------------|---------------------------|---------------|----------------------------|
-| `connect_db`         | None                      |`db`           | Connect to db |
-| `init_db`            | None                      | void          | init database|
-| `query_db`           | query, args=[], one=false |`results`      | query the database|
 | `get_user_id`        | username: string          |`user_id`/`nil`| get user_id from username|
 
 ### Helper methods
@@ -127,6 +127,15 @@ Creating a dump file:
 | `format_datetime`    | timestamp      | `formatted_time` | Formats datetime to 'Y-m-d @ H:M'|
 | `gravatar_url`       | email, size=80 | `url_to_image` | generate the url to image |
 
+## Release
+
+Releases are done automatically by Github Actions.  
+The release version is determined by the contents of the last commit message, for every push on main (which will be the merge commit).  
+- If you include `#major` in the commit message, it will bump the major version for the release.
+- If you include `#minor` in the commit message, it will bump the minor version for the release.
+- If you include `#patch` in the commit message, it will bump the patch version for the release.
+- If you include `#none` in the commit message, **no release will be done**.
+- Otherwise, if you don't include any of the above options, the *minor* version will be bumped by default.
 
 ## Deployment
 We use Vagrant to deploy an instance to Digital Ocean. For this to work, a few configuration steps must be taken. Once instantiated, the github workflows must be adjusted in accordance.

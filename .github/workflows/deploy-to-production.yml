@@ -1,18 +1,18 @@
 ---
-name: Continuous Deployment Staging
+name: Continuous Deployment Production
 
 on:
   push:
     # Run workflow every time something is pushed to the main branch
     branches:
-      - develop
+      - main
 
 # env variables
 env:
-  DROPLET_NAME: "minitwit-staging"
+  DROPLET_NAME: "minitwit"
   REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
   SSH_USER: "root"
-  SSH_HOST: "157.245.22.36" # refers to the reserved IP address of the droplet
+  SSH_HOST: "209.38.114.92" # refers to the reserved IP address of the droplet
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.
@@ -27,6 +27,38 @@ jobs:
 
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
+  
+  tag_and_release:
+    runs-on: ubuntu-latest
+    needs: test
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+      
+      - name: Bump version and create tag
+        id: create_tag
+        uses: anothrNick/github-tag-action@1.71.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: minor
+          BRANCH_HISTORY: last
+      
+      - name: Create release
+        run: |
+          if [[ -n "$OLD_TAG" && "$NEW_TAG" != "$OLD_TAG" ]]; then
+            gh release create ${{ steps.create_tag.outputs.new_tag }} --title ${{ steps.create_tag.outputs.new_tag }} --generate-notes --notes-start-tag ${{ steps.create_tag.outputs.old_tag }}
+          fi
+        env:
+          NEW_TAG: ${{ steps.create_tag.outputs.new_tag }}
+          OLD_TAG: ${{ steps.create_tag.outputs.old_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build_and_push:
     runs-on: ubuntu-latest

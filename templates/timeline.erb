@@ -39,9 +39,7 @@
         <img src="<%= gravatar_url(message.values[:email], 48) %>" alt="gravatar">
           <p>
             <strong>
-              <a href="/<%= message.values[:username] %>">
-                <%= message.values[:username] %>
-              </a>
+              <a href="/<%= message.values[:username] %>"><%= message.values[:username] %></a>
             </strong>
             <%= message.values[:text] %>
             <small>

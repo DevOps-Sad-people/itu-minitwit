@@ -1,5 +1,5 @@
 body {
-    background:rgb(236, 202, 202);
+    background: #6ECCC4;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
 }
@@ -12,35 +12,56 @@ a:hover {
     color: #333;
 }
 
+a.active {
+    color: #3baca2 !important;
+}
+
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+textarea {
     background: white;
     border: 1px solid #BFE6E2;
-    padding: 2px;
+    padding: 5px 10px;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
     color: #105751;
+}
+
+textarea {
+    width: -webkit-fill-available;
+    resize: vertical;
+    margin-bottom: 5px;
 }
 
 input[type="submit"] {
     background: #105751;
     border: 1px solid #073B36;
-    padding: 1px 3px;
+    padding: 4px 20px;
     font-family: 'Trebuchet MS', sans-serif;
     font-size: 14px;
     font-weight: bold;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
     color: white;
+}
+
+input[type="submit"]:hover {
+    background: #073B36;
+    cursor: pointer;
 }
 
 div.page {
     background: white;
-    border: 1px solid #6ECCC4;
     width: 700px;
     margin: 30px auto;
+    border-radius: 10px;
+    -moz-box-shadow: 0 0 10px #787878;
+    -webkit-box-shadow: 0 0 10px #787878;
+    box-shadow: 0 0 10px #787878;
 }
 
 div.page h1 {
@@ -51,6 +72,7 @@ div.page h1 {
     letter-spacing: 1px;
     text-shadow: 0 0 3px #24776F;
     font-weight: normal;
+    border-radius: 10px 10px 0 0;
 }
 
 div.page div.navigation {
@@ -85,6 +107,11 @@ div.page div.footer {
     font-size: 12px;
 }
 
+div.footer {
+    border-radius: 0 0 10px 10px;
+    text-align: center;
+}
+
 div.page div.followstatus {
     border: 1px solid #ccc;
     background: #E3EBEA;
@@ -104,10 +131,13 @@ div.page ul.messages li {
     margin: 10px 0;
     padding: 5px;
     background: #F0FAF9;
-    border: 1px solid #DBF3F1;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
     min-height: 48px;
+    -moz-box-shadow: 0 0 5px #bcbcbc;
+    -webkit-box-shadow: 0 0 5px #bcbcbc;
+    box-shadow: 0 0 5px #bcbcbc;
 }
 
 div.page ul.messages p {
@@ -116,7 +146,10 @@ div.page ul.messages p {
 
 div.page ul.messages li img {
     float: left;
-    padding: 0 10px 0 0;
+    margin: 0 10px 0 0;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 
 div.page ul.messages li small {
@@ -125,31 +158,29 @@ div.page ul.messages li small {
 }
 
 div.page div.twitbox {
-    margin: 10px 0;
-    padding: 5px;
+    margin: 5px 0 20px 0;
+    padding: 10px;
     background: #F0FAF9;
     border: 1px solid #94E2DA;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+}
+
+.twitbox form {
+    width: -webkit-fill-available;
+    text-align: right;
 }
 
 div.page div.twitbox h3 {
     margin: 0;
+    margin-bottom: 5px;
     font-size: 1em;
     color: #2C7E76;
 }
 
 div.page div.twitbox p {
     margin: 0;
-}
-
-div.page div.twitbox input[type="text"] {
-    width: 585px;
-}
-
-div.page div.twitbox input[type="submit"] {
-    width: 70px;
-    margin-left: 5px;
 }
 
 ul.flashes {
@@ -161,8 +192,9 @@ ul.flashes {
 ul.flashes li {
     background: #B9F3ED;
     border: 1px solid #81CEC6;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
     padding: 4px;
     font-size: 13px;
 }
@@ -171,8 +203,9 @@ div.error {
     margin: 10px 0;
     background: #FAE4E4;
     border: 1px solid #DD6F6F;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
     padding: 4px;
     font-size: 13px;
 }

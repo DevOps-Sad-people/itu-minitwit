@@ -157,7 +157,7 @@ post '/msgs/:username' do
     halt 404, "User not found" unless user_id
 
     body = JSON.parse request.body.read
-    message = body['message']
+    message = body['content']
     if message
         Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
     end

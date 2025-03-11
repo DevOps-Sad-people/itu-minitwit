@@ -7,11 +7,18 @@ require 'digest/sha2'
 require 'json'
 require 'dotenv/load'
 require 'sequel'
+require 'rack'
+require 'prometheus/middleware/collector'
+require 'prometheus/middleware/exporter'
 
 # configuration
 PER_PAGE = 30
 DEBUG = true
 DB_URL = "postgres://#{ENV.fetch('DB_USER')}:#{ENV.fetch('DB_PASSWORD')}@#{ENV.fetch('DB_HOST')}:#{ENV.fetch('DB_PORT')}/#{ENV.fetch('DB_NAME')}"
+
+use Rack::Deflater
+use Prometheus::Middleware::Collector
+use Prometheus::Middleware::Exporter
 
 configure do
     set :port, 4567

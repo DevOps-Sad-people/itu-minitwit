@@ -43,6 +43,14 @@ services:
 
   grafana:
     image: grafana/grafana:11.5.2
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/predefined-dashboards:/predefined-dashboards
     ports:
       - "3000:3000"  
     networks:
@@ -54,3 +62,4 @@ networks:
 
 volumes:
   pg_data:
+  grafana-data:

@@ -31,6 +31,23 @@ services:
       - pg_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
 
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - minitwit_network_dev
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    ports:
+      - "3000:3000"  
+    networks:
+      - minitwit_network_dev
+
 networks:
   minitwit_network_dev:
     driver: bridge

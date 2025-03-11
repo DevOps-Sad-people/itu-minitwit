@@ -5,7 +5,7 @@ services:
     volumes:
       - .:/app # Mount your project directory into the container
     working_dir: /app
-    entrypoint: ["/bin/bash", "-c", "bundle install && /bin/bash"]
+    entrypoint: ["/bin/bash", "-c", "bundle install && ruby minitwit.rb && /bin/bash"]
     depends_on:
       - db
     networks:

@@ -23,7 +23,10 @@ scrape_configs:
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
 
+    metrics_path: '/metrics'
+
     static_configs:
-      - targets: ['minitwit_dev:4567']
+      - targets: ['dev:4567']
         labels:
           group: 'dev'
+      

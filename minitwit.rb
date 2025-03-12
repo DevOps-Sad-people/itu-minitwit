@@ -28,6 +28,7 @@ configure do
     set :show_exceptions, DEBUG
     set :views, 'templates'
     set :public_folder, 'public'
+    set :environment, :production
 end
 
 DB = Sequel.connect(DB_URL)

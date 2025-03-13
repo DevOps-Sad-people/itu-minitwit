@@ -62,6 +62,8 @@ div.page {
     -moz-box-shadow: 0 0 10px #787878;
     -webkit-box-shadow: 0 0 10px #787878;
     box-shadow: 0 0 10px #787878;
+    max-height: 90vh;
+    overflow: auto;
 }
 
 div.page h1 {

@@ -10,7 +10,6 @@ puts "#{DB_URL}"
 
 DB = Sequel.connect(DB_URL)
 
-# Run all migrations but first one
-# We skip the first because this is already applied with the schema.sql
+# Run all migrations
 # schema.sql == 001_create_user_table.rb - they are the same
-Sequel::Migrator.run(DB, 'migrations', current: 1)
+Sequel::Migrator.run(DB, 'migrations')

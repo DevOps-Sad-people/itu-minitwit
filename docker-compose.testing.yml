@@ -12,7 +12,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: password
       SECRET_KEY: example key example key example key example key example key example key example key
-    entrypoint: ["/bin/bash", "-c", "bundle install && rspec"]
+    entrypoint: ["/bin/bash", "-c", "bundle install && ruby manage_migrations_dev.rb && rspec"]
     depends_on:
       - db
     networks:
@@ -32,7 +32,6 @@ services:
       - minitwit_network_test
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
 
 networks:
   minitwit_network_test:

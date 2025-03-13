@@ -7,6 +7,8 @@ Vagrant.configure("2") do |config|
   config.ssh.private_key_path = ENV.fetch('SSH_PRIVATE_KEY_PATH', '~/.ssh/id_ed25519')
   
   config.vm.synced_folder "remote_files", "/minitwit", type: "rsync"
+  config.vm.synced_folder "prometheus", "/minitwit/prometheus", type: "rsync"
+  config.vm.synced_folder "grafana", "/minitwit/grafana", type: "rsync"
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.vm.provision "file", source: "schema.sql", destination: "/minitwit/schema.sql"
   config.vm.provision "file", source: ".env", destination: "/minitwit/.env"

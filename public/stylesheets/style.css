@@ -85,6 +85,8 @@ div.page div.navigation {
     color: #888;
     font-size: 12px;
     letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
 }
 
 div.page div.navigation a {
@@ -107,6 +109,8 @@ div.page div.footer {
     color: #888;
     padding: 5px 10px;
     font-size: 12px;
+    position: sticky;
+    bottom: 0;
 }
 
 div.footer {

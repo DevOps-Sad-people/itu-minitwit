@@ -1,6 +1,6 @@
 {
       "id": null,
-      "uid": "http_server_dashboard",
+      "uid": "minitwit_dashboard",
       "title": "HTTP Server Dashboard",
       "tags": ["http", "server", "requests", "prometheus"],
       "timezone": "browser",

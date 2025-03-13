@@ -1,13 +1,13 @@
 {
       "id": null,
       "uid": "http_server_dashboard",
-      "title": "test",
+      "title": "HTTP Server Dashboard",
       "tags": ["http", "server", "requests", "prometheus"],
       "timezone": "browser",
       "panels": [
         {
           "type": "graph",
-          "title": "HTTP Requests by Status Code",
+          "title": "HTTP Responses by Status Code",
           "targets": [
             {
               "expr": "sum(rate(http_server_requests_total{code=~\"2..\"}[1m])) by (code)",
@@ -16,16 +16,22 @@
               "refId": "A"
             },
             {
+                "expr": "sum(rate(http_server_requests_total{code=~\"3..\"}[1m])) by (code)",
+                "interval": "",
+                "legendFormat": "{{code}}",
+                "refId": "B"
+              },
+            {
               "expr": "sum(rate(http_server_requests_total{code=~\"4..\"}[1m])) by (code)",
               "interval": "",
               "legendFormat": "{{code}}",
-              "refId": "B"
+              "refId": "C"
             },
             {
               "expr": "sum(rate(http_server_requests_total{code=~\"5..\"}[1m])) by (code)",
               "interval": "",
               "legendFormat": "{{code}}",
-              "refId": "C"
+              "refId": "D"
             }
           ],
           "fieldConfig": {
@@ -39,9 +45,9 @@
           "legend": {
             "show": true,
             "values": false,
-            "min": false,
-            "max": false,
-            "avg": false,
+            "min": true,
+            "max": true,
+            "avg": true,
             "current": true,
             "total": false,
             "alignAsTable": false,

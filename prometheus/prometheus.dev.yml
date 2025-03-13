@@ -10,23 +10,8 @@ rule_files:
   - 'prometheus.rules.yml'
 
 scrape_configs:
-  - job_name: 'prometheus'
-
-    # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
-
-    static_configs:
-      - targets: ['prometheus:9090']
-
   - job_name: 'itu-minitwit-app'
-
-    # Override the global default and scrape targets from this job every 5 seconds.
-    scrape_interval: 5s
-
-    metrics_path: '/metrics'
 
     static_configs:
       - targets: ['dev:4567']
-        labels:
-          group: 'dev'
       

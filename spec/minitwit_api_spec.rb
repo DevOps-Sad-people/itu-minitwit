@@ -85,7 +85,7 @@ describe 'API test' do
     post '/register?latest=1', payload.to_json, headers
 
     username = 'a'
-    payload = {'message': 'test'}
+    payload = {'content': 'test'}
     post "/msgs/#{username}?latest=2", payload.to_json, headers
 
     expect(last_response.status).to eq(204)
@@ -101,7 +101,7 @@ describe 'API test' do
     post '/register?latest=1', payload.to_json, headers
 
     posted_msg = 'Test get lastest user messages'
-    payload = {'message': posted_msg}
+    payload = {'content': posted_msg}
     post "/msgs/a?latest=2", payload.to_json, headers
 
     expect(last_response.status).to eq(204)
@@ -131,7 +131,7 @@ describe 'API test' do
     post '/register?latest=1', payload.to_json, headers
 
     posted_msg = 'Test get lastest messages'
-    payload = {'message': posted_msg}
+    payload = {'content': posted_msg}
     post "/msgs/a?latest=2", payload.to_json, headers
 
     expect(last_response.status).to eq(204)

@@ -9,6 +9,7 @@ gem "pg", "1.5.9"
 gem 'dotenv'
 gem 'htmlbeautifier'
 gem 'sequel', "5.89.0"
+gem "prometheus-client", "4.2.4"
 
 group :test do
   gem "rspec"

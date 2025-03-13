@@ -7,11 +7,18 @@ require 'digest/sha2'
 require 'json'
 require 'dotenv/load'
 require 'sequel'
+require 'rack'
+require 'prometheus/middleware/exporter'
+require_relative 'config'
 
 # configuration
 PER_PAGE = 30
 DEBUG = true
 DB_URL = "postgres://#{ENV.fetch('DB_USER')}:#{ENV.fetch('DB_PASSWORD')}@#{ENV.fetch('DB_HOST')}:#{ENV.fetch('DB_PORT')}/#{ENV.fetch('DB_NAME')}"
+
+use Rack::Deflater
+use Prometheus::Middleware::Exporter
+use MyCollector
 
 configure do
     set :port, 4567
@@ -21,6 +28,7 @@ configure do
     set :show_exceptions, DEBUG
     set :views, 'templates'
     set :public_folder, 'public'
+    set :environment, :production
 end
 
 DB = Sequel.connect(DB_URL)
@@ -162,7 +170,7 @@ post '/msgs/:username' do
     halt 404, "User not found" unless user_id
 
     body = JSON.parse request.body.read
-    message = body['message']
+    message = body['content']
     if message
         Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
     end

@@ -33,12 +33,14 @@ jobs:
         run: cp .env.example .env
 
       - name: Initialize Docker
-        run: docker compose up -d
-
-      - name: Wait for services to be ready
         run: |
           wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.9.0/wait -O /usr/local/bin/wait
           chmod +x /usr/local/bin/wait
+          docker compose up -d
+          /usr/local/bin/wait
+
+      - name: Wait for services to be ready
+        run: |
           /usr/local/bin/wait
 
       - name: Install python

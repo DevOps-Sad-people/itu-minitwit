@@ -5,7 +5,7 @@ services:
     volumes:
       - .:/app # Mount your project directory into the container
     working_dir: /app
-    entrypoint: ["/bin/bash", "-c", "bundle install && ruby minitwit.rb && /bin/bash"]
+    entrypoint: ["/bin/bash", "-c", "bundle install && ruby manage_migrations.rb && ruby minitwit.rb && /bin/bash"]
     depends_on:
       - db
     networks:
@@ -29,7 +29,9 @@ services:
       - minitwit_network_dev
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      # - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      # - ./create_tables.rb:/docker-entrypoint-initdb.d/create_tables.rb:ro
+
 
   prometheus:
     image: prom/prometheus:v3.2.1

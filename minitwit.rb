@@ -32,6 +32,9 @@ configure do
 end
 
 DB = Sequel.connect(DB_URL)
+
+## Create the 
+
 class User < Sequel::Model(:user); end
 class Follower < Sequel::Model(:follower); end
 class Message < Sequel::Model(:message); end

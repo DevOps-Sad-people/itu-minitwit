@@ -189,6 +189,25 @@ div.page div.twitbox p {
     margin: 0;
 }
 
+div.page .pagination{
+    padding: 10px;
+    display: flex;
+}
+
+.pagination .previous, .pagination .next {
+    width: 20%;
+}
+
+.pagination .next {
+    text-align: right;
+}
+.pagination .page_info
+{
+    display: flex;
+    flex: 1;
+    justify-content: center;
+}
+
 ul.flashes {
     list-style: none;
     margin: 10px 10px 0 10px;

@@ -80,8 +80,9 @@ def not_req_from_simulator(request)
     end
 end
 
-def public_msgs(per_page)
-    Message.dataset.join(User.dataset, user_id: :author_id).where(flagged: 0).order(Sequel.desc(:pub_date)).limit(per_page).all
+def public_msgs(per_page, page=1)
+    offset = (page - 1) * per_page
+    Message.dataset.join(User.dataset, user_id: :author_id).where(flagged: 0).order(Sequel.desc(:pub_date)).offset(offset).limit(per_page).all
 end
 
 def filtered_msgs(messages)
@@ -103,6 +104,7 @@ before do
     @profile_user = nil # user whose profile is being viewed
     @followed = false # whether the current user is following the profile user
     @error = nil
+    @page = 1
     @show_follow_unfollow = false
     # check if the user is logged in
     if session[:user]
@@ -119,16 +121,35 @@ get '/' do
     if not @user
         redirect '/public'
     end
-    puts "Getting messages User: #{@user}"
-    @messages = Message
+
+
+    page = params[:page].to_i
+    page = 1 if page < 1
+
+    offset = (page - 1) * PER_PAGE
+    
+    @page = page
+
+    all_messages = 
+        Message
         .join(User.dataset.as(:user), Sequel[:user][:user_id] => :author_id)
         .where(flagged: 0)
         .where(Sequel[:user][:user_id] => session[:user])
         .or(Sequel[:user][:user_id] => Follower.where(who_id: session[:user]).select(:whom_id))
         .order(Sequel.desc(:pub_date))
+
+    max_page = (all_messages.count / PER_PAGE.to_f).ceil
+    max_page = 1 if max_page < 1
+    @max_page = max_page
+    
+    puts "Getting messages User: #{@user}"
+    @messages = 
+        all_messages
+        .offset(offset)
         .limit(PER_PAGE)
         .all
     
+    @has_more = @messages.size == PER_PAGE
     # render the timeline
     erb :timeline
 end
@@ -136,7 +157,16 @@ end
 get '/public' do
     """Displays the latest messages of all users."""
     puts "Getting public messages"
-    @messages = public_msgs(PER_PAGE)
+    page = params[:page].to_i
+    page = 1 if page < 1
+
+    @page = page
+    max_page = (Message.where(flagged: 0).count / PER_PAGE.to_f).ceil
+    max_page = 1 if max_page < 1
+    @max_page = max_page
+    
+    @messages = public_msgs(PER_PAGE, page)
+    @has_more = @messages.size == PER_PAGE
     erb :timeline
 end
 

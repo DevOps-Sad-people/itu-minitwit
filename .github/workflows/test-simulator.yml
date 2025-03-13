@@ -49,7 +49,7 @@ jobs:
 
       - name: Wait for web service to be ready
         run: |
-          for i in {1..30}; do
+          for i in {1..5}; do
             if curl -s http://0.0.0.0:4567 > /dev/null; then
               echo "Web service is ready"
               exit 0
@@ -58,6 +58,7 @@ jobs:
             sleep 10
           done
           echo "Web service did not become ready in time"
+          docker logs minitwit
           exit 1
 
       - name: Run tests

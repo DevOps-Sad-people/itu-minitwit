@@ -9,6 +9,7 @@ require 'dotenv/load'
 require 'sequel'
 require 'rack'
 require 'prometheus/middleware/exporter'
+require 'active_support/time'
 require_relative 'config'
 
 # configuration
@@ -41,9 +42,10 @@ def get_user_id(username)
 end
 
 def format_datetime(timestamp)
-  timestamp = timestamp.to_i if timestamp.is_a?(String)
-  return nil unless timestamp.is_a?(Numeric) && timestamp >= 0
-  Time.at(timestamp).utc.strftime('%Y-%m-%d @ %H:%M')
+    timestamp = timestamp.to_i if timestamp.is_a?(String)
+    return nil unless timestamp.is_a?(Numeric) && timestamp >= 0
+    Time.at(timestamp).in_time_zone("Copenhagen").strftime("%Y-%m-%d %H:%M:%S")
+
 end
 
 def gravatar_url(email, size = 80)

@@ -7,6 +7,9 @@ on:
     branches:
       - main
       - develop
+  push:
+    branches:
+      - 83-add-simulator-test-to-github-actions
 
 # env variables
 env:

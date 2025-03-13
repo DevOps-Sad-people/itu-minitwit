@@ -47,6 +47,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r simulator/requirements.txt
 
+      - name: Wait for web service to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://0.0.0.0:4567 > /dev/null; then
+              echo "Web service is ready"
+              exit 0
+            fi
+            echo "Waiting for web service..."
+            sleep 10
+          done
+          echo "Web service did not become ready in time"
+          exit 1
+
       - name: Run tests
         run: |
           cd simulator

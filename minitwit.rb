@@ -81,7 +81,8 @@ def not_req_from_simulator(request)
 end
 
 def public_msgs(per_page, page=1)
-    offset = (page - 1) * per_page
+    offset = (page - 1) * per_page.to_i
+    puts offset
     Message.dataset.join(User.dataset, user_id: :author_id).where(flagged: 0).order(Sequel.desc(:pub_date)).offset(offset).limit(per_page).all
 end
 

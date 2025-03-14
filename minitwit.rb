@@ -458,7 +458,7 @@ get '/:username' do
     page = 1 if page < 1
     @page = page
 
-    max_page = (Message.where(flagged: 0).count / PER_PAGE.to_f).ceil
+    max_page = (Message.dataset.join(User.dataset, user_id: :author_id).where(user_id: @profile_user.user_id).count / PER_PAGE.to_f).ceil
     max_page = 1 if max_page < 1
     @max_page = max_page
     

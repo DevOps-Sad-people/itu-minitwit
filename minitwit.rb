@@ -453,10 +453,22 @@ get '/:username' do
         @followed = Follower.where(who_id: @user.user_id, whom_id: @profile_user.user_id).first != nil
         puts "#{@user.username} Follows #{@profile_user.username}: #{@followed}"
     end
-  
+
+    page = params[:page].to_i
+    page = 1 if page < 1
+    @page = page
+
+    max_page = (Message.where(flagged: 0).count / PER_PAGE.to_f).ceil
+    max_page = 1 if max_page < 1
+    @max_page = max_page
+    
+    offset = (page - 1) * PER_PAGE
+
     # # Fetch the user's messages from the database
     @messages = Message.dataset.join(User.dataset, user_id: :author_id).where(user_id: @profile_user.user_id)
-        .order(Sequel.desc(:pub_date)).limit(PER_PAGE).all
+    .order(Sequel.desc(:pub_date)).offset(offset).limit(PER_PAGE).all
+    
+    @has_more = @messages.size == PER_PAGE
 
     # Render the timeline template (timeline.erb)
     @show_follow_unfollow = true

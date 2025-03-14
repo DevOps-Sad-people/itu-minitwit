@@ -7,7 +7,6 @@ Sequel.migration do
         end
         alter_table(:message) do
             add_index :author_id
-            add_index :pub_date
         end
         alter_table(:user) do
             add_index :username

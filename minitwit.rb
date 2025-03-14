@@ -44,7 +44,7 @@ end
 def format_datetime(timestamp)
     timestamp = timestamp.to_i if timestamp.is_a?(String)
     return nil unless timestamp.is_a?(Numeric) && timestamp >= 0
-    Time.at(timestamp).in_time_zone("Copenhagen").strftime("%Y-%m-%d %H:%M:%S")
+    Time.at(timestamp).in_time_zone("Copenhagen").strftime("%d-%m-%Y @ %H:%M")
 
 end
 

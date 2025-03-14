@@ -208,6 +208,25 @@ div.page .pagination{
     justify-content: center;
 }
 
+.next a, .previous a {
+    background: #105751;
+    border: 1px solid #073B36;
+    padding: 4px 20px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    color: white;
+    text-decoration: none;
+}
+
+.next a:hover, .previous a:hover {
+    background: #073B36;
+    cursor: pointer;
+}
+
 ul.flashes {
     list-style: none;
     margin: 10px 10px 0 10px;

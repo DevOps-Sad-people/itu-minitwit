@@ -98,6 +98,21 @@ e.g. /:username would match /login or /logout
 
 ## Database
 
+### Migrations
+
+For more information go to [sequel documentation](https://sequel.jeremyevans.net/documentation.html)
+We have created a folder `migrations/` that contains the database changes
+
+For development: `manage_migrations_dev.rb` used in `docker-compose.dev.yml`
+For production: `manage_migrations.rb`used in `docker-compose.yml`
+
+This creates a migration of the current database, in this way you can see if the migrations have been applied to the database
+This should be run inside the docker container (run Interactive Development 1. and then maybe CTRL+C)
+
+```bash
+sequel -d <DB_URL> 
+```
+
 ### Setup
 Create and run a PostgreSQL docker container:
 `docker run --name minitwit-postgres --network=minitwit -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`

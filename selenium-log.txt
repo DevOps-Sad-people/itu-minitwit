@@ -449,3 +449,64 @@ Remote response: status=500 | data={"value":{"error":"unknown error","message":"
 Finished Request
 POST http://web_driver:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}}}}}
 POST http://web_driver:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}}}}}
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+Sending stats to Plausible: Props { browser: "firefox", browser_version: "", os: "linux", arch: "x86_64", lang: "python", selenium_version: "4.29" }
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Valid geckodriver versions for firefox 136: ["0.36.0", "0.35.0", "0.34.0"]
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 68 using 0 to output -3
+POST http://localhost:46321/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}}}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 18:49:04 GMT'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --browser-path ../usr/local/bin/firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:57557/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '../usr/local/bin/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=400 | data={"value":{"error":"invalid argument","message":"binary is not a Firefox executable","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '101', 'date': 'Sun, 16 Mar 2025 18:55:38 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:52251/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=500 | data={"value":{"error":"session not created","message":"Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '245', 'date': 'Sun, 16 Mar 2025 18:56:59 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:51405/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=500 | data={"value":{"error":"session not created","message":"Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '245', 'date': 'Sun, 16 Mar 2025 18:58:12 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:50385/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=500 | data={"value":{"error":"session not created","message":"Expected browser binary location, but unable to find binary in default location, no 'moz:firefoxOptions.binary' capability provided, and no binary flag set on the command line","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '245', 'date': 'Sun, 16 Mar 2025 19:00:31 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:46021/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/usr/local/bin/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=400 | data={"value":{"error":"invalid argument","message":"binary is not a Firefox executable","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '101', 'date': 'Sun, 16 Mar 2025 19:01:23 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:47871/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/usr/local/bin/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=400 | data={"value":{"error":"invalid argument","message":"binary is not a Firefox executable","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '101', 'date': 'Sun, 16 Mar 2025 19:03:24 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:53733/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '../usr/local/bin/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=400 | data={"value":{"error":"invalid argument","message":"binary is not a Firefox executable","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '101', 'date': 'Sun, 16 Mar 2025 19:04:29 GMT'})
+Finished Request
+Skipping Selenium Manager; path to firefox driver specified in Service class: ./geckodriver
+Started executable: `./geckodriver` in a child process with pid: 10 using 0 to output -3
+POST http://localhost:57425/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '../usr/local/bin/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=400 | data={"value":{"error":"invalid argument","message":"binary is not a Firefox executable","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '101', 'date': 'Sun, 16 Mar 2025 19:13:59 GMT'})
+Finished Request

@@ -2,7 +2,7 @@ FROM python:3.12
 
 # # Install dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    firefox-esr \
+    firefox \
     wget
 
 # RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -26,10 +26,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 #     && rm /tmp/chromedriver.zip
 
 # Install geckodriver
-RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz \
-    && tar -xzf geckodriver-v0.32.0-linux64.tar.gz \
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.34.0/geckodriver-v0.34.0-linux64.tar.gz \
+    && tar -xzf geckodriver-v0.34.0-linux64.tar.gz \
     && mv geckodriver /usr/local/bin/geckodriver \ 
-    && rm geckodriver-v0.32.0-linux64.tar.gz
+    && rm geckodriver-v0.34.0-linux64.tar.gz
+
+RUN ln -s /usr/bin/firefox /usr/local/bin/firefox
 
 # Set the working directory
 WORKDIR /app

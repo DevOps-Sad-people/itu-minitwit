@@ -79,22 +79,23 @@ def test_register_user_via_gui():
     time.sleep(5)
     # Get the current working directory
     # current_directory = os.getcwd()
-    # current_directory = os.listdir()
     ## Check dir usr/bin/firefox
     firefox_options = Options()
-    # firefox_options.add_argument("--headless")
-    # firefox_options.binary_location = "../usr/local/bin/firefox"
+    firefox_options.add_argument("--headless")
+    firefox_options.binary_location = "../usr/local/bin/firefox"
+    current_directory = os.listdir("../usr/local/bin")
+    print("current_directory: ", current_directory)
     # firefox_options = None
     # with chrome webdriver
     # chrome_options = Options()
     # chrome_options.add_argument("--headless")
     # chrome_options.binary_location = "../usr/local/bin/google-chrome"
-    driver = webdriver.Remote(
-        command_executor='http://web_driver:4444',
-        options=firefox_options
-    )
+    # driver = webdriver.Remote(
+    #     command_executor='http://web_driver:4444',
+    #     options=firefox_options
+    # )
 
-    with webdriver.Firefox(options=firefox_options) as driver:
+    with webdriver.Firefox(service=Service("./geckodriver"), options=firefox_options) as driver:
         # with webdriver.Chrome(options=chrome_options) as driver:
         # with webdriver.Firefox() as driver:
         generated_msg = _register_user_via_gui(driver, ["Me", "me@some.where", "secure123", "secure123"])[0].text

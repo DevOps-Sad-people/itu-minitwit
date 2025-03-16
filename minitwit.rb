@@ -431,6 +431,13 @@ get "/latest" do
   {latest: latest_processed_command_id}.to_json
 end
 
+
+
+
+
+
+
+
 # Place this in bottom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout
 get "/:username" do

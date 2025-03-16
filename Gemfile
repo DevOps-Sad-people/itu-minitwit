@@ -11,7 +11,8 @@ gem "htmlbeautifier"
 gem "sequel", "5.89.0"
 gem "prometheus-client", "4.2.4"
 gem "activesupport", "~> 7.0"
-gem "standard"
+gem "standard", require: false
+gem "erb_lint", require: false
 
 group :test do
   gem "rspec"

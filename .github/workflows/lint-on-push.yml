@@ -1,0 +1,36 @@
+---
+name: Linting and Formatting
+
+on:
+  push:
+    # Run workflow every time there is a push to a branch
+    branches:
+      - '*'
+
+# This action currently includes 3 different linter/formatter tools:
+# - A standard Ruby linter and formatter
+# - An ERB file linter
+# - A Dockerfile linter
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bundle
+        run: bundle install
+
+      - name: Standard Ruby check and fix
+        run: standardrb --fix
+
+      - name: ERB check
+        run: bundle exec erb_lint ./templates/**/*.erb
+
+      - name: Pulling hadolint image
+        run: docker pull hadolint/hadolint
+
+      - name: DockerFile check
+        run: docker run --rm -i hadolint/hadolint < Dockerfile

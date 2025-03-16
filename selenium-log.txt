@@ -91,3 +91,361 @@ Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodrive
 POST http://localhost:42873/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
 Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 13:43:51 GMT'})
 Finished Request
+POST http://localhost:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://localhost:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://minitwit_webdriver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://minitwit_webdriver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=200 | data={
+  "value": {
+    "sessionId": "75a7060b-1a0a-4c1a-896c-184571960a2a",
+    "capabilities": {
+      "acceptInsecureCerts": true,
+      "browserName": "firefox",
+      "browserVersion": "136.0",
+      "container:hostname": "92798042eafd",
+      "moz:accessibilityChecks": false,
+      "moz:buildID": "20250227124745",
+      "moz:debuggerAddress": "127.0.0.1:30010",
+      "moz:firefoxOptions": {
+        "prefs": {
+          "remote.active-protocols": 3
+        },
+        "args": [
+          "--headless"
+        ]
+      },
+      "moz:geckodriverVersion": "0.36.0",
+      "moz:headless": true,
+      "moz:platformVersion": "5.15.133.1-microsoft-standard-WSL2",
+      "moz:processID": 192,
+      "moz:profile": "\u002ftmp\u002frust_mozprofileIqjoju",
+      "moz:shutdownTimeout": 60000,
+      "moz:webdriverClick": true,
+      "moz:windowless": false,
+      "pageLoadStrategy": "normal",
+      "platformName": "linux",
+      "proxy": {
+      },
+      "se:bidiEnabled": false,
+      "se:cdp": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002f75a7060b-1a0a-4c1a-896c-184571960a2a\u002fse\u002fcdp",
+      "se:cdpVersion": "85.0",
+      "se:containerName": "92798042eafd",
+      "se:noVncPort": 7900,
+      "se:vnc": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002f75a7060b-1a0a-4c1a-896c-184571960a2a\u002fse\u002fvnc",
+      "se:vncEnabled": true,
+      "se:vncLocalAddress": "ws:\u002f\u002f172.18.0.3:7900",
+      "setWindowRect": true,
+      "strictFileInteractability": false,
+      "timeouts": {
+        "implicit": 0,
+        "pageLoad": 300000,
+        "script": 30000
+      },
+      "unhandledPromptBehavior": "dismiss and notify",
+      "userAgent": "Mozilla\u002f5.0 (X11; Linux x86_64; rv:136.0) Gecko\u002f20100101 Firefox\u002f136.0"
+    }
+  }
+} | headers=HTTPHeaderDict({'content-length': '1759', 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+Sending stats to Plausible: Props { browser: "firefox", browser_version: "", os: "linux", arch: "x86_64", lang: "python", selenium_version: "4.29" }
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+Acquiring lock: /root/.cache/selenium/firefox/linux64/136.0.1/sm.lock
+Downloading firefox 136.0.1 from https://ftp.mozilla.org/pub/firefox/releases/136.0.1/linux-x86_64/en-US/firefox-136.0.1.tar.xz
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Valid geckodriver versions for firefox 136: ["0.36.0", "0.35.0", "0.34.0"]
+Required driver: geckodriver 0.36.0
+Acquiring lock: /root/.cache/selenium/geckodriver/linux64/0.36.0/sm.lock
+Downloading geckodriver 0.36.0 from https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 102 using 0 to output -3
+POST http://localhost:47345/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}, 'browserVersion': None}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 14:09:57 GMT'})
+Finished Request
+POST http://localhost:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://localhost:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://localhost:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://localhost:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://localhost:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://web_driver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=200 | data={
+  "value": {
+    "sessionId": "29fb2867-327f-4c7e-84f8-620211b0db0a",
+    "capabilities": {
+      "acceptInsecureCerts": true,
+      "browserName": "firefox",
+      "browserVersion": "136.0",
+      "container:hostname": "92798042eafd",
+      "moz:accessibilityChecks": false,
+      "moz:buildID": "20250227124745",
+      "moz:debuggerAddress": "127.0.0.1:18737",
+      "moz:firefoxOptions": {
+        "prefs": {
+          "remote.active-protocols": 3
+        },
+        "args": [
+          "--headless"
+        ]
+      },
+      "moz:geckodriverVersion": "0.36.0",
+      "moz:headless": true,
+      "moz:platformVersion": "5.15.133.1-microsoft-standard-WSL2",
+      "moz:processID": 602,
+      "moz:profile": "\u002ftmp\u002frust_mozprofileHHyiIn",
+      "moz:shutdownTimeout": 60000,
+      "moz:webdriverClick": true,
+      "moz:windowless": false,
+      "pageLoadStrategy": "normal",
+      "platformName": "linux",
+      "proxy": {
+      },
+      "se:bidiEnabled": false,
+      "se:cdp": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002f29fb2867-327f-4c7e-84f8-620211b0db0a\u002fse\u002fcdp",
+      "se:cdpVersion": "85.0",
+      "se:containerName": "92798042eafd",
+      "se:noVncPort": 7900,
+      "se:vnc": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002f29fb2867-327f-4c7e-84f8-620211b0db0a\u002fse\u002fvnc",
+      "se:vncEnabled": true,
+      "se:vncLocalAddress": "ws:\u002f\u002f172.18.0.3:7900",
+      "setWindowRect": true,
+      "strictFileInteractability": false,
+      "timeouts": {
+        "implicit": 0,
+        "pageLoad": 300000,
+        "script": 30000
+      },
+      "unhandledPromptBehavior": "dismiss and notify",
+      "userAgent": "Mozilla\u002f5.0 (X11; Linux x86_64; rv:136.0) Gecko\u002f20100101 Firefox\u002f136.0"
+    }
+  }
+} | headers=HTTPHeaderDict({'content-length': '1759', 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:38769/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}, 'browserVersion': None}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 14:29:14 GMT'})
+Finished Request
+POST http://web_driver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://web_driver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=200 | data={
+  "value": {
+    "sessionId": "e538a411-b8a2-4aa9-8d22-f23f20c888da",
+    "capabilities": {
+      "acceptInsecureCerts": true,
+      "browserName": "firefox",
+      "browserVersion": "136.0",
+      "container:hostname": "389a6122a39f",
+      "moz:accessibilityChecks": false,
+      "moz:buildID": "20250227124745",
+      "moz:debuggerAddress": "127.0.0.1:18943",
+      "moz:firefoxOptions": {
+        "prefs": {
+          "remote.active-protocols": 3
+        },
+        "args": [
+          "--headless"
+        ]
+      },
+      "moz:geckodriverVersion": "0.36.0",
+      "moz:headless": true,
+      "moz:platformVersion": "5.15.133.1-microsoft-standard-WSL2",
+      "moz:processID": 183,
+      "moz:profile": "\u002ftmp\u002frust_mozprofileMAxRv5",
+      "moz:shutdownTimeout": 60000,
+      "moz:webdriverClick": true,
+      "moz:windowless": false,
+      "pageLoadStrategy": "normal",
+      "platformName": "linux",
+      "proxy": {
+      },
+      "se:bidiEnabled": false,
+      "se:cdp": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002fe538a411-b8a2-4aa9-8d22-f23f20c888da\u002fse\u002fcdp",
+      "se:cdpVersion": "85.0",
+      "se:containerName": "389a6122a39f",
+      "se:noVncPort": 7900,
+      "se:vnc": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002fe538a411-b8a2-4aa9-8d22-f23f20c888da\u002fse\u002fvnc",
+      "se:vncEnabled": true,
+      "se:vncLocalAddress": "ws:\u002f\u002f172.18.0.3:7900",
+      "setWindowRect": true,
+      "strictFileInteractability": false,
+      "timeouts": {
+        "implicit": 0,
+        "pageLoad": 300000,
+        "script": 30000
+      },
+      "unhandledPromptBehavior": "dismiss and notify",
+      "userAgent": "Mozilla\u002f5.0 (X11; Linux x86_64; rv:136.0) Gecko\u002f20100101 Firefox\u002f136.0"
+    }
+  }
+} | headers=HTTPHeaderDict({'content-length': '1759', 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:48435/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}, 'browserVersion': None}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 14:32:01 GMT'})
+Finished Request
+POST http://web_driver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+POST http://web_driver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=200 | data={
+  "value": {
+    "sessionId": "ebf5e8c7-c463-456b-bd6a-1fd3f2e3acb6",
+    "capabilities": {
+      "acceptInsecureCerts": true,
+      "browserName": "firefox",
+      "browserVersion": "136.0",
+      "container:hostname": "389a6122a39f",
+      "moz:accessibilityChecks": false,
+      "moz:buildID": "20250227124745",
+      "moz:debuggerAddress": "127.0.0.1:32288",
+      "moz:firefoxOptions": {
+        "prefs": {
+          "remote.active-protocols": 3
+        },
+        "args": [
+          "--headless"
+        ]
+      },
+      "moz:geckodriverVersion": "0.36.0",
+      "moz:headless": true,
+      "moz:platformVersion": "5.15.133.1-microsoft-standard-WSL2",
+      "moz:processID": 569,
+      "moz:profile": "\u002ftmp\u002frust_mozprofile8JQMxz",
+      "moz:shutdownTimeout": 60000,
+      "moz:webdriverClick": true,
+      "moz:windowless": false,
+      "pageLoadStrategy": "normal",
+      "platformName": "linux",
+      "proxy": {
+      },
+      "se:bidiEnabled": false,
+      "se:cdp": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002febf5e8c7-c463-456b-bd6a-1fd3f2e3acb6\u002fse\u002fcdp",
+      "se:cdpVersion": "85.0",
+      "se:containerName": "389a6122a39f",
+      "se:noVncPort": 7900,
+      "se:vnc": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002febf5e8c7-c463-456b-bd6a-1fd3f2e3acb6\u002fse\u002fvnc",
+      "se:vncEnabled": true,
+      "se:vncLocalAddress": "ws:\u002f\u002f172.18.0.3:7900",
+      "setWindowRect": true,
+      "strictFileInteractability": false,
+      "timeouts": {
+        "implicit": 0,
+        "pageLoad": 300000,
+        "script": 30000
+      },
+      "unhandledPromptBehavior": "dismiss and notify",
+      "userAgent": "Mozilla\u002f5.0 (X11; Linux x86_64; rv:136.0) Gecko\u002f20100101 Firefox\u002f136.0"
+    }
+  }
+} | headers=HTTPHeaderDict({'content-length': '1759', 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:59771/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}, 'browserVersion': None}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 14:39:52 GMT'})
+Finished Request
+POST http://web_driver:4444/wd/hub/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}}}}}
+Remote response: status=200 | data={
+  "value": {
+    "sessionId": "6e749e9d-ae07-49bb-8df6-14f7ed349267",
+    "capabilities": {
+      "acceptInsecureCerts": true,
+      "browserName": "firefox",
+      "browserVersion": "136.0",
+      "container:hostname": "389a6122a39f",
+      "moz:accessibilityChecks": false,
+      "moz:buildID": "20250227124745",
+      "moz:debuggerAddress": "127.0.0.1:15473",
+      "moz:firefoxOptions": {
+        "prefs": {
+          "remote.active-protocols": 3
+        }
+      },
+      "moz:geckodriverVersion": "0.36.0",
+      "moz:headless": false,
+      "moz:platformVersion": "5.15.133.1-microsoft-standard-WSL2",
+      "moz:processID": 930,
+      "moz:profile": "\u002ftmp\u002frust_mozprofilekAH9VA",
+      "moz:shutdownTimeout": 60000,
+      "moz:webdriverClick": true,
+      "moz:windowless": false,
+      "pageLoadStrategy": "normal",
+      "platformName": "linux",
+      "proxy": {
+      },
+      "se:bidiEnabled": false,
+      "se:cdp": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002f6e749e9d-ae07-49bb-8df6-14f7ed349267\u002fse\u002fcdp",
+      "se:cdpVersion": "85.0",
+      "se:containerName": "389a6122a39f",
+      "se:noVncPort": 7900,
+      "se:vnc": "ws:\u002f\u002f172.18.0.3:4444\u002fsession\u002f6e749e9d-ae07-49bb-8df6-14f7ed349267\u002fse\u002fvnc",
+      "se:vncEnabled": true,
+      "se:vncLocalAddress": "ws:\u002f\u002f172.18.0.3:7900",
+      "setWindowRect": true,
+      "strictFileInteractability": false,
+      "timeouts": {
+        "implicit": 0,
+        "pageLoad": 300000,
+        "script": 30000
+      },
+      "unhandledPromptBehavior": "dismiss and notify",
+      "userAgent": "Mozilla\u002f5.0 (X11; Linux x86_64; rv:136.0) Gecko\u002f20100101 Firefox\u002f136.0"
+    }
+  }
+} | headers=HTTPHeaderDict({'content-length': '1708', 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:41829/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}}, 'browserVersion': None}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 14:45:24 GMT'})
+Finished Request
+POST http://web_driver:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}}}}}
+POST http://web_driver:4444/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'moz:firefoxOptions': {'prefs': {'remote.active-protocols': 3}}}}}

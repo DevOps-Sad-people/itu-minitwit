@@ -18,6 +18,22 @@ services:
   #   networks:
   #     - minitwit_network_test
   
+  dev:
+    image: ruby:3.3
+    container_name: minitwit_dev
+    volumes:
+      - .:/app # Mount your project directory into the container
+    working_dir: /app
+    entrypoint: ["/bin/bash", "-c", "bundle install && ruby minitwit.rb"]
+    depends_on:
+      - db
+    networks:
+      - minitwit_network_test
+    ports:
+      - "4567:4567" # Exposing the default Sinatra port, adjust as needed
+    env_file:
+      - .env
+
   python_test:
     build:
       context: .
@@ -35,11 +51,23 @@ services:
       SECRET_KEY: example key example key example key example key example key example key example key
     entrypoint: ["/bin/bash", "-c", "pip install -r requirements.txt && pytest test_itu_minitwit_ui.py"]
     depends_on:
-      - db
+      - dev
     networks:
       - minitwit_network_test
 
-
+  web_driver:
+    image: selenium/standalone-firefox:latest
+    container_name: minitwit_webdriver
+    ports:
+      - "4444:4444"
+      - "7900:7900"
+    expose:
+      - "4444"
+      - "7900"
+    shm_size: "2g"
+    networks:
+      - minitwit_network_test
+    
   db:
     image: postgres:15
     container_name: minitwit_test_db

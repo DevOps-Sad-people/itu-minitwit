@@ -27,6 +27,7 @@ import os
 import pymongo
 import psycopg2
 import logging
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -41,7 +42,7 @@ log_path = "selenium-log.txt"
 fh = logging.FileHandler(log_path)
 logger.addHandler(fh)
 
-GUI_URL = "http://localhost:4567/register"
+GUI_URL = "http://localhost:4444//register"
 # Get the database URL from the environment variables
 
 DB_URL = f"postgres://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
@@ -49,7 +50,7 @@ DB_URL = f"postgres://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.gete
 
 
 def _register_user_via_gui(driver, data):
-    driver.get(GUI_URL)
+    driver.get("http://localhost:4444/register")
 
     wait = WebDriverWait(driver, 5)
     buttons = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "actions")))
@@ -74,18 +75,25 @@ def test_register_user_via_gui():
     This is a UI test. It only interacts with the UI that is rendered in the browser and checks that visual
     responses that users observe are displayed.
     """
+    ## wait 10 seconds
+    time.sleep(5)
     # Get the current working directory
     # current_directory = os.getcwd()
     # current_directory = os.listdir()
     ## Check dir usr/bin/firefox
     firefox_options = Options()
-    firefox_options.add_argument("--headless")
+    # firefox_options.add_argument("--headless")
     # firefox_options.binary_location = "../usr/local/bin/firefox"
     # firefox_options = None
     # with chrome webdriver
     # chrome_options = Options()
     # chrome_options.add_argument("--headless")
     # chrome_options.binary_location = "../usr/local/bin/google-chrome"
+    driver = webdriver.Remote(
+        command_executor='http://web_driver:4444',
+        options=firefox_options
+    )
+
     with webdriver.Firefox(options=firefox_options) as driver:
         # with webdriver.Chrome(options=chrome_options) as driver:
         # with webdriver.Firefox() as driver:

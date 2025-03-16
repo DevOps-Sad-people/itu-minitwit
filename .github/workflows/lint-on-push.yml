@@ -27,7 +27,7 @@ jobs:
           bundler-cache: true
 
       - name: Standard Ruby check and fix
-        run: standardrb --fix
+        run: bundle exec standardrb --fix
 
       - name: ERB check
         run: bundle exec erb_lint ./templates/**/*.erb

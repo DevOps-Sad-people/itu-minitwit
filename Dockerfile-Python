@@ -5,16 +5,30 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     firefox-esr \
     wget
 
+# RUN apt-get update && apt-get install --no-install-recommends -y \
+#     wget \
+#     gnupg \
+#     unzip
+
 ## Move firefox to app directory
 # RUN mv /usr/bin/firefox 
     
 #     ## Print out the firefox version and path
-RUN firefox --version && which firefox 
+#RUN firefox --version && which firefox 
+# RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+#     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' \
+#     && apt-get update \
+#     && apt-get install -y google-chrome-stable
+
+# RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE) \
+#     && wget -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip \
+#     && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
+#     && rm /tmp/chromedriver.zip
 
 # Install geckodriver
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz \
     && tar -xzf geckodriver-v0.32.0-linux64.tar.gz \
-    && mv geckodriver /usr/bin/geckodriver \ 
+    && mv geckodriver /usr/local/bin/geckodriver \ 
     && rm geckodriver-v0.32.0-linux64.tar.gz
 
 # Set the working directory

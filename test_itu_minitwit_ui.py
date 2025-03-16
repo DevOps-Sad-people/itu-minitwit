@@ -26,6 +26,7 @@ Now, the test itself can be executed via: `pytest test_itu_minitwit_ui.py`.
 import os
 import pymongo
 import psycopg2
+import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -34,6 +35,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 
+logger = logging.getLogger('selenium')
+logger.setLevel(logging.DEBUG)
+log_path = "selenium-log.txt"
+fh = logging.FileHandler(log_path)
+logger.addHandler(fh)
 
 GUI_URL = "http://localhost:4567/register"
 # Get the database URL from the environment variables
@@ -72,20 +78,20 @@ def test_register_user_via_gui():
     # current_directory = os.getcwd()
     # current_directory = os.listdir()
     ## Check dir usr/bin/firefox
-    current_directory = os.listdir("../usr/bin")
-
-
-    # Print the current working directory
-    print("Current working directory:", current_directory)
-    
-
     firefox_options = Options()
     firefox_options.add_argument("--headless")
-    firefox_options.binary_location = "../usr/bin/firefox"
+    # firefox_options.binary_location = "../usr/local/bin/firefox"
     # firefox_options = None
-    with webdriver.Firefox(service=Service("./geckodriver"), options=firefox_options) as driver:
+    # with chrome webdriver
+    # chrome_options = Options()
+    # chrome_options.add_argument("--headless")
+    # chrome_options.binary_location = "../usr/local/bin/google-chrome"
+    with webdriver.Firefox(options=firefox_options) as driver:
+        # with webdriver.Chrome(options=chrome_options) as driver:
+        # with webdriver.Firefox() as driver:
         generated_msg = _register_user_via_gui(driver, ["Me", "me@some.where", "secure123", "secure123"])[0].text
         expected_msg = "You were successfully registered and can login now"
+        print("generated_msg: ", generated_msg)
         assert generated_msg == expected_msg
 
     # cleanup, make test case idempotent

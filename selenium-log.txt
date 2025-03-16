@@ -1,0 +1,93 @@
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --browser-path ../usr/local/bin/google-chrome --debug --language-binding python --output json
+geckodriver not found in PATH
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --browser-path ../usr/local/bin/google-chrome --debug --language-binding python --output json
+geckodriver not found in PATH
+Skipping Selenium Manager; path to firefox driver specified in Service class: ../usr/bin/geckodriver
+Skipping Selenium Manager; path to firefox driver specified in Service class: ../usr/bin/geckodriver
+Skipping Selenium Manager; path to firefox driver specified in Service class: ../usr/bin/geckodriver
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 17 using 0 to output -3
+POST http://localhost:56759/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}}}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 13:35:53 GMT'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+Sending stats to Plausible: Props { browser: "firefox", browser_version: "", os: "linux", arch: "x86_64", lang: "python", selenium_version: "4.29" }
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+Acquiring lock: /root/.cache/selenium/firefox/linux64/136.0.1/sm.lock
+Downloading firefox 136.0.1 from https://ftp.mozilla.org/pub/firefox/releases/136.0.1/linux-x86_64/en-US/firefox-136.0.1.tar.xz
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Valid geckodriver versions for firefox 136: ["0.36.0", "0.35.0", "0.34.0"]
+Required driver: geckodriver 0.36.0
+Acquiring lock: /root/.cache/selenium/geckodriver/linux64/0.36.0/sm.lock
+Downloading geckodriver 0.36.0 from https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 102 using 0 to output -3
+POST http://localhost:54657/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}}}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 13:38:05 GMT'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:58043/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 13:38:59 GMT'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:38779/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 13:39:48 GMT'})
+Finished Request
+Selenium Manager binary found at: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager
+Executing process: /usr/local/lib/python3.12/site-packages/selenium/webdriver/common/linux/selenium-manager --browser firefox --debug --language-binding python --output json
+geckodriver not found in PATH
+firefox not found in PATH
+firefox not found in the system
+Required browser: firefox 136.0.1
+firefox 136.0.1 already exists
+firefox 136.0.1 is available at /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Required driver: geckodriver 0.36.0
+geckodriver 0.36.0 already in the cache
+Driver path: /root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver
+Browser path: /root/.cache/selenium/firefox/linux64/136.0.1/firefox
+Started executable: `/root/.cache/selenium/geckodriver/linux64/0.36.0/geckodriver` in a child process with pid: 16 using 0 to output -3
+POST http://localhost:42873/session {'capabilities': {'firstMatch': [{}], 'alwaysMatch': {'browserName': 'firefox', 'acceptInsecureCerts': True, 'moz:debuggerAddress': True, 'pageLoadStrategy': <PageLoadStrategy.normal: 'normal'>, 'browserVersion': None, 'moz:firefoxOptions': {'binary': '/root/.cache/selenium/firefox/linux64/136.0.1/firefox', 'prefs': {'remote.active-protocols': 3}, 'args': ['--headless']}}}}
+Remote response: status=500 | data={"value":{"error":"unknown error","message":"Process unexpectedly closed with status 255","stacktrace":""}} | headers=HTTPHeaderDict({'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-cache', 'content-length': '107', 'date': 'Sun, 16 Mar 2025 13:43:51 GMT'})
+Finished Request

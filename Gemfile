@@ -13,6 +13,7 @@ gem "prometheus-client", "4.2.4"
 gem 'activesupport', '~> 7.0'
 
 group :test do
+  gem 'selenium-webdriver', "4.6"
   gem "rspec"
   gem "rack-test", "2.2.0" # For testing Sinatra routes
 end

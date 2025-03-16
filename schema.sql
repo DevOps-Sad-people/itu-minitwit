@@ -1,9 +1,9 @@
 drop table if exists "user";
 create table "user" (
   user_id SERIAL primary key,
-  username VARCHAR(100) not null,
-  email VARCHAR(100) not null,
-  pw_hash VARCHAR(100) not null
+  username VARCHAR2(100) not null,
+  email VARCHAR2(100) not null,
+  pw_hash VARCHAR2(100) not null
 );
 
 drop table if exists "follower";
@@ -16,7 +16,7 @@ drop table if exists "message";
 create table message (
   message_id SERIAL primary key,
   author_id integer not null,
-  text VARCHAR(500) not null,
+  text TEXT not null,
   pub_date integer,
   flagged integer
 );

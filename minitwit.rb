@@ -100,6 +100,10 @@ def filtered_msgs(messages)
   filtered_msgs
 end
 
+def user_not_found
+  halt 404, "User not found"
+end
+
 # before each request, make sure the database is connected
 before do
   @user = nil # current logged in user
@@ -192,7 +196,7 @@ post "/msgs/:username" do
   end
 
   user_id = get_user_id(params[:username])
-  halt 404, "User not found" unless user_id
+  user_not_found unless user_id
 
   body = JSON.parse request.body.read
   message = body["content"]
@@ -210,7 +214,7 @@ get "/msgs/:username" do
   end
 
   user_id = get_user_id(params[:username])
-  halt 404, "User not found" unless user_id
+  user_not_found unless user_id
 
   # get the number of messages to return
   no_msgs = params["no"] || 100
@@ -339,13 +343,13 @@ end
 
 def follow(user_id, follows_username)
   follows_user_id = get_user_id(follows_username)
-  halt 404, "User not found" unless user_id && follows_user_id
+  user_not_found unless user_id && follows_user_id
   Follower.insert(who_id: user_id, whom_id: follows_user_id)
 end
 
 def unfollow(user_id, unfollows_username)
   unfollows_user_id = get_user_id(unfollows_username)
-  halt 404, "User not found" unless user_id && unfollows_user_id
+  user_not_found unless user_id && unfollows_user_id
   Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 
@@ -372,7 +376,7 @@ get "/fllws/:username" do
     return req_from_simulator
   end
   user_id = get_user_id(params[:username])
-  halt 404, "User not found" unless user_id
+  user_not_found unless user_id
 
   limit = params["no"] || 100
   follower_names = User.dataset.join(Follower.dataset, whom_id: :user_id).where(who_id: user_id).limit(limit).map(:username)
@@ -387,7 +391,7 @@ post "/fllws/:username" do
     return req_from_simulator
   end
   user_id = get_user_id(params[:username])
-  halt 404, "User not found" unless user_id
+  user_not_found unless user_id
 
   body = JSON.parse request.body.read
   follows_username = body["follow"]
@@ -434,7 +438,7 @@ get "/:username" do
   puts "Getting profile for user: #{username}"
   # # Fetch the user's profile from the database
   @profile_user = User.where(username: username).first
-  halt 404, "User not found" unless @profile_user
+  user_not_found unless @profile_user
   puts "Getting profile_user: #{@profile_user}"
 
   @followed = false

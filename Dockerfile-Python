@@ -1,0 +1,33 @@
+FROM python:3.12
+
+# # Install dependencies
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    firefox-esr \
+    wget
+
+## Move firefox to app directory
+# RUN mv /usr/bin/firefox 
+    
+#     ## Print out the firefox version and path
+RUN firefox --version && which firefox 
+
+# Install geckodriver
+RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz \
+    && tar -xzf geckodriver-v0.32.0-linux64.tar.gz \
+    && mv geckodriver /usr/bin/geckodriver \ 
+    && rm geckodriver-v0.32.0-linux64.tar.gz
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the requirements file
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Command to run the tests
+CMD ["pytest", "test_itu_minitwit_ui.py"]

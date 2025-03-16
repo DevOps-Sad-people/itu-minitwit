@@ -31,11 +31,11 @@ jobs:
           ruby-version: '3.3'
           bundler-cache: true
 
-      - name: Standard Ruby check and fix
+      - name: Standard Ruby lint
         if: '!cancelled()'
-        run: bundle exec standardrb --fix
+        run: bundle exec standardrb #--fix
 
-      - name: ERB check
+      - name: ERB lint
         if: '!cancelled()'
         run: bundle exec erb_lint ./templates/**/*.erb
 
@@ -43,6 +43,6 @@ jobs:
         if: '!cancelled()'
         run: docker pull hadolint/hadolint
 
-      - name: DockerFile check
+      - name: DockerFile lint
         if: '!cancelled()'
         run: docker run --rm -i hadolint/hadolint < Dockerfile

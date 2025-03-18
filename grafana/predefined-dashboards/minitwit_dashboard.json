@@ -4,11 +4,11 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "datasource",
+          "uid": "grafana"
         },
         "enable": true,
-        "hide": true,
+        "hide": false,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
         "type": "dashboard"
@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -52,11 +52,11 @@
             "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
-            "pointSize": 5,
+            "pointSize": 3,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -196,7 +196,7 @@
           "interval": "",
           "legendFormat": "{{code}}",
           "range": true,
-          "refId": "A"
+          "refId": "response counts"
         }
       ],
       "title": "HTTP response count by status codes",
@@ -237,7 +237,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -345,37 +345,54 @@
       "datasource": {
         "uid": "P1809F7CD0C75ACF3"
       },
-      "description": "Shows the median and worst-case latency (request duration) in milliseconds for the given time range.",
+      "description": "Shows the median, 95th and 99th percentiles of latency (request duration) in milliseconds at any given point of the time range.",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "mode": "palette-classic"
           },
-          "fieldMinMax": false,
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "index": 0,
-                  "text": "No data"
-                }
-              },
-              "type": "value"
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            {
-              "options": {
-                "match": "null+nan",
-                "result": {
-                  "index": 1,
-                  "text": "No data"
-                }
-              },
-              "type": "special"
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 3,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
-          ],
+          },
+          "decimals": 2,
+          "fieldMinMax": false,
+          "mappings": [],
           "min": 0,
           "thresholds": {
-            "mode": "percentage",
+            "mode": "absolute",
             "steps": [
               {
                 "color": "green",
@@ -389,7 +406,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "50th percentile (median)"
+              "options": "Median"
             },
             "properties": [
               {
@@ -398,6 +415,9 @@
                   "fixedColor": "green",
                   "mode": "fixed"
                 }
+              },
+              {
+                "id": "max"
               }
             ]
           },
@@ -410,7 +430,22 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "semi-dark-red",
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "99th percentile"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
                   "mode": "fixed"
                 }
               }
@@ -426,30 +461,28 @@
       },
       "id": 3,
       "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": false,
-        "sizing": "auto"
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "11.5.2",
       "targets": [
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "histogram_quantile(0.5, sum(increase(http_server_request_duration_seconds_bucket[1m])) by (le)) * 1000\nor on() vector(0)",
+          "expr": "histogram_quantile(0.5, sum(increase(http_server_request_duration_seconds_bucket[5m])) by (le)) * 1000",
           "format": "time_series",
           "hide": false,
           "instant": false,
-          "legendFormat": "50th percentile (median)",
+          "legendFormat": "Median",
           "range": true,
           "refId": "median latency"
         },
@@ -460,16 +493,162 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "histogram_quantile(0.95, sum(increase(http_server_request_duration_seconds_bucket[1m])) by (le)) * 1000\nor on() vector(0)",
+          "expr": "histogram_quantile(0.95, sum(increase(http_server_request_duration_seconds_bucket[5m])) by (le)) * 1000",
           "format": "time_series",
           "hide": false,
           "instant": false,
           "legendFormat": "95th percentile",
           "range": true,
           "refId": "95th percentile latency"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.99, sum(increase(http_server_request_duration_seconds_bucket[5m])) by (le)) * 1000",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "99th percentile",
+          "range": true,
+          "refId": "99th percentile latency"
         }
       ],
       "title": "Latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P1809F7CD0C75ACF3"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "fieldMinMax": false,
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "text",
+                  "index": 0,
+                  "text": "No data"
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "match": "null+nan",
+                "result": {
+                  "color": "text",
+                  "index": 1,
+                  "text": "No data"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "text": {}
+      },
+      "pluginVersion": "11.5.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "avg(increase(http_server_request_duration_seconds_sum[$__range]) \n    / increase(http_server_request_duration_seconds_count[$__range])) \n    * 1000",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "Average latency",
+          "range": false,
+          "refId": "average latency"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P1809F7CD0C75ACF3"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "histogram_quantile(0.99, sum(increase(http_server_request_duration_seconds_bucket[$__range])) by (le)) \n    * 1000",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "Max latency",
+          "range": false,
+          "refId": "max latency"
+        }
+      ],
+      "title": "Average latency",
+      "transformations": [
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byType",
+              "options": "number"
+            },
+            "configRefId": "max latency",
+            "mappings": [
+              {
+                "fieldName": "Time",
+                "handlerKey": "__ignore",
+                "reducerId": "last"
+              },
+              {
+                "fieldName": "Max latency",
+                "handlerKey": "max",
+                "reducerId": "last"
+              }
+            ]
+          }
+        }
+      ],
       "type": "gauge"
     }
   ],
@@ -492,6 +671,6 @@
   "timezone": "browser",
   "title": "Minitwit Dashboard",
   "uid": "minitwit_dashboard",
-  "version": 22,
+  "version": 5,
   "weekStart": ""
 }

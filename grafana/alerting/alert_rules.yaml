@@ -1,0 +1,148 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: Evaluation group
+      folder: Alerts/Error alerts
+      interval: 1m
+      rules:
+        - uid: aeg2o4x5xg1dsb
+          title: HTTP client errors alert
+          condition: Client errors threshold
+          data:
+            - refId: Client errors
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: P1809F7CD0C75ACF3
+              model:
+                adhocFilters: []
+                datasource:
+                    type: prometheus
+                    uid: P1809F7CD0C75ACF3
+                editorMode: code
+                exemplar: false
+                expr: |-
+                    sum(
+                        label_replace(
+                            sum(increase(http_server_requests_total{code=~"4.."}[1m])) by (code)
+                                or on() vector(0),
+                            "error_category",
+                            "4xx - Client error",
+                            "code",
+                            ".*"
+                        )
+                    ) by (error_category)
+                instant: true
+                interval: ""
+                intervalMs: 15000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: Client errors
+            - refId: Client errors threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 10
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: Client errors
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: Client errors threshold
+                type: threshold
+          dashboardUid: minitwit_dashboard
+          panelId: 2
+          noDataState: NoData
+          execErrState: Error
+          annotations:
+            __dashboardUid__: minitwit_dashboard
+            __panelId__: "2"
+            summary: The number of client-side errors per minute has crossed the threshold.
+          isPaused: false
+          notification_settings:
+            receiver: developers
+        - uid: deg3mpw8ilxq8d
+          title: HTTP server errors alert
+          condition: Server errors threshold
+          data:
+            - refId: Server errors
+              relativeTimeRange:
+                from: 300
+                to: 0
+              datasourceUid: P1809F7CD0C75ACF3
+              model:
+                adhocFilters: []
+                datasource:
+                    type: prometheus
+                    uid: P1809F7CD0C75ACF3
+                editorMode: code
+                exemplar: false
+                expr: |-
+                    sum(
+                        label_replace(
+                            sum(increase(http_server_requests_total{code=~"5.."}[1m])) by (code)
+                                or on() vector(0),
+                            "error_category",
+                            "5xx - Server error",
+                            "code",
+                            ".*"
+                        )
+                    ) by (error_category)
+                instant: true
+                interval: ""
+                intervalMs: 15000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: Server errors
+            - refId: Server errors threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 10
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - B
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: Server errors
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: Server errors threshold
+                type: threshold
+          dashboardUid: minitwit_dashboard
+          panelId: 2
+          noDataState: NoData
+          execErrState: Error
+          annotations:
+            __dashboardUid__: minitwit_dashboard
+            __panelId__: "2"
+            summary: The number of server-side errors per minute has crossed the threshold.
+          isPaused: false
+          notification_settings:
+            receiver: developers

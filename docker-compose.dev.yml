@@ -51,6 +51,7 @@ services:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/predefined-dashboards:/predefined-dashboards
+      - ./grafana/alerting:/etc/grafana/provisioning/alerting
     ports:
       - "3000:3000"  
     networks:

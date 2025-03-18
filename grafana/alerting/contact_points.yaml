@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: developers
+      receivers:
+        - uid: eeg2m7vqaksn4f
+          type: email
+          settings:
+            addresses: zaka@itu.dk
+            singleEmail: false
+          disableResolveMessage: false

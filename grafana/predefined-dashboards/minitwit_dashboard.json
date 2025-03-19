@@ -537,7 +537,6 @@
             {
               "options": {
                 "0": {
-                  "color": "text",
                   "index": 0,
                   "text": "No data"
                 }
@@ -548,7 +547,6 @@
               "options": {
                 "match": "null+nan",
                 "result": {
-                  "color": "text",
                   "index": 1,
                   "text": "No data"
                 }
@@ -602,7 +600,7 @@
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "avg(increase(http_server_request_duration_seconds_sum[$__range]) \n    / increase(http_server_request_duration_seconds_count[$__range])) \n    * 1000",
+          "expr": "sum(increase(http_server_request_duration_seconds_sum[$__range]) or on() vector(0))\n    / clamp_min(sum(increase(http_server_request_duration_seconds_count[$__range]) or on() vector(0)), 1)\n    * 1000",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -672,6 +670,6 @@
   "timezone": "browser",
   "title": "Minitwit Dashboard",
   "uid": "minitwit_dashboard",
-  "version": 6,
+  "version": 7,
   "weekStart": ""
 }

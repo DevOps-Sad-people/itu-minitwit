@@ -29,7 +29,7 @@ jobs:
       run: cp .env.example .env
 
     - name: Start Docker Compose
-      run: docker compose -f docker-compose.yml up --abort-on-container-exit --exit-code-from web
+      run: docker compose -f docker-compose.dev.yml up --detach --remove-orphans
 
     - name: Wait for services to be ready
       run: |

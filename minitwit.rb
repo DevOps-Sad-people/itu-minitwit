@@ -437,6 +437,10 @@ get '/latest' do
     {latest: latest_processed_command_id}.to_json
 end
 
+get '/health' do
+    'OK'
+end
+
 # Place this in bottom, because the routes are evaluated from top to bottom
 # e.g. /:username would match /login or /logout
 get '/:username' do
@@ -473,8 +477,4 @@ get '/:username' do
     # Render the timeline template (timeline.erb)
     @show_follow_unfollow = true
     erb :timeline
-end
-
-get '/health' do
-    'OK'
 end

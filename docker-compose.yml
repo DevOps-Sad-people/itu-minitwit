@@ -31,6 +31,7 @@ services:
     image: prom/prometheus:v3.2.1
     container_name: prometheus
     volumes:
+      - prometheus-data:/prometheus
       - ./prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
     expose:
       - "9090"
@@ -59,4 +60,5 @@ networks:
 
 volumes:
   pg_data:
+  prometheus-data:
   grafana-data:

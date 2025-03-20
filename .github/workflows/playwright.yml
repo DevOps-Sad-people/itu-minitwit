@@ -25,14 +25,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Ensure browsers are installed
-      run: python -m playwright install --with-deps
-
     - name: Create .env file based on example
       run: cp .env.example .env
 
     - name: Start Docker Compose
       run: docker compose -f docker-compose.dev.yml up --detach --remove-orphans
+
+    - name: Ensure browsers are installed
+      run: python -m playwright install --with-deps
 
     - name: Wait for services to be ready
       run: |

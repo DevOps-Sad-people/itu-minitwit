@@ -1,9 +1,6 @@
 # based on script from https://playwright.dev/python/docs/ci-intro
 name: Playwright Tests
 on:
-  push:
-    branches: 
-        - '*' # all branches
   pull_request:
     branches:
         - '*' # all branches

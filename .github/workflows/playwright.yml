@@ -42,7 +42,9 @@ jobs:
       run: python -m playwright install --with-deps
 
     - name: Run your tests
-      run: pytest --tracing=retain-on-failure
+      run: |
+       cd Playwright
+       pytest --tracing=retain-on-failure
 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}

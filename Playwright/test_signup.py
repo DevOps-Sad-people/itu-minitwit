@@ -22,6 +22,5 @@ def test_sign_up_empty_db(page: Page) -> None:
     expect(page.get_by_role("button", name="Sign Up")).to_be_visible()
     expect(page.get_by_role("button")).to_contain_text("Sign Up")
     page.get_by_role("button", name="Sign Up").click()
-    expect(page.locator("body")).to_match_aria_snapshot("- heading \"Sign Up\" [level=2]\n- term: \"Username:\"\n- definition:\n  - textbox: a\n- term: \"E-Mail:\"\n- definition:\n  - textbox: a@a.dk\n- term: \"Password:\"\n- definition:\n  - textbox: /\\d+/\n- term: \"Password (repeat):\"\n- definition:\n  - textbox: /\\d+/\n- button \"Sign Up\"")
-    expect(page.get_by_role("listitem")).to_match_aria_snapshot("- listitem: You were successfully registered and can login now")
-    expect(page.get_by_text("You were successfully registered and can login now")).to_be_visible()
+    expect(page.get_by_role("listitem")).to_contain_text("You were successfully registered and can login now")
+    

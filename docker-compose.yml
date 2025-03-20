@@ -27,30 +27,30 @@ services:
       - pg_data:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
 
-  prometheus:
-    image: prom/prometheus:v3.2.1
-    container_name: prometheus
-    volumes:
-      - ./prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
-    expose:
-      - "9090"
-    networks:
-      - minitwit_network
+  # prometheus:
+  #   image: prom/prometheus:v3.2.1
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
+  #   expose:
+  #     - "9090"
+  #   networks:
+  #     - minitwit_network
 
-  grafana:
-    image: grafana/grafana:11.5.2
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./grafana/predefined-dashboards:/predefined-dashboards
-    ports:
-      - "3000:3000"  
-    networks:
-      - minitwit_network
+  # grafana:
+  #   image: grafana/grafana:11.5.2
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #     - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+  #     - ./grafana/datasources:/etc/grafana/provisioning/datasources
+  #     - ./grafana/predefined-dashboards:/predefined-dashboards
+  #   ports:
+  #     - "3000:3000"  
+  #   networks:
+  #     - minitwit_network
 
 networks:
   minitwit_network:

@@ -517,7 +517,7 @@
           "refId": "99th percentile latency"
         }
       ],
-      "title": "Latency",
+      "title": "Latency percentiles",
       "type": "timeseries"
     },
     {
@@ -670,6 +670,6 @@
   "timezone": "browser",
   "title": "Minitwit Dashboard",
   "uid": "minitwit_dashboard",
-  "version": 7,
+  "version": 8,
   "weekStart": ""
 }

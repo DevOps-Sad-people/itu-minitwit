@@ -3,7 +3,7 @@ groups:
     - orgId: 1
       name: Evaluation group
       folder: Alerts/Error alerts
-      interval: 1m
+      interval: 30s
       rules:
         - uid: aeg2o4x5xg1dsb
           title: HTTP client errors alert
@@ -48,7 +48,7 @@ groups:
                 conditions:
                     - evaluator:
                         params:
-                            - 10
+                            - 100
                             - 0
                         type: gt
                       operator:
@@ -75,11 +75,9 @@ groups:
           annotations:
             __dashboardUid__: minitwit_dashboard
             __panelId__: "2"
-            summary: |-
-                The number of client-side errors for the last minute has exceeded the threshold (acceptable: <10, actual: {{ $values.error_count }}).
+            summary: 'The number of client-side errors for the last minute has exceeded the threshold (acceptable: <100, actual: {{ $values.error_count }}).'
+          labels: {}
           isPaused: false
-          notification_settings:
-            receiver: developers
         - uid: deg3mpw8ilxq8d
           title: HTTP server errors alert
           condition: error_count_threshold
@@ -149,9 +147,5 @@ groups:
           annotations:
             __dashboardUid__: minitwit_dashboard
             __panelId__: "2"
-            summary: |-
-                The number of server-side errors for the last minute has exceeded the threshold (acceptable: <10, actual: {{ $values.error_count }}).
-          labels: {}
+            summary: 'The number of server-side errors for the last minute has exceeded the threshold (acceptable: <10, actual: {{ $values.error_count }}).'
           isPaused: false
-          notification_settings:
-            receiver: developers

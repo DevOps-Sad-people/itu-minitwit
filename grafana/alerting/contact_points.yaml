@@ -8,4 +8,4 @@ contactPoints:
           settings:
             addresses: zaka@itu.dk
             singleEmail: false
-          disableResolveMessage: false
+          disableResolveMessage: true

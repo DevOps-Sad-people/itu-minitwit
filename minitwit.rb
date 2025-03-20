@@ -474,3 +474,7 @@ get '/:username' do
     @show_follow_unfollow = true
     erb :timeline
 end
+
+get '/health' do
+    'OK'
+end

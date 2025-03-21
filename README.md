@@ -180,6 +180,13 @@ After this, every push should successfully build, test and deploy the applicatio
 - Requests return HTML
 
 
+### Linters
+Currently there are 3 linters used for this project, which are the following:
+- [Standard Ruby linter](https://github.com/standardrb/standard)
+- [ERB linter](https://github.com/Shopify/erb_lint)
+- [Dockerfile linter](https://github.com/hadolint/hadolint)
+
+
 ## Compile flag tool
 ```bash
 gcc flag_tool.c -o flag_tool -lsqlite3

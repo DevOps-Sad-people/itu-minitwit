@@ -52,3 +52,20 @@
     <li><em>There's no message so far.</em></li>
   <% end %>
 </ul>
+
+
+<div class="pagination">
+  <div class="previous">
+    <% if @page > 1 %>
+        <a href="<%= request.path_info %>?page=<%= @page - 1 %>">Previous</a>
+    <% end %>
+  </div>
+  <div class="page_info">
+    Page <%= @page %> of <%= @max_page %>
+  </div>
+  <div class="next">
+    <% if @has_more and @page < @max_page %>
+      <a href="<%= request.path_info %>?page=<%= @page + 1 %>">Next</a>
+    <% end %>
+  </div>
+</div>

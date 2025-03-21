@@ -10,6 +10,7 @@ gem 'dotenv'
 gem 'htmlbeautifier'
 gem 'sequel', "5.89.0"
 gem "prometheus-client", "4.2.4"
+gem 'activesupport', '~> 7.0'
 
 group :test do
   gem "rspec"

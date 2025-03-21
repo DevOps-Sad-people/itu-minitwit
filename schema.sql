@@ -1,9 +1,9 @@
 drop table if exists "user";
 create table "user" (
   user_id SERIAL primary key,
-  username VARCHAR2(100) not null,
-  email VARCHAR2(100) not null,
-  pw_hash VARCHAR2(100) not null
+  username VARCHAR(100) not null,
+  email VARCHAR(100) not null,
+  pw_hash VARCHAR(100) not null
 );
 
 drop table if exists "follower";

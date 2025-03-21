@@ -9,6 +9,7 @@ require 'dotenv/load'
 require 'sequel'
 require 'rack'
 require 'prometheus/middleware/exporter'
+require_relative 'db_migrations'
 require_relative 'config'
 
 # configuration
@@ -32,8 +33,7 @@ configure do
 end
 
 DB = Sequel.connect(DB_URL)
-
-## Create the 
+migrate_db(DB)
 
 class User < Sequel::Model(:user); end
 class Follower < Sequel::Model(:follower); end

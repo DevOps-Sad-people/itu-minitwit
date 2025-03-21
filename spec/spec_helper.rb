@@ -41,7 +41,7 @@ def clean_db
     password: ENV["DB_PASSWORD"]
   )
 
-  conn.exec("SELECT tablename FROM pg_tables WHERE schemaname = \"public\";") do |result|
+  conn.exec("SELECT tablename FROM pg_tables WHERE schemaname = 'public';") do |result|
     result.each do |row|
       conn.exec("TRUNCATE \"#{row["tablename"]}\" CASCADE;")
     end

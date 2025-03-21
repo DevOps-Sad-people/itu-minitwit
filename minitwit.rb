@@ -202,8 +202,12 @@ post '/msgs/:username' do
 
     body = JSON.parse request.body.read
     message = body['content']
+
+    max_id = Message.max(:message_id)
+    message_id = max_id ? max_id + 1 : 1
+
     if message
-        Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
+        Message.insert(message_id: message_id,  author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
     end
     status 204
 end
@@ -420,8 +424,12 @@ post '/add_message' do
     if not @user
         halt 401, "Unauthorized"
     end
+
+    max_id = Message.max(:message_id)
+    message_id = max_id ? max_id + 1 : 1
+
     if params[:message]
-        Message.insert(author_id: @user.user_id, text: Rack::Utils.escape_html(params[:message]), pub_date: Time.now.to_i, flagged: 0)
+        Message.insert(message_id: message_id, author_id: @user.user_id, text: Rack::Utils.escape_html(params[:message]), pub_date: Time.now.to_i, flagged: 0)
         flash[:notice] = 'Your message was recorded'
     end
     redirect '/'

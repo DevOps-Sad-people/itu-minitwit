@@ -48,6 +48,8 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_POSTGRES_USERNAME=${GRAFANA_POSTGRES_USERNAME}
+      - GF_POSTGRES_PASSWORD=${GRAFANA_POSTGRES_PASSWORD}
       - GF_SMTP_ENABLED=${GRAFANA_SMTP_ENABLED}
       - GF_SMTP_HOST=${GRAFANA_SMTP_HOST}
       - GF_SMTP_USER=${GRAFANA_SMTP_USER}
@@ -57,10 +59,10 @@ services:
       - GF_SMTP_FROM_ADDRESS=${GRAFANA_SMTP_FROM_ADDRESS}
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./grafana/alerting:/etc/grafana/provisioning/alerting
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/predefined-dashboards:/predefined-dashboards
-      - ./grafana/alerting:/etc/grafana/provisioning/alerting
     ports:
       - "3000:3000"  
     networks:

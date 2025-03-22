@@ -62,11 +62,21 @@ def generate_pw_hash(password)
     "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
 end
 
+def halt_disallowed_ips(request)
+    sim_ip = ENV.fetch('SIMULATOR_IP')
+    puts "Simulator IP: #{sim_ip}, Request IP: #{request.ip}"
+    if sim_ip == '*' or request.ip == sim_ip then return end
+
+    return halt 403,
+    {
+        error_msg: "You are not authorized to use this resource!",
+        status: 403
+    }.to_json
+end
+
 def update_latest(params, request)
     parsed_command_id = params['latest'] ? params['latest'].to_i : -1
-    if parsed_command_id == -1
-        return
-    end
+    if parsed_command_id == -1 then return end
 
     # Write the latest id to db
     puts "Updating latest id to: #{parsed_command_id}"
@@ -79,15 +89,17 @@ def update_latest(params, request)
     end
 end
 
-def not_req_from_simulator(request)
+def halt_unauthorized_sim_requests(request)
     authorization = request.env["HTTP_AUTHORIZATION"]
     if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
-        halt 403,
+        return halt 403,
         {
             error_msg: "You are not authorized to use this resource!",
             status: 403
         }.to_json
     end
+
+    return halt_disallowed_ips(request)
 end
 
 def public_msgs(per_page, page=1)
@@ -183,11 +195,10 @@ end
 
 
 get '/msgs' do
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return end
+    
     update_latest(params, 'GET /msgs')
-    not_from_sim_response = not_req_from_simulator(request)
-    if (not_from_sim_response)
-        return not_from_sim_response
-    end
 
     # get the number of messages to return
     no_msgs = params["no"] ? params["no"] : 100
@@ -198,11 +209,10 @@ get '/msgs' do
 end
 
 post '/msgs/:username' do
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return halted end
+
     update_latest(params, 'POST /msgs')
-    not_from_sim_response = not_req_from_simulator(request)
-    if (not_from_sim_response)
-        return not_from_sim_response
-    end
 
     user_id = get_user_id(params[:username])
     halt 404, "User not found" unless user_id
@@ -216,11 +226,10 @@ post '/msgs/:username' do
 end
 
 get '/msgs/:username' do
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return halted end
+
     update_latest(params, 'GET /msgs')
-    not_from_sim_response = not_req_from_simulator(request)
-    if (not_from_sim_response)
-        return not_from_sim_response
-    end
 
     user_id = get_user_id(params[:username])
     halt 404, "User not found" unless user_id
@@ -309,7 +318,11 @@ post '/register' do
     username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
     
     if is_simulator
+        halted = halt_unauthorized_sim_requests(request)
+        if halted then return end
+        
         update_latest(params, 'POST /register')
+        
     elsif @user
         redirect '/'
     end
@@ -394,11 +407,11 @@ get '/:username/unfollow' do
 end
 
 get '/fllws/:username' do
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return halted end
+
     update_latest(params, 'GET /fllws')
-    req_from_simulator = not_req_from_simulator(request)
-    if (req_from_simulator)
-        return req_from_simulator
-    end
+
     user_id = get_user_id(params[:username])
     halt 404, "User not found" unless user_id
 
@@ -409,11 +422,10 @@ get '/fllws/:username' do
 end
 
 post '/fllws/:username' do
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return halted end
+
     update_latest(params, 'POST /fllws')
-    req_from_simulator = not_req_from_simulator(request)
-    if (req_from_simulator)
-        return req_from_simulator
-    end
     user_id = get_user_id(params[:username])
     halt 404, "User not found" unless user_id
 

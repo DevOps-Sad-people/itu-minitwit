@@ -64,7 +64,6 @@ end
 
 def halt_disallowed_ips(request)
     sim_ip = ENV.fetch('SIMULATOR_IP')
-    puts "Simulator IP: #{sim_ip}, Request IP: #{request.ip}"
     if sim_ip == '*' or request.ip == sim_ip then return end
 
     return halt 403,
@@ -77,9 +76,6 @@ end
 def update_latest(params, request)
     parsed_command_id = params['latest'] ? params['latest'].to_i : -1
     if parsed_command_id == -1 then return end
-
-    # Write the latest id to db
-    puts "Updating latest id to: #{parsed_command_id}"
 
     # If the is no request in db then insert it
     if Request.count == 0

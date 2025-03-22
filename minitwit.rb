@@ -9,6 +9,8 @@ require 'dotenv/load'
 require 'sequel'
 require 'rack'
 require 'prometheus/middleware/exporter'
+require_relative 'db_migrations'
+require 'active_support/time'
 require_relative 'config'
 
 # configuration
@@ -32,18 +34,22 @@ configure do
 end
 
 DB = Sequel.connect(DB_URL)
+migrate_db(DB)
+
 class User < Sequel::Model(:user); end
 class Follower < Sequel::Model(:follower); end
 class Message < Sequel::Model(:message); end
+class Request < Sequel::Model(:request); end
 
 def get_user_id(username)
     User.where(username: username).get(:user_id)
 end
 
 def format_datetime(timestamp)
-  timestamp = timestamp.to_i if timestamp.is_a?(String)
-  return nil unless timestamp.is_a?(Numeric) && timestamp >= 0
-  Time.at(timestamp).utc.strftime('%Y-%m-%d @ %H:%M')
+    timestamp = timestamp.to_i if timestamp.is_a?(String)
+    return nil unless timestamp.is_a?(Numeric) && timestamp >= 0
+    Time.at(timestamp).in_time_zone("Copenhagen").strftime("%d-%m-%Y @ %H:%M")
+
 end
 
 def gravatar_url(email, size = 80)
@@ -56,20 +62,21 @@ def generate_pw_hash(password)
     "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
 end
 
-def update_latest(params)
+def update_latest(params, request)
     parsed_command_id = params['latest'] ? params['latest'].to_i : -1
     if parsed_command_id == -1
         return
     end
 
-    # check if temp folder exists
-    if not File.directory?(ENV.fetch('TEMP_FOLDER'))
-        Dir.mkdir(ENV.fetch('TEMP_FOLDER'))
-    end
+    # Write the latest id to db
+    puts "Updating latest id to: #{parsed_command_id}"
 
-    file = File.new(ENV.fetch('SIM_TRACKER_FILE'), "w")
-    file.puts(parsed_command_id)
-    file.close
+    # If the is no request in db then insert it
+    if Request.count == 0
+        Request.insert(latest_id: parsed_command_id, request: request)
+    else
+        Request.first.update(latest_id: parsed_command_id, request: request)
+    end
 end
 
 def not_req_from_simulator(request)
@@ -83,8 +90,10 @@ def not_req_from_simulator(request)
     end
 end
 
-def public_msgs(per_page)
-    Message.dataset.join(User.dataset, user_id: :author_id).where(flagged: 0).order(Sequel.desc(:pub_date)).limit(per_page).all
+def public_msgs(per_page, page=1)
+    offset = (page - 1) * per_page.to_i
+    puts offset
+    Message.dataset.join(User.dataset, user_id: :author_id).where(flagged: 0).order(Sequel.desc(:pub_date)).offset(offset).limit(per_page).all
 end
 
 def filtered_msgs(messages)
@@ -106,6 +115,7 @@ before do
     @profile_user = nil # user whose profile is being viewed
     @followed = false # whether the current user is following the profile user
     @error = nil
+    @page = 1
     @show_follow_unfollow = false
     # check if the user is logged in
     if session[:user]
@@ -122,16 +132,35 @@ get '/' do
     if not @user
         redirect '/public'
     end
-    puts "Getting messages User: #{@user}"
-    @messages = Message
+
+
+    page = params[:page].to_i
+    page = 1 if page < 1
+
+    offset = (page - 1) * PER_PAGE
+    
+    @page = page
+
+    all_messages = 
+        Message
         .join(User.dataset.as(:user), Sequel[:user][:user_id] => :author_id)
         .where(flagged: 0)
         .where(Sequel[:user][:user_id] => session[:user])
         .or(Sequel[:user][:user_id] => Follower.where(who_id: session[:user]).select(:whom_id))
         .order(Sequel.desc(:pub_date))
+
+    max_page = (all_messages.count / PER_PAGE.to_f).ceil
+    max_page = 1 if max_page < 1
+    @max_page = max_page
+    
+    puts "Getting messages User: #{@user}"
+    @messages = 
+        all_messages
+        .offset(offset)
         .limit(PER_PAGE)
         .all
     
+    @has_more = @messages.size == PER_PAGE
     # render the timeline
     erb :timeline
 end
@@ -139,13 +168,22 @@ end
 get '/public' do
     """Displays the latest messages of all users."""
     puts "Getting public messages"
-    @messages = public_msgs(PER_PAGE)
+    page = params[:page].to_i
+    page = 1 if page < 1
+
+    @page = page
+    max_page = (Message.where(flagged: 0).count / PER_PAGE.to_f).ceil
+    max_page = 1 if max_page < 1
+    @max_page = max_page
+    
+    @messages = public_msgs(PER_PAGE, page)
+    @has_more = @messages.size == PER_PAGE
     erb :timeline
 end
 
 
 get '/msgs' do
-    update_latest(params)
+    update_latest(params, 'GET /msgs')
     not_from_sim_response = not_req_from_simulator(request)
     if (not_from_sim_response)
         return not_from_sim_response
@@ -160,7 +198,7 @@ get '/msgs' do
 end
 
 post '/msgs/:username' do
-    update_latest(params)
+    update_latest(params, 'POST /msgs')
     not_from_sim_response = not_req_from_simulator(request)
     if (not_from_sim_response)
         return not_from_sim_response
@@ -178,7 +216,7 @@ post '/msgs/:username' do
 end
 
 get '/msgs/:username' do
-    update_latest(params)
+    update_latest(params, 'GET /msgs')
     not_from_sim_response = not_req_from_simulator(request)
     if (not_from_sim_response)
         return not_from_sim_response
@@ -271,7 +309,7 @@ post '/register' do
     username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
     
     if is_simulator
-        update_latest(params)
+        update_latest(params, 'POST /register')
     elsif @user
         redirect '/'
     end
@@ -318,12 +356,20 @@ end
 def follow(user_id, follows_username)
     follows_user_id = get_user_id(follows_username)
     halt 404, "User not found" unless user_id and follows_user_id
+
+    # check if the user is already following the user
+    halt 400, "Already following" if Follower.where(who_id: user_id, whom_id: follows_user_id).first
+
     Follower.insert(who_id: user_id, whom_id: follows_user_id)
 end
 
 def unfollow(user_id, unfollows_username)
     unfollows_user_id = get_user_id(unfollows_username)
     halt 404, "User not found" unless user_id and unfollows_user_id
+
+    # make sure the user is following the user
+    halt 400, "Not following" unless Follower.where(who_id: user_id, whom_id: unfollows_user_id).first
+
     Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 
@@ -348,7 +394,7 @@ get '/:username/unfollow' do
 end
 
 get '/fllws/:username' do
-    update_latest(params)
+    update_latest(params, 'GET /fllws')
     req_from_simulator = not_req_from_simulator(request)
     if (req_from_simulator)
         return req_from_simulator
@@ -363,7 +409,7 @@ get '/fllws/:username' do
 end
 
 post '/fllws/:username' do
-    update_latest(params)
+    update_latest(params, 'POST /fllws')
     req_from_simulator = not_req_from_simulator(request)
     if (req_from_simulator)
         return req_from_simulator
@@ -396,17 +442,12 @@ post '/add_message' do
     redirect '/'
 end
 
-get '/latest' do
-    path = ENV.fetch('SIM_TRACKER_FILE')
+get '/latest' do    
+    # Fetch the latest id from the database
+    latest_id = Request.select(:latest_id).first
+    latest_id = latest_id ? latest_id.latest_id : -1
 
-    latest_processed_command_id = begin
-        file_content = File.read(path).strip
-        file_content.match?(/^\d+$/) ? file_content.to_i : -1
-    rescue
-        -1
-    end
-    
-    {latest: latest_processed_command_id}.to_json
+    {latest: latest_id}.to_json
 end
 
 # Place this in bottom, because the routes are evaluated from top to bottom
@@ -425,10 +466,22 @@ get '/:username' do
         @followed = Follower.where(who_id: @user.user_id, whom_id: @profile_user.user_id).first != nil
         puts "#{@user.username} Follows #{@profile_user.username}: #{@followed}"
     end
-  
+
+    page = params[:page].to_i
+    page = 1 if page < 1
+    @page = page
+
+    max_page = (Message.dataset.join(User.dataset, user_id: :author_id).where(user_id: @profile_user.user_id).count / PER_PAGE.to_f).ceil
+    max_page = 1 if max_page < 1
+    @max_page = max_page
+    
+    offset = (page - 1) * PER_PAGE
+
     # # Fetch the user's messages from the database
     @messages = Message.dataset.join(User.dataset, user_id: :author_id).where(user_id: @profile_user.user_id)
-        .order(Sequel.desc(:pub_date)).limit(PER_PAGE).all
+    .order(Sequel.desc(:pub_date)).offset(offset).limit(PER_PAGE).all
+    
+    @has_more = @messages.size == PER_PAGE
 
     # Render the timeline template (timeline.erb)
     @show_follow_unfollow = true

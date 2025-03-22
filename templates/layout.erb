@@ -3,7 +3,7 @@
     <head>
         <title><%= yield_content(:title) || 'Welcome' %> | MiniTwit</title>
         <meta charset="utf-8">
-        <link rel="stylesheet" type=text/css href="/stylesheets/style.css">
+        <link rel="stylesheet" type=text/css href="/stylesheets/style.css?<%= Time.now.to_i %>">
     </head>
     <body>
         <div class="page">

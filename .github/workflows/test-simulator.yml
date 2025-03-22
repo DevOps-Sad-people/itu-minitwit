@@ -32,7 +32,7 @@ jobs:
       - name: Create .env file based on example
         run: cp .env.test .env
 
-      - name: Initialize Docker
+      - name: Setup project
         run: docker compose up -d
 
       - name: Install python
@@ -43,12 +43,13 @@ jobs:
 
       - name: Wait for web service to be ready
         run: |
+          echo "Waiting for web service"
           for i in {1..100}; do
             if curl -s http://0.0.0.0:4567 > /dev/null; then
               echo "Web service is ready"
               exit 0
             fi
-            echo "Waiting for web service..."
+            echo -n "."
             sleep 0.1
           done
           echo "Web service did not become ready in time"

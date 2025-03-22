@@ -59,4 +59,4 @@ jobs:
       - name: Run tests
         run: |
           cd simulator
-          python3 minitwit_simulator_test.py http://0.0.0.0:4567
+            python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)

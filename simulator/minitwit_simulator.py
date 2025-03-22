@@ -21,14 +21,16 @@ import sqlite3
 
 CSV_FILENAME = "./minitwit_scenario.csv"
 USERNAME = "simulator"
-PWD = "super_safe!"
+PWD = "super_safe!" # "super_safe!" is the default password for the simulator user
 CREDENTIALS = ":".join([USERNAME, PWD]).encode("ascii")
 ENCODED_CREDENTIALS = base64.b64encode(CREDENTIALS).decode()
+
 HEADERS = {
     "Connection": "close",
     "Content-Type": "application/json",
     f"Authorization": f"Basic {ENCODED_CREDENTIALS}",
 }
+print(HEADERS)
 
 
 def get_actions():

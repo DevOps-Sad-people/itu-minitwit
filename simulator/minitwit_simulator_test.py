@@ -158,6 +158,7 @@ def main(host):
                             ]
                         )
                     )
+                    print(response.text)
                     exit(1)
 
                 response.close()
@@ -193,6 +194,7 @@ def main(host):
                             ]
                         )
                     )
+                    print(response.text)
                     exit(1)
 
                 response.close()
@@ -234,6 +236,7 @@ def main(host):
                             ]
                         )
                     )
+                    print(response.text)
                     exit(1)
 
                 response.close()
@@ -275,6 +278,7 @@ def main(host):
                             ]
                         )
                     )
+                    print(response.text)
                     exit(1)
 
                 response.close()
@@ -314,6 +318,7 @@ def main(host):
                             ]
                         )
                     )
+                    print(response.text)
                     exit(1)
 
                 response.close()

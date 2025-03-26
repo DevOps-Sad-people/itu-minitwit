@@ -6,8 +6,8 @@ WORKDIR /usr/src/app
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential=12.9ubuntu3 \
-    libpq-dev=14.17-0ubuntu0.22.04.1 \
+    build-essential=12.9 \
+    libpq-dev=13.20-0+deb11u1 \
     && rm -rf /var/lib/apt/lists/*
     
 # Install the required packages

@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests
         run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
-  
+
   tag_and_release:
     runs-on: ubuntu-latest
     needs: test
@@ -39,8 +39,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: '0'
-      
+          fetch-depth: "0"
+
       - name: Bump version and create tag
         id: create_tag
         uses: anothrNick/github-tag-action@1.71.0
@@ -49,7 +49,7 @@ jobs:
           WITH_V: true
           DEFAULT_BUMP: minor
           BRANCH_HISTORY: last
-      
+
       - name: Create release
         run: |
           if [[ -n "$OLD_TAG" && "$NEW_TAG" != "$OLD_TAG" ]]; then

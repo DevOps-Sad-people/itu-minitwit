@@ -3,7 +3,7 @@
 <% elsif request.path_info == "/" %>
   <% content_for :title do %>My Timeline<% end %>
 <% elsif @profile_user != nil %>
-  <% content_for :title do %><%= @profile_user.username%>'s Timeline<% end %>
+  <% content_for :title do %><%= @profile_user.username %>'s Timeline<% end %>
 <% end %>
 
 <% if  @user %>
@@ -13,10 +13,10 @@
         This is you!
       <% elsif @followed %>
         You are currently following this user.
-        <a href="/<%= @profile_user.username%>/unfollow">Unfollow</a>
+        <a href="/<%= @profile_user.username %>/unfollow">Unfollow</a>
       <% else %>
         You are not yet following this user.
-        <a href="/<%= @profile_user.username%>/follow">Follow</a>
+        <a href="/<%= @profile_user.username %>/follow">Follow</a>
       <% end %>
     </div>
   <% end %>
@@ -52,7 +52,6 @@
     <li><em>There's no message so far.</em></li>
   <% end %>
 </ul>
-
 
 <div class="pagination">
   <div class="previous">

@@ -655,12 +655,12 @@
         "type": "grafana-postgresql-datasource",
         "uid": "PA478B4566BE5CB00"
       },
+      "description": "Shows the total number of registerd users in the Minitwit application.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "Total registered users",
           "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
@@ -697,10 +697,9 @@
         },
         "showPercentChange": false,
         "text": {
-          "titleSize": 25,
           "valueSize": 50
         },
-        "textMode": "value_and_name",
+        "textMode": "value",
         "wideLayout": false
       },
       "pluginVersion": "11.5.2",
@@ -734,7 +733,7 @@
           }
         }
       ],
-      "title": "",
+      "title": "Total registered users",
       "type": "stat"
     }
   ],

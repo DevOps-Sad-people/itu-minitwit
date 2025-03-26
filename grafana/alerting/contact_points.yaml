@@ -6,6 +6,6 @@ contactPoints:
         - uid: eeg2m7vqaksn4f
           type: email
           settings:
-            addresses: zaka@itu.dk
+            addresses: zaka@itu.dk;gato@itu.dk;ngry@itu.dk;seaa@itu.dk;nicra@itu.dk
             singleEmail: false
           disableResolveMessage: true

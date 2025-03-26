@@ -445,8 +445,8 @@ get "/latest" do
   {latest: latest_id}.to_json
 end
 
-get '/health' do
-    'OK'
+get "/health" do
+  "OK"
 end
 
 # Place this in bottom, because the routes are evaluated from top to bottom

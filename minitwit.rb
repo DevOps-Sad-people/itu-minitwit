@@ -41,6 +41,7 @@ class User < Sequel::Model(:user); end
 class Follower < Sequel::Model(:follower); end
 
 class Message < Sequel::Model(:message); end
+
 class Request < Sequel::Model(:request); end
 
 def get_user_id(username)
@@ -65,7 +66,7 @@ end
 def update_latest(params, request)
   parsed_command_id = params["latest"] ? params["latest"].to_i : -1
   if parsed_command_id == -1
-      return
+    return
   end
 
   # Write the latest id to db
@@ -73,9 +74,9 @@ def update_latest(params, request)
 
   # If the is no request in db then insert it
   if Request.count == 0
-      Request.insert(latest_id: parsed_command_id, request: request)
+    Request.insert(latest_id: parsed_command_id, request: request)
   else
-      Request.first.update(latest_id: parsed_command_id, request: request)
+    Request.first.update(latest_id: parsed_command_id, request: request)
   end
 end
 
@@ -185,12 +186,12 @@ end
 get "/msgs" do
   update_latest(params, "GET /msgs")
   not_from_sim_response = not_req_from_simulator(request)
-  if (not_from_sim_response)
-      return not_from_sim_response
+  if not_from_sim_response
+    return not_from_sim_response
   end
 
   # get the number of messages to return
-  no_msgs = params["no"] ? params["no"] : 100
+  no_msgs = params["no"] || 100
 
   messages = public_msgs(no_msgs)
 
@@ -200,8 +201,8 @@ end
 post "/msgs/:username" do
   update_latest(params, "POST /msgs")
   not_from_sim_response = not_req_from_simulator(request)
-  if (not_from_sim_response)
-      return not_from_sim_response
+  if not_from_sim_response
+    return not_from_sim_response
   end
 
   user_id = get_user_id(params[:username])
@@ -210,7 +211,7 @@ post "/msgs/:username" do
   body = JSON.parse request.body.read
   message = body["content"]
   if message
-      Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
+    Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
   end
   status 204
 end
@@ -218,13 +219,12 @@ end
 get "/msgs/:username" do
   update_latest(params, "GET /msgs")
   not_from_sim_response = not_req_from_simulator(request)
-  if (not_from_sim_response)
-      return not_from_sim_response
+  if not_from_sim_response
+    return not_from_sim_response
   end
 
   user_id = get_user_id(params[:username])
-  
-  
+
   user_not_found unless user_id
 
   # get the number of messages to return
@@ -303,42 +303,42 @@ def get_register_payload(request, is_simulator)
 end
 
 post "/register" do
-    is_simulator = request.content_type == "application/json"
-    payload = get_register_payload(request, is_simulator)
-    username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
-    
-    if is_simulator
-        update_latest(params, "POST /register")
-    elsif @user
-        redirect "/"
-    end
+  is_simulator = request.content_type == "application/json"
+  payload = get_register_payload(request, is_simulator)
+  username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
 
-    if not username || username == ""
-        @error = "You have to enter a username"
-    elsif email.nil? || !email.include?("@")
-        @error = "You have to enter a valid email address"
-    elsif not password || password == ""
-        @error = "You have to enter a password"
-    elsif not is_simulator && password != password2
-        @error = "The two passwords do not match"
-    elsif get_user_id(username) != nil
-        @error = "The username is already taken"
-    else
-        User.insert(username: username, email: email, pw_hash: generate_pw_hash(password))
+  if is_simulator
+    update_latest(params, "POST /register")
+  elsif @user
+    redirect "/"
+  end
 
-        if is_simulator
-            return status 204
-        else
-            flash[:notice] = "You were successfully registered and can login now"
-            redirect "/login"
-        end
-    end
+  if !(username || username == "")
+    @error = "You have to enter a username"
+  elsif email.nil? || !email.include?("@")
+    @error = "You have to enter a valid email address"
+  elsif !(password || password == "")
+    @error = "You have to enter a password"
+  elsif !(is_simulator && password != password2)
+    @error = "The two passwords do not match"
+  elsif !get_user_id(username).nil?
+    @error = "The username is already taken"
+  else
+    User.insert(username: username, email: email, pw_hash: generate_pw_hash(password))
 
     if is_simulator
-      halt 400, {status: 400, error_msg: @error}.to_json
+      return status 204
     else
-      erb :register
+      flash[:notice] = "You were successfully registered and can login now"
+      redirect "/login"
     end
+  end
+
+  if is_simulator
+    halt 400, {status: 400, error_msg: @error}.to_json
+  else
+    erb :register
+  end
 end
 
 # Logs the user out.
@@ -391,8 +391,8 @@ end
 get "/fllws/:username" do
   update_latest(params, "GET /fllws")
   req_from_simulator = not_req_from_simulator(request)
-  if (req_from_simulator)
-      return req_from_simulator
+  if req_from_simulator
+    return req_from_simulator
   end
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
@@ -406,8 +406,8 @@ end
 post "/fllws/:username" do
   update_latest(params, "POST /fllws")
   req_from_simulator = not_req_from_simulator(request)
-  if (req_from_simulator)
-      return req_from_simulator
+  if req_from_simulator
+    return req_from_simulator
   end
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
@@ -417,11 +417,11 @@ post "/fllws/:username" do
   unfollows_username = body["unfollow"]
 
   if follows_username
-      follow(user_id, follows_username)
-      return status 204
+    follow(user_id, follows_username)
+    return status 204
   elsif unfollows_username
-      unfollow(user_id, unfollows_username)
-      return status 204
+    unfollow(user_id, unfollows_username)
+    return status 204
   end
 end
 
@@ -437,7 +437,7 @@ post "/add_message" do
   redirect "/"
 end
 
-get "/latest" do    
+get "/latest" do
   # Fetch the latest id from the database
   latest_id = Request.select(:latest_id).first
   latest_id = latest_id ? latest_id.latest_id : -1

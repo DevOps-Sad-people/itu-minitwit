@@ -10,6 +10,7 @@ require "sequel"
 require "rack"
 require "prometheus/middleware/exporter"
 require "active_support/time"
+require_relative "db_migrations"
 require_relative "config"
 
 # configuration
@@ -33,12 +34,14 @@ configure do
 end
 
 DB = Sequel.connect(DB_URL)
+migrate_db(DB)
 
 class User < Sequel::Model(:user); end
 
 class Follower < Sequel::Model(:follower); end
 
 class Message < Sequel::Model(:message); end
+class Request < Sequel::Model(:request); end
 
 def get_user_id(username)
   User.where(username: username).get(:user_id)
@@ -59,15 +62,21 @@ def generate_pw_hash(password)
   "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
 end
 
-def update_latest(params)
+def update_latest(params, request)
   parsed_command_id = params["latest"] ? params["latest"].to_i : -1
   if parsed_command_id == -1
-    return
+      return
   end
 
-  file = File.new(ENV.fetch("SIM_TRACKER_FILE"), "w")
-  file.puts(parsed_command_id)
-  file.close
+  # Write the latest id to db
+  puts "Updating latest id to: #{parsed_command_id}"
+
+  # If the is no request in db then insert it
+  if Request.count == 0
+      Request.insert(latest_id: parsed_command_id, request: request)
+  else
+      Request.first.update(latest_id: parsed_command_id, request: request)
+  end
 end
 
 def not_req_from_simulator(request)
@@ -174,14 +183,14 @@ get "/public" do
 end
 
 get "/msgs" do
-  update_latest(params)
+  update_latest(params, 'GET /msgs')
   not_from_sim_response = not_req_from_simulator(request)
-  if not_from_sim_response
-    return not_from_sim_response
+  if (not_from_sim_response)
+      return not_from_sim_response
   end
 
   # get the number of messages to return
-  no_msgs = params["no"] || 100
+  no_msgs = params["no"] ? params["no"] : 100
 
   messages = public_msgs(no_msgs)
 
@@ -189,31 +198,33 @@ get "/msgs" do
 end
 
 post "/msgs/:username" do
-  update_latest(params)
+  update_latest(params, 'POST /msgs')
   not_from_sim_response = not_req_from_simulator(request)
-  if not_from_sim_response
-    return not_from_sim_response
+  if (not_from_sim_response)
+      return not_from_sim_response
   end
 
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
 
   body = JSON.parse request.body.read
-  message = body["content"]
+  message = body['content']
   if message
-    Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
+      Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
   end
   status 204
 end
 
 get "/msgs/:username" do
-  update_latest(params)
+  update_latest(params, 'GET /msgs')
   not_from_sim_response = not_req_from_simulator(request)
-  if not_from_sim_response
-    return not_from_sim_response
+  if (not_from_sim_response)
+      return not_from_sim_response
   end
 
   user_id = get_user_id(params[:username])
+  
+  
   user_not_found unless user_id
 
   # get the number of messages to return
@@ -292,28 +303,36 @@ def get_register_payload(request, is_simulator)
 end
 
 post "/register" do
-  is_simulator = request.content_type == "application/json"
-  payload = get_register_payload(request, is_simulator)
-  username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
+    is_simulator = request.content_type == "application/json"
+    payload = get_register_payload(request, is_simulator)
+    username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
+    
+    if is_simulator
+        update_latest(params, "POST /register")
+    elsif @user
+        redirect '/'
+    end
 
-  if is_simulator
-    update_latest(params)
-  elsif @user
-    redirect "/"
-  end
+    if not username || username == ""
+        @error = "You have to enter a username"
+    elsif not email || not email.include? '@'
+        @error = "You have to enter a valid email address"
+    elsif not password or password == ""
+        @error = "You have to enter a password"
+    elsif not is_simulator && password != password2
+        @error = "The two passwords do not match"
+    elsif get_user_id(username) != nil
+        @error = "The username is already taken"
+    else
+        User.insert(username: username, email: email, pw_hash: generate_pw_hash(password))
 
-  if !username || username == ""
-    @error = "You have to enter a username"
-  elsif !email || !email.include?("@")
-    @error = "You have to enter a valid email address"
-  elsif !password || password == ""
-    @error = "You have to enter a password"
-  elsif !is_simulator && password != password2
-    @error = "The two passwords do not match"
-  elsif !get_user_id(username).nil?
-    @error = "The username is already taken"
-  else
-    User.insert(username: username, email: email, pw_hash: generate_pw_hash(password))
+        if is_simulator
+            return status 204
+        else
+            flash[:notice] = 'You were successfully registered and can login now'
+            redirect '/login'
+        end
+    end
 
     if is_simulator
       return status 204
@@ -344,12 +363,20 @@ end
 def follow(user_id, follows_username)
   follows_user_id = get_user_id(follows_username)
   user_not_found unless user_id && follows_user_id
+
+  # check if the user is already following the user
+  halt 400, "Already following" if Follower.where(who_id: user_id, whom_id: follows_user_id).first
+
   Follower.insert(who_id: user_id, whom_id: follows_user_id)
 end
 
 def unfollow(user_id, unfollows_username)
   unfollows_user_id = get_user_id(unfollows_username)
   user_not_found unless user_id && unfollows_user_id
+
+  # make sure the user is following the user
+  halt 400, "Not following" unless Follower.where(who_id: user_id, whom_id: unfollows_user_id).first
+
   Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 
@@ -370,10 +397,10 @@ get "/:username/unfollow" do
 end
 
 get "/fllws/:username" do
-  update_latest(params)
+  update_latest(params, "GET /fllws")
   req_from_simulator = not_req_from_simulator(request)
-  if req_from_simulator
-    return req_from_simulator
+  if (req_from_simulator)
+      return req_from_simulator
   end
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
@@ -385,10 +412,10 @@ get "/fllws/:username" do
 end
 
 post "/fllws/:username" do
-  update_latest(params)
+  update_latest(params, "POST /fllws")
   req_from_simulator = not_req_from_simulator(request)
-  if req_from_simulator
-    return req_from_simulator
+  if (req_from_simulator)
+      return req_from_simulator
   end
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
@@ -398,11 +425,11 @@ post "/fllws/:username" do
   unfollows_username = body["unfollow"]
 
   if follows_username
-    follow(user_id, follows_username)
-    return status 204
+      follow(user_id, follows_username)
+      return status 204
   elsif unfollows_username
-    unfollow(user_id, unfollows_username)
-    return status 204
+      unfollow(user_id, unfollows_username)
+      return status 204
   end
 end
 
@@ -418,17 +445,12 @@ post "/add_message" do
   redirect "/"
 end
 
-get "/latest" do
-  path = ENV.fetch("SIM_TRACKER_FILE")
+get '/latest' do    
+  # Fetch the latest id from the database
+  latest_id = Request.select(:latest_id).first
+  latest_id = latest_id ? latest_id.latest_id : -1
 
-  latest_processed_command_id = begin
-    file_content = File.read(path).strip
-    file_content.match?(/^\d+$/) ? file_content.to_i : -1
-  rescue
-    -1
-  end
-
-  {latest: latest_processed_command_id}.to_json
+  {latest: latest_id}.to_json
 end
 
 # Place this in bottom, because the routes are evaluated from top to bottom

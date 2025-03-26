@@ -25,7 +25,6 @@ services:
       - minitwit_network
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
 
   prometheus:
     image: prom/prometheus:v3.2.1
@@ -48,7 +47,7 @@ services:
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/predefined-dashboards:/predefined-dashboards
     ports:
-      - "3000:3000"  
+      - "3000:3000"
     networks:
       - minitwit_network
 

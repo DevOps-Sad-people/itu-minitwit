@@ -28,7 +28,7 @@ end
 # standard:enable Style/GlobalVars
 
 def clean_db
-  db_url = "postgres://#{ENV.fetch('DB_USER')}:#{ENV.fetch('DB_PASSWORD')}@#{ENV.fetch('DB_HOST')}:#{ENV.fetch('DB_PORT')}/#{ENV.fetch('DB_NAME')}"
+  db_url = "postgres://#{ENV.fetch("DB_USER")}:#{ENV.fetch("DB_PASSWORD")}@#{ENV.fetch("DB_HOST")}:#{ENV.fetch("DB_PORT")}/#{ENV.fetch("DB_NAME")}"
   db = Sequel.connect(db_url)
   db[:message].delete
   db[:follower].delete

@@ -12,6 +12,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: password
       SECRET_KEY: example key example key example key example key example key example key example key
+      GRAFANA_POSTGRES_USERNAME: 'grafana_postgres'
+      GRAFANA_POSTGRES_PASSWORD: 'password'
     entrypoint: ["/bin/bash", "-c", "bundle install && rspec"]
     depends_on:
       - db

@@ -177,10 +177,10 @@ export SSH_PRIVATE_KEY_PATH="private-ssh-key-path"
 - `vagrant destroy` - Destroy current instance
 - `doctl compute ssh app-name` - SSH into instance. default app-name is `minitwit`. [Install doctl here](https://docs.digitalocean.com/reference/doctl/how-to/install/)
 
-<!--If you want to run a specific vagrant file, you can specify it by setting the `VAGRANT_VAGRANTFILE` env variable. E.g.:
+If you want to run a specific vagrant file, you can specify it by setting the `VAGRANT_VAGRANTFILE` env variable. E.g.:
 ```bash
 VAGRANT_VAGRANTFILE=VagrantfileStaging vagrant up --provider=digital_ocean
-```-->
+```
 
 ### Auto deployment
 The `deploy-to-XXX.yml` file is setup to trigger an automatic deployment. Ensure that you have set up the correct env variables and secrets as explained in section `PREPARE FOR DEPLOYMENT`. *Remember to specify which branch you want the action to be triggered by*.
@@ -193,6 +193,13 @@ After this, every push should successfully build, test and deploy the applicatio
 - Flagging system. 
 - time: Unix seconds
 - Requests return HTML
+
+
+### Linters
+Currently there are 3 linters used for this project, which are the following:
+- [Standard Ruby linter](https://github.com/standardrb/standard)
+- [ERB linter](https://github.com/Shopify/erb_lint)
+- [Dockerfile linter](https://github.com/hadolint/hadolint)
 
 
 ## Compile flag tool

@@ -313,13 +313,13 @@ post "/register" do
     redirect "/"
   end
 
-  if !(username || username == "")
+  if !username || username == ""
     @error = "You have to enter a username"
   elsif email.nil? || !email.include?("@")
     @error = "You have to enter a valid email address"
-  elsif !(password || password == "")
+  elsif !password || password == ""
     @error = "You have to enter a password"
-  elsif !(is_simulator && password != password2)
+  elsif !is_simulator && password != password2
     @error = "The two passwords do not match"
   elsif !get_user_id(username).nil?
     @error = "The username is already taken"

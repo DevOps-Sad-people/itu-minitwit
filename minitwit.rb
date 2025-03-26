@@ -183,7 +183,7 @@ get "/public" do
 end
 
 get "/msgs" do
-  update_latest(params, 'GET /msgs')
+  update_latest(params, "GET /msgs")
   not_from_sim_response = not_req_from_simulator(request)
   if (not_from_sim_response)
       return not_from_sim_response
@@ -198,7 +198,7 @@ get "/msgs" do
 end
 
 post "/msgs/:username" do
-  update_latest(params, 'POST /msgs')
+  update_latest(params, "POST /msgs")
   not_from_sim_response = not_req_from_simulator(request)
   if (not_from_sim_response)
       return not_from_sim_response
@@ -208,7 +208,7 @@ post "/msgs/:username" do
   user_not_found unless user_id
 
   body = JSON.parse request.body.read
-  message = body['content']
+  message = body["content"]
   if message
       Message.insert(author_id: user_id, text: Rack::Utils.escape_html(message), pub_date: Time.now.to_i, flagged: 0)
   end
@@ -216,7 +216,7 @@ post "/msgs/:username" do
 end
 
 get "/msgs/:username" do
-  update_latest(params, 'GET /msgs')
+  update_latest(params, "GET /msgs")
   not_from_sim_response = not_req_from_simulator(request)
   if (not_from_sim_response)
       return not_from_sim_response
@@ -310,14 +310,14 @@ post "/register" do
     if is_simulator
         update_latest(params, "POST /register")
     elsif @user
-        redirect '/'
+        redirect "/"
     end
 
     if not username || username == ""
         @error = "You have to enter a username"
-    elsif not email || not email.include? '@'
+    elsif email.nil? || !email.include?("@")
         @error = "You have to enter a valid email address"
-    elsif not password or password == ""
+    elsif not password || password == ""
         @error = "You have to enter a password"
     elsif not is_simulator && password != password2
         @error = "The two passwords do not match"
@@ -329,24 +329,16 @@ post "/register" do
         if is_simulator
             return status 204
         else
-            flash[:notice] = 'You were successfully registered and can login now'
-            redirect '/login'
+            flash[:notice] = "You were successfully registered and can login now"
+            redirect "/login"
         end
     end
 
     if is_simulator
-      return status 204
+      halt 400, {status: 400, error_msg: @error}.to_json
     else
-      flash[:notice] = "You were successfully registered and can login now"
-      redirect "/login"
+      erb :register
     end
-  end
-
-  if is_simulator
-    halt 400, {status: 400, error_msg: @error}.to_json
-  else
-    erb :register
-  end
 end
 
 # Logs the user out.
@@ -445,7 +437,7 @@ post "/add_message" do
   redirect "/"
 end
 
-get '/latest' do    
+get "/latest" do    
   # Fetch the latest id from the database
   latest_id = Request.select(:latest_id).first
   latest_id = latest_id ? latest_id.latest_id : -1

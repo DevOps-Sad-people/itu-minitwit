@@ -15,7 +15,7 @@ monitoring:
   enabled: true
   elasticsearch:
     hosts: ["http://elasticsearch:9200"]
-    username: beats_system
+    username: ${BEATS_SYSTEM_USERNAME}
     password: ${BEATS_SYSTEM_PASSWORD}
 
 

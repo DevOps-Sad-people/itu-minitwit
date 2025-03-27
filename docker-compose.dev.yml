@@ -82,13 +82,16 @@ services:
         - ./elk/setup/lib.sh:/lib.sh:ro,Z
         - ./elk/setup/roles:/roles:ro,Z
       environment:
+        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
         ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
         LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
         KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
         METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
         FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
         HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
         MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
         BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
       networks:
         - minitwit_elk
@@ -108,6 +111,7 @@ services:
     environment:
       node.name: elasticsearch
       ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
     networks:
@@ -143,6 +147,7 @@ services:
     ports:
       - 5601:5601
     environment:
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
     networks:
       - minitwit_elk
@@ -152,7 +157,7 @@ services:
 
   filebeat: # Uses another docker compose file to setup filebeat.
     extends:
-      file: .elk/filebeat/filebeat-compose.yml
+      file: elk/filebeat/filebeat-compose.yml
       service: filebeat
 
 networks:

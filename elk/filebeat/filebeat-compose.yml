@@ -28,6 +28,7 @@ services:
         read_only: true
     environment:
       FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
     networks:
       - minitwit_elk

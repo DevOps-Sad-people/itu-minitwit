@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "remote_files", "/minitwit", type: "rsync"
   config.vm.synced_folder "prometheus", "/minitwit/prometheus", type: "rsync"
   config.vm.synced_folder "grafana", "/minitwit/grafana", type: "rsync"
+  config.vm.synced_folder "elk", "/minitwit/elk", type: "rsync"
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.vm.provision "file", source: "schema.sql", destination: "/minitwit/schema.sql"
   config.vm.provision "file", source: ".env", destination: "/minitwit/.env"

@@ -99,6 +99,7 @@ services:
         - elasticsearch
 
   elasticsearch:
+    container_name: elasticsearch
     build:
       context: elk/elasticsearch/
       args:
@@ -119,6 +120,7 @@ services:
     restart: unless-stopped
 
   logstash:
+    container_name: logstash
     build:
       context: elk/logstash/
       args:
@@ -138,6 +140,7 @@ services:
     restart: unless-stopped
 
   kibana:
+    container_name: kibana
     build:
       context: elk/kibana/
       args:
@@ -156,6 +159,7 @@ services:
     restart: unless-stopped
 
   filebeat: # Uses another docker compose file to setup filebeat.
+    container_name: filebeat
     extends:
       file: elk/filebeat/filebeat-compose.yml
       service: filebeat

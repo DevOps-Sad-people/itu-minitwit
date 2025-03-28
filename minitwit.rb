@@ -11,7 +11,7 @@ require "rack"
 require "prometheus/middleware/exporter"
 require "active_support/time"
 require_relative "db_migrations"
-require_relative "config"
+require_relative "prometheus_config"
 
 # configuration
 PER_PAGE = 30
@@ -20,7 +20,7 @@ DB_URL = "postgres://#{ENV.fetch("DB_USER")}:#{ENV.fetch("DB_PASSWORD")}@#{ENV.f
 
 use Rack::Deflater
 use Prometheus::Middleware::Exporter
-use MyCollector
+use PrometheusCollector
 
 configure do
   set :port, 4567
@@ -443,6 +443,10 @@ get "/latest" do
   latest_id = latest_id ? latest_id.latest_id : -1
 
   {latest: latest_id}.to_json
+end
+
+get "/health" do
+  "OK"
 end
 
 # Place this in bottom, because the routes are evaluated from top to bottom

@@ -65,7 +65,7 @@ end
 
 def halt_disallowed_ips(request)
   sim_ip = ENV.fetch("SIMULATOR_IP")
-  if sim_ip == "*" or request.ip == sim_ip then return end
+  if sim_ip == "*" || request.ip == sim_ip then return end
 
   halt 403,
     {

@@ -64,19 +64,19 @@ def generate_pw_hash(password)
 end
 
 def halt_disallowed_ips(request)
-    sim_ip = ENV.fetch('SIMULATOR_IP')
-    if sim_ip == '*' or request.ip == sim_ip then return end
+  sim_ip = ENV.fetch("SIMULATOR_IP")
+  if sim_ip == "*" or request.ip == sim_ip then return end
 
-    return halt 403,
+  halt 403,
     {
-        error_msg: "You are not authorized to use this resource!",
-        status: 403
+      error_msg: "You are not authorized to use this resource!",
+      status: 403
     }.to_json
 end
 
 def update_latest(params, request)
-    parsed_command_id = params['latest'] ? params['latest'].to_i : -1
-    if parsed_command_id == -1 then return end
+  parsed_command_id = params["latest"] ? params["latest"].to_i : -1
+  if parsed_command_id == -1 then return end
 
   # If the is no request in db then insert it
   if Request.count == 0
@@ -87,16 +87,16 @@ def update_latest(params, request)
 end
 
 def halt_unauthorized_sim_requests(request)
-    authorization = request.env["HTTP_AUTHORIZATION"]
-    if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
-        return halt 403,
-        {
-            error_msg: "You are not authorized to use this resource!",
-            status: 403
-        }.to_json
-    end
+  authorization = request.env["HTTP_AUTHORIZATION"]
+  if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
+    return halt 403,
+      {
+        error_msg: "You are not authorized to use this resource!",
+        status: 403
+      }.to_json
+  end
 
-    return halt_disallowed_ips(request)
+  halt_disallowed_ips(request)
 end
 
 def public_msgs(per_page, page = 1)
@@ -190,11 +190,11 @@ get "/public" do
   erb :timeline
 end
 
-get '/msgs' do
-    halted = halt_unauthorized_sim_requests(request)
-    if halted then return end
-    
-    update_latest(params, 'GET /msgs')
+get "/msgs" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return end
+
+  update_latest(params, "GET /msgs")
   # get the number of messages to return
   no_msgs = params["no"] || 100
 
@@ -203,11 +203,11 @@ get '/msgs' do
   filtered_msgs(messages).to_json
 end
 
-post '/msgs/:username' do
-    halted = halt_unauthorized_sim_requests(request)
-    if halted then return halted end
+post "/msgs/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
 
-    update_latest(params, 'POST /msgs')
+  update_latest(params, "POST /msgs")
 
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
@@ -220,11 +220,11 @@ post '/msgs/:username' do
   status 204
 end
 
-get '/msgs/:username' do
-    halted = halt_unauthorized_sim_requests(request)
-    if halted then return halted end
+get "/msgs/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
 
-    update_latest(params, 'GET /msgs')
+  update_latest(params, "GET /msgs")
 
   user_id = get_user_id(params[:username])
 
@@ -305,20 +305,20 @@ def get_register_payload(request, is_simulator)
   }
 end
 
-post '/register' do
-    is_simulator = request.content_type == "application/json"
-    payload = get_register_payload(request, is_simulator)
-    username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
-    
-    if is_simulator
-        halted = halt_unauthorized_sim_requests(request)
-        if halted then return end
-        
-        update_latest(params, 'POST /register')
-        
-    elsif @user
-        redirect '/'
-    end
+post "/register" do
+  is_simulator = request.content_type == "application/json"
+  payload = get_register_payload(request, is_simulator)
+  username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
+
+  if is_simulator
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return end
+
+    update_latest(params, "POST /register")
+
+  elsif @user
+    redirect "/"
+  end
 
   if !username || username == ""
     @error = "You have to enter a username"
@@ -373,7 +373,7 @@ def unfollow(user_id, unfollows_username)
   unfollows_user_id = get_user_id(unfollows_username)
   user_not_found unless user_id && unfollows_user_id
 
-    Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
+  Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 
 get "/:username/follow" do
@@ -392,14 +392,14 @@ get "/:username/unfollow" do
   redirect "/#{username}"
 end
 
-get '/fllws/:username' do
-    halted = halt_unauthorized_sim_requests(request)
-    if halted then return halted end
+get "/fllws/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
 
-    update_latest(params, 'GET /fllws')
+  update_latest(params, "GET /fllws")
 
-    user_id = get_user_id(params[:username])
-    user_not_found unless user_id
+  user_id = get_user_id(params[:username])
+  user_not_found unless user_id
 
   limit = params["no"] || 100
   follower_names = User.dataset.join(Follower.dataset, whom_id: :user_id).where(who_id: user_id).limit(limit).map(:username)
@@ -407,13 +407,13 @@ get '/fllws/:username' do
   {follows: follower_names}.to_json
 end
 
-post '/fllws/:username' do
-    halted = halt_unauthorized_sim_requests(request)
-    if halted then return halted end
+post "/fllws/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
 
-    update_latest(params, 'POST /fllws')
-    user_id = get_user_id(params[:username])
-    user_not_found unless user_id
+  update_latest(params, "POST /fllws")
+  user_id = get_user_id(params[:username])
+  user_not_found unless user_id
 
   body = JSON.parse request.body.read
   follows_username = body["follow"]

@@ -376,9 +376,6 @@ def unfollow(user_id, unfollows_username)
     unfollows_user_id = get_user_id(unfollows_username)
     halt 404, "User not found" unless user_id and unfollows_user_id
 
-    # make sure the user is following the user
-    halt 400, "Not following" unless Follower.where(who_id: user_id, whom_id: unfollows_user_id).first
-
     Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 

@@ -9,6 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "remote_files", "/minitwit", type: "rsync"
   config.vm.synced_folder "prometheus", "/minitwit/prometheus", type: "rsync"
   config.vm.synced_folder "grafana", "/minitwit/grafana", type: "rsync"
+  config.vm.synced_folder "elk", "/minitwit/elk", type: "rsync"
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.vm.provision "file", source: "schema.sql", destination: "/minitwit/schema.sql"
   config.vm.provision "file", source: ".env", destination: "/minitwit/.env"
@@ -19,7 +20,7 @@ Vagrant.configure("2") do |config|
       provider.token = ENV["DIGITAL_OCEAN_TOKEN"]
       provider.image = 'ubuntu-22-04-x64'
       provider.region = 'fra1'
-      provider.size = 's-1vcpu-1gb'
+      provider.size = 's-2vcpu-4gb'
     end
 
     server.vm.hostname = "minitwit"
@@ -70,6 +71,8 @@ Vagrant.configure("2") do |config|
     # run the deploy.sh script
     cd /minitwit
     mkdir tmp
+    docker compose -f docker-compose.yml up setup
+    docker compose -f docker-compose.yml down setup
     sh deploy.sh
 
 

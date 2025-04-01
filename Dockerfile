@@ -5,9 +5,9 @@ FROM ruby:3.3.7-slim-bullseye
 WORKDIR /usr/src/app
 
 # Install necessary dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential=12.9 \
+    libpq-dev=13.20-0+deb11u1 \
     && rm -rf /var/lib/apt/lists/*
     
 # Install the required packages

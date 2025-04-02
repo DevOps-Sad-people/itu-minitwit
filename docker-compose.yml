@@ -3,7 +3,8 @@ services:
     build: .
     container_name: minitwit
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "4567:4567"
     networks:
@@ -25,6 +26,11 @@ services:
       - minitwit_network
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   prometheus:
     image: prom/prometheus:v3.2.1
@@ -63,11 +69,109 @@ services:
     networks:
       - minitwit_network
 
+  setup:
+      profiles:
+        - setup
+      build:
+        context: elk/setup/
+        args:
+          ELASTIC_VERSION: ${ELASTIC_VERSION}
+      init: true
+      volumes:
+        - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+        - ./elk/setup/lib.sh:/lib.sh:ro,Z
+        - ./elk/setup/roles:/roles:ro,Z
+      environment:
+        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+        LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+        KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+        METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+        FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+        HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+        MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+        BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+      networks:
+        - minitwit_elk
+      depends_on:
+        - elasticsearch
+
+  elasticsearch:
+    container_name: elasticsearch
+    build:
+      context: elk/elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch-data:/usr/share/elasticsearch/data:Z
+    ports:
+      - 9200:9200
+    environment:
+      node.name: elasticsearch
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      discovery.type: single-node
+    networks:
+      - minitwit_elk
+    restart: unless-stopped
+
+  logstash:
+    container_name: logstash
+    build:
+      context: elk/logstash/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    ports:
+      - 5044:5044
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  kibana:
+    container_name: kibana
+    build:
+      context: elk/kibana/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - 5601:5601
+    environment:
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+
+  filebeat: # Uses another docker compose file to setup filebeat.
+    container_name: filebeat
+    extends:
+      file: elk/filebeat/filebeat-compose.yml
+      service: filebeat
+
 networks:
   minitwit_network:
+    driver: bridge
+  minitwit_elk:
     driver: bridge
 
 volumes:
   pg_data:
   prometheus-data:
   grafana-data:
+  elasticsearch-data:

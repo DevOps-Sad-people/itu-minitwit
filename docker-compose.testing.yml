@@ -5,15 +5,8 @@ services:
     volumes:
       - .:/app # Mount your project directory into the container
     working_dir: /app
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: minitwit
-      DB_USER: postgres
-      DB_PASSWORD: password
-      SECRET_KEY: example key example key example key example key example key example key example key
-      GRAFANA_POSTGRES_USERNAME: 'grafana_postgres'
-      GRAFANA_POSTGRES_PASSWORD: 'password'
+    env_file:
+      - .env.test
     entrypoint: ["/bin/bash", "-c", "bundle install && rspec"]
     depends_on:
       - db

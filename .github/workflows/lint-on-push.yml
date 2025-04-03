@@ -52,4 +52,5 @@ jobs:
 
       - name: DockerFile linting
         if: '!cancelled()'
-        run: docker run --rm -i hadolint/hadolint < Dockerfile
+        run: find . -type f -name "Dockerfile*" -print0 | xargs -0 cat | docker run --rm -i hadolint/hadolint
+

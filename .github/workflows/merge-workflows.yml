@@ -36,12 +36,12 @@ jobs:
         run: |
           docker compose -f docker-compose.test-deploy.yml run web rspec
 
-      - name: Setup Simulated Environment
+      - name: Setup Simulator and E2E Environment
         run: |
           docker compose -f docker-compose.test-deploy.yml up -d
           sudo apt-get update
           sudo apt-get install -y python3
-          pip install -r simulator/requirements.txt
+          pip install -r simulator/requirements.txt -r requirements.txt
 
       - name: Ensure browsers are installed
         run: python3 -m playwright install --with-deps

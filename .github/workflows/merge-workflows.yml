@@ -30,13 +30,14 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Build container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest .
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:processing .
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
+        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:processing
 
   test:
     runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Checkout
@@ -44,6 +45,14 @@ jobs:
 
       - name: Create .env file based on example
         run: cp .env.test .env
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
 
       - name: Setup project
         run: docker compose -f docker-compose.test-deploy.yml up

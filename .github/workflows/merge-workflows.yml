@@ -43,6 +43,12 @@ jobs:
           sudo apt-get install -y python3
           pip install -r simulator/requirements.txt
 
+      - name: Ensure browsers are installed
+        run: python -m playwright install --with-deps
+
+      - name: Run your tests
+        run: pytest --tracing=retain-on-failure
+
       - name: Run Simulator tests
         run: |
           cd simulator

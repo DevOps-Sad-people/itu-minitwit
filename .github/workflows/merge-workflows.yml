@@ -55,7 +55,7 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Setup project
-        run: docker compose -f docker-compose.test-deploy.yml up
+        run: docker compose -f docker-compose.test-deploy.yml up -d
 
       - name: Install python
         run: sudo apt-get update && sudo apt-get install -y python3

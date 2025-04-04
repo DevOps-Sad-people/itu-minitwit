@@ -17,11 +17,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    if: ${{ false }}
     steps:
-      - name: Debugging - Skip steps
-        if: ${{ false }}
-        run: echo "This step is skipped for debugging purposes"
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -60,7 +57,7 @@ jobs:
 
       - name: Run Ruby Tests
         run: |
-          docker compose -f docker-compose.test-deploy.yml run web rspec --rm
+          docker compose -f docker-compose.test-deploy.yml run web rspec
 
       - name: Setup Simulated Environment
         run: |

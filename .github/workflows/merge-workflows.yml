@@ -18,6 +18,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debugging - Skip steps
+        if: ${{ false }}
+        run: echo "This step is skipped for debugging purposes"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -43,9 +47,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create .env file based on example
-        run: cp .env.test .env
-
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
         with:
@@ -54,31 +55,21 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
-      - name: Setup project
-        run: docker compose -f docker-compose.test-deploy.yml up -d
+      - name: Setup environment variables
+        run: cp .env.test .env
 
-      - name: Install python
-        run: sudo apt-get update && sudo apt-get install -y python3
-
-      - name: Install dependencies
-        run: pip install -r simulator/requirements.txt
-
-      - name: Wait for web service to be ready
+      - name: Run Ruby Tests
         run: |
-          echo "Waiting for web service"
-          for i in {1..100}; do
-            if curl -s http://0.0.0.0:4567 > /dev/null; then
-              echo "Web service is ready"
-              exit 0
-            fi
-            echo -n "."
-            sleep 0.1
-          done
-          echo "Web service did not become ready in time"
-          docker logs minitwit
-          exit 1
+          docker compose -f docker-compose.test-deploy.yml run web rspec --rm
 
-      - name: Run tests
+      - name: Setup Simulated Environment
+        run: |
+          docker compose -f docker-compose.test-deploy.yml up -d
+          sudo apt-get update
+          sudo apt-get install -y python3
+          pip install -r simulator/requirements.txt
+
+      - name: Run Simulator tests
         run: |
           cd simulator
             python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)

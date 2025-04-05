@@ -7,9 +7,12 @@ on:
     branches:
       - main
       - develop
+<<<<<<< HEAD
   push:
     branches:
       - 83-add-simulator-test-to-github-actions
+=======
+>>>>>>> 7daa7bb (Update test-simulator.yml)
 
 # env variables
 env:

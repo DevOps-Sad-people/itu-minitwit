@@ -3,7 +3,6 @@ version: '3.8' # version to be compatible with docker swarm/stack deployments
 services:
   web:
     image: registry.digitalocean.com/sad-containers/minitwit:latest
-    container_name: minitwit
     deploy:
       replicas: 2
       update_config:
@@ -16,15 +15,11 @@ services:
       - db
     ports:
       - "4567:4567"
-    networks:
-      - minitwit_network
     env_file:
       - .env
 
   db:
     image: postgres:15
-    container_name: minitwit_db
-    restart: always
     deploy:
       replicas: 1
       update_config:
@@ -38,16 +33,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: minitwit
-    expose:
-      - "5432"
-    networks:
-      - minitwit_network
     volumes:
       - pg_data:/var/lib/postgresql/data
 
   prometheus:
     image: prom/prometheus:v3.2.1
-    container_name: prometheus
     deploy:
       replicas: 1
       update_config:
@@ -60,14 +50,9 @@ services:
     volumes:
       - prometheus-data:/prometheus
       - ./prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
-    expose:
-      - "9090"
-    networks:
-      - minitwit_network
 
   grafana:
     image: grafana/grafana:11.5.2
-    container_name: grafana
     deploy:
       replicas: 1
       update_config:
@@ -97,49 +82,43 @@ services:
       - ./grafana/predefined-dashboards:/predefined-dashboards
     ports:
       - "3000:3000"
-    networks:
-      - minitwit_network
 
-  setup:
-      profiles:
-        - setup
-      build:
-        context: elk/setup/
-        args:
-          ELASTIC_VERSION: ${ELASTIC_VERSION}
-      deploy:
-      replicas: 1
-      update_config:
-        delay: 10s
-        order: start-first
-      placement:
-        constraints:
-          - "node.hostname!=dbvm"
-          - "node.role==manager"
-      init: true
-      volumes:
-        - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-        - ./elk/setup/lib.sh:/lib.sh:ro,Z
-        - ./elk/setup/roles:/roles:ro,Z
-      environment:
-        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-        LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-        KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-        METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-        FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-        HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-        MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
-        BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-      networks:
-        - minitwit_elk
-      depends_on:
-        - elasticsearch
+  # setup:
+  #   build:
+  #     context: elk/setup/
+  #     args:
+  #       ELASTIC_VERSION: ${ELASTIC_VERSION}
+  #   deploy:
+  #     replicas: 1
+  #     update_config:
+  #       delay: 10s
+  #       order: start-first
+  #     placement:
+  #       constraints:
+  #         - "node.hostname!=dbvm"
+  #         - "node.role==manager"
+  #   init: true
+  #   volumes:
+  #     - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+  #     - ./elk/setup/lib.sh:/lib.sh:ro,Z
+  #     - ./elk/setup/roles:/roles:ro,Z
+  #   environment:
+  #     ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+  #     ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+  #     LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+  #     KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+  #     KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+  #     METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+  #     FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+  #     HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+  #     MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+  #     BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+  #     BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+  #   depends_on:
+  #     - elasticsearch
 
   elasticsearch:
-    container_name: elasticsearch
+    image: elasticsearch:8.10.2
     build:
       context: elk/elasticsearch/
       args:
@@ -164,12 +143,9 @@ services:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
-    networks:
-      - minitwit_elk
-    restart: unless-stopped
 
   logstash:
-    container_name: logstash
+    image: logstash:8.10.2
     build:
       context: elk/logstash/
       args:
@@ -191,14 +167,11 @@ services:
     environment:
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
       LS_JAVA_OPTS: -Xms256m -Xmx256m
-    networks:
-      - minitwit_elk
     depends_on:
       - elasticsearch
-    restart: unless-stopped
 
   kibana:
-    container_name: kibana
+    image: kibana:8.10.2
     build:
       context: elk/kibana/
       args:
@@ -219,32 +192,19 @@ services:
     environment:
       KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-    networks:
-      - minitwit_elk
     depends_on:
       - elasticsearch
-    restart: unless-stopped
 
-  filebeat: # Uses another docker compose file to setup filebeat.
-    container_name: filebeat
-    deploy:
-      replicas: 1
-      update_config:
-        delay: 10s
-        order: start-first
-      placement:
-        constraints:
-          - "node.hostname!=dbvm"
-          - "node.role==manager"
-    extends:
-      file: elk/filebeat/filebeat-compose.yml
-      service: filebeat
+  # filebeat: # Uses another docker compose file to setup filebeat.
+  #   extends:
+  #     file: elk/filebeat/filebeat-compose.yml
+  #     service: filebeat
 
-networks:
-  minitwit_network:
-    driver: bridge
-  minitwit_elk:
-    driver: bridge
+# networks:
+#   minitwit_network:
+#     driver: overlay
+#   minitwit_elk:
+#     driver: bridge
 
 volumes:
   pg_data:

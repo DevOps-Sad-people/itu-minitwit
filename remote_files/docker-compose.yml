@@ -105,10 +105,10 @@ services:
       - 9200:9200
     environment:
       node.name: elasticsearch
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
       ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
     networks:
       - minitwit_elk
     restart: unless-stopped
@@ -125,8 +125,8 @@ services:
     ports:
       - 5044:5044
     environment:
-      LS_JAVA_OPTS: -Xms256m -Xmx256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
     networks:
       - minitwit_elk
     depends_on:

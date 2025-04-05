@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8' # version to be compatible with docker swarm/stack deployments
 
 services:
   web:
@@ -103,46 +103,46 @@ services:
   #     depends_on:
   #       - elasticsearch
 
-  # elasticsearch:
-  #   container_name: elasticsearch
-  #   build:
-  #     context: elk/elasticsearch/
-  #     args:
-  #       ELASTIC_VERSION: ${ELASTIC_VERSION}
-  #   volumes:
-  #     - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
-  #     - elasticsearch-data:/usr/share/elasticsearch/data:Z
-  #   ports:
-  #     - 9200:9200
-  #   environment:
-  #     node.name: elasticsearch
-  #     ES_JAVA_OPTS: -Xms512m -Xmx512m
-  #     ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-  #     ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-  #     discovery.type: single-node
-  #   networks:
-  #     - minitwit_elk
-  #   restart: unless-stopped
+  elasticsearch:
+    container_name: elasticsearch
+    build:
+      context: elk/elasticsearch/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
+      - elasticsearch-data:/usr/share/elasticsearch/data:Z
+    ports:
+      - 9200:9200
+    environment:
+      node.name: elasticsearch
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    networks:
+      - minitwit_elk
+    restart: unless-stopped
 
-  # logstash:
-  #   container_name: logstash
-  #   build:
-  #     context: elk/logstash/
-  #     args:
-  #       ELASTIC_VERSION: ${ELASTIC_VERSION}
-  #   volumes:
-  #     - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
-  #     - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
-  #   ports:
-  #     - 5044:5044
-  #   environment:
-  #     LS_JAVA_OPTS: -Xms256m -Xmx256m
-  #     LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-  #   networks:
-  #     - minitwit_elk
-  #   depends_on:
-  #     - elasticsearch
-  #   restart: unless-stopped
+  logstash:
+    container_name: logstash
+    build:
+      context: elk/logstash/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    volumes:
+      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+    ports:
+      - 5044:5044
+    environment:
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
 
   # kibana:
   #   container_name: kibana

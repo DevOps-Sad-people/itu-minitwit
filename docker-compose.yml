@@ -1,9 +1,12 @@
+version: '3.8' # version to be compatible with docker swarm/stack deployments
+
 services:
   web:
     build: .
     container_name: minitwit
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "4567:4567"
     networks:
@@ -25,6 +28,11 @@ services:
       - minitwit_network
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   prometheus:
     image: prom/prometheus:v3.2.1
@@ -105,10 +113,10 @@ services:
       - 9200:9200
     environment:
       node.name: elasticsearch
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
       ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
     networks:
       - minitwit_elk
     restart: unless-stopped
@@ -125,8 +133,8 @@ services:
     ports:
       - 5044:5044
     environment:
-      LS_JAVA_OPTS: -Xms256m -Xmx256m
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
     networks:
       - minitwit_elk
     depends_on:

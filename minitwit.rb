@@ -63,14 +63,20 @@ def generate_pw_hash(password)
   "pbkdf2:sha256:50000$" + Digest::SHA256.hexdigest(password)
 end
 
+def halt_disallowed_ips(request)
+  sim_ip = ENV.fetch("SIMULATOR_IP")
+  if sim_ip == "*" || request.ip == sim_ip then return end
+
+  halt 403,
+    {
+      error_msg: "You are not authorized to use this resource!",
+      status: 403
+    }.to_json
+end
+
 def update_latest(params, request)
   parsed_command_id = params["latest"] ? params["latest"].to_i : -1
-  if parsed_command_id == -1
-    return
-  end
-
-  # Write the latest id to db
-  puts "Updating latest id to: #{parsed_command_id}"
+  if parsed_command_id == -1 then return end
 
   # If the is no request in db then insert it
   if Request.count == 0
@@ -80,16 +86,17 @@ def update_latest(params, request)
   end
 end
 
-def not_req_from_simulator(request)
+def halt_unauthorized_sim_requests(request)
   authorization = request.env["HTTP_AUTHORIZATION"]
-  # Hardcoded even though its bad practice! >:(
-  if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh"
-    halt 403,
+  if authorization != "Basic c2ltdWxhdG9yOnN1cGVyX3NhZmUh" # Hardcoded even though its bad practice! >:(
+    return halt 403,
       {
         error_msg: "You are not authorized to use this resource!",
         status: 403
       }.to_json
   end
+
+  halt_disallowed_ips(request)
 end
 
 def public_msgs(per_page, page = 1)
@@ -184,12 +191,10 @@ get "/public" do
 end
 
 get "/msgs" do
-  update_latest(params, "GET /msgs")
-  not_from_sim_response = not_req_from_simulator(request)
-  if not_from_sim_response
-    return not_from_sim_response
-  end
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return end
 
+  update_latest(params, "GET /msgs")
   # get the number of messages to return
   no_msgs = params["no"] || 100
 
@@ -199,11 +204,10 @@ get "/msgs" do
 end
 
 post "/msgs/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
+
   update_latest(params, "POST /msgs")
-  not_from_sim_response = not_req_from_simulator(request)
-  if not_from_sim_response
-    return not_from_sim_response
-  end
 
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
@@ -217,11 +221,10 @@ post "/msgs/:username" do
 end
 
 get "/msgs/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
+
   update_latest(params, "GET /msgs")
-  not_from_sim_response = not_req_from_simulator(request)
-  if not_from_sim_response
-    return not_from_sim_response
-  end
 
   user_id = get_user_id(params[:username])
 
@@ -308,7 +311,11 @@ post "/register" do
   username, email, password, password2 = payload.values_at(:username, :email, :password, :password2)
 
   if is_simulator
+    halted = halt_unauthorized_sim_requests(request)
+    if halted then return end
+
     update_latest(params, "POST /register")
+
   elsif @user
     redirect "/"
   end
@@ -366,9 +373,6 @@ def unfollow(user_id, unfollows_username)
   unfollows_user_id = get_user_id(unfollows_username)
   user_not_found unless user_id && unfollows_user_id
 
-  # make sure the user is following the user
-  halt 400, "Not following" unless Follower.where(who_id: user_id, whom_id: unfollows_user_id).first
-
   Follower.where(who_id: user_id, whom_id: unfollows_user_id).delete
 end
 
@@ -389,11 +393,11 @@ get "/:username/unfollow" do
 end
 
 get "/fllws/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
+
   update_latest(params, "GET /fllws")
-  req_from_simulator = not_req_from_simulator(request)
-  if req_from_simulator
-    return req_from_simulator
-  end
+
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
 
@@ -404,11 +408,10 @@ get "/fllws/:username" do
 end
 
 post "/fllws/:username" do
+  halted = halt_unauthorized_sim_requests(request)
+  if halted then return halted end
+
   update_latest(params, "POST /fllws")
-  req_from_simulator = not_req_from_simulator(request)
-  if req_from_simulator
-    return req_from_simulator
-  end
   user_id = get_user_id(params[:username])
   user_not_found unless user_id
 

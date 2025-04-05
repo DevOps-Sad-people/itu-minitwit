@@ -16,8 +16,7 @@ require_relative "prometheus_config"
 # configuration
 PER_PAGE = 30
 DEBUG = true
-# DB_URL = "postgres://#{ENV.fetch("DB_USER")}:#{ENV.fetch("DB_PASSWORD")}@#{ENV.fetch("DB_HOST")}:#{ENV.fetch("DB_PORT")}/#{ENV.fetch("DB_NAME")}"
-DB_URL = "postgres://postgres:password@db:5432/minitwit"
+DB_URL = "postgres://#{ENV.fetch("DB_USER")}:#{ENV.fetch("DB_PASSWORD")}@#{ENV.fetch("DB_HOST")}:#{ENV.fetch("DB_PORT")}/#{ENV.fetch("DB_NAME")}"
 
 use Rack::Deflater
 use Prometheus::Middleware::Exporter

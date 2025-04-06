@@ -1,19 +1,19 @@
-version: '3.8' # version to be compatible with docker swarm/stack deployments
+version: "3.8" # version to be compatible with docker swarm/stack deployments
 
 services:
   test:
-    image: ruby:3.3
-    container_name: minitwit_test
-    volumes:
-      - .:/app # Mount your project directory into the container
-    working_dir: /app
-    env_file:
-      - .env.test
-    entrypoint: ["/bin/bash", "-c", "bundle install && rspec"]
+    build: .
+    container_name: minitwit
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    ports:
+      - "4567:4567"
     networks:
       - minitwit_network_test
+    command: ["rspec"]
+    env_file:
+      - .env.test
 
   db:
     image: postgres:15

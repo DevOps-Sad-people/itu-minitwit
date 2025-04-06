@@ -14,26 +14,26 @@ env:
   SSH_HOST: "209.38.114.92"
 
 jobs:
-  #  build:
-  #    runs-on: ubuntu-latest
-  #
-  #    steps:
-  #      - name: Checkout
-  #        uses: actions/checkout@v4
-  #
-  #      - name: Install doctl
-  #        uses: digitalocean/action-doctl@v2
-  #        with:
-  #          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-  #
-  #      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-  #        run: doctl registry login --expiry-seconds 600
-  #
-  #      - name: Build container image
-  #        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:processing .
-  #
-  #      - name: Push image to DigitalOcean Container Registry
-  #        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:processing
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Build container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:processing .
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:processing
 
   test:
     runs-on: ubuntu-latest
@@ -55,11 +55,11 @@ jobs:
 
       - name: Run Ruby Tests
         run: |
-          docker compose -f docker-compose.test-deploy.yml run web rspec
+          docker compose -f docker-compose.test-github.yml run web rspec
 
       - name: Setup E2E Environment
         run: |
-          docker compose -f docker-compose.test-deploy.yml up -d
+          docker compose -f docker-compose.test-github.yml up -d
           sudo apt-get update
           sudo apt-get install -y python3
           pip install -r simulator/requirements.txt -r requirements.txt
@@ -72,7 +72,7 @@ jobs:
 
       - name: Setup Simulator Environment
         run: |
-          docker compose -f docker-compose.test-deploy.yml up -d
+          docker compose -f docker-compose.test-github.yml up -d
 
       - name: Run Simulator tests
         run: |

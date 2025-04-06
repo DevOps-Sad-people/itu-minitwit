@@ -97,7 +97,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
       - name: Copy remote_files to server
-        run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit
+        run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit -i ~/.ssh/id_ed25519
 
       - name: Deploy to server
         # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile

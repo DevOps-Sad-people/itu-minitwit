@@ -98,6 +98,9 @@ jobs:
 
       - name: Copy remote_files to server
         run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
+        env:
+          SSH_USER: ${{ env.SSH_USER }}
+          SSH_HOST: ${{ env.SSH_HOST }}
 
       - name: Deploy to server
         # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile

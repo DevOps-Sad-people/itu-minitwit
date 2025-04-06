@@ -15,5 +15,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run tests
-        run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
+      - name: Setup environment variables
+        run: cp .env.test .env
+
+      - name: Run Ruby Tests
+        run: |
+          docker compose -f docker-compose.testing.yml
+
+      - name: Setup E2E Environment
+        run: |
+          docker compose -f docker-compose.testing.yml run web "ruby minitwit.rb" -d
+          sudo apt-get update
+          sudo apt-get install -y python3
+          pip install -r requirements.txt
+
+      - name: Setup Simulator Environment
+        run: |
+
+      - name: Run Simulator tests
+        run: |
+          cd simulator
+            python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)

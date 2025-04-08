@@ -5,7 +5,7 @@ on:
   push:
     # Run workflow every time there is a push to a branch
     branches:
-      - "!main" # all branches except 'main'
+      - "*"
 
 # This action currently includes 3 different linter/formatter tools:
 # - A standard Ruby linter and formatter

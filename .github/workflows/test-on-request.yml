@@ -5,7 +5,7 @@ on:
   pull_request:
     # Run workflow every time something is in a pull request
     branches:
-      - "!main" # all branches except 'main'
+      - "*"
 
 jobs:
   test:

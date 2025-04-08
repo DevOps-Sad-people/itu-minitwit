@@ -27,21 +27,29 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: |
-          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
-          doctl registry login --expiry-seconds 600
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Setup TAG name for containers
+        id: set-tag
+        run: echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_OUTPUT
 
       - name: Build container image
         run: |
           docker build -t ${{ env.REGISTRY_NAME }}/minitwit:$TAG .
+        env:
+          TAG: ${{ steps.set-tag.outputs.TAG }}
 
       - name: Push image to DigitalOcean Container Registry
         run: |
           docker push ${{ env.REGISTRY_NAME }}/minitwit:$TAG
+        env:
+          TAG: ${{ steps.set-tag.outputs.TAG }}
 
   test:
     runs-on: ubuntu-latest
     needs: build
+    env:
+      TAG: ${{ steps.set-tag.outputs.TAG }}
 
     steps:
       - name: Checkout
@@ -56,9 +64,7 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Setup environment variables
-        run: |
-          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV  
-          cp .env.test .env
+        run: cp .env.test .env
 
       - name: Run Ruby Tests
         run: |
@@ -106,28 +112,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, test]
 
+    env:
+      TAG: ${{ steps.set-tag.outputs.TAG }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_USER: ${{ env.SSH_USER }}
+      SSH_HOST: ${{ env.SSH_HOST }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure SSH & set up environment variables
+      - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           echo -e "Host $SSH_HOST\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
-          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
 
       - name: Copy remote_files to server
         run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit
-        env:
-          SSH_USER: ${{ env.SSH_USER }}
-          SSH_HOST: ${{ env.SSH_HOST }}
 
       - name: Deploy to server
         run: ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
-        env:
-          SSH_USER: ${{ env.SSH_USER }}
-          SSH_HOST: ${{ env.SSH_HOST }}

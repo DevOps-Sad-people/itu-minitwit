@@ -4,7 +4,7 @@ name: Test merged workflows
 on:
   push:
     branches:
-      - some-branch
+      - 162-merge-workflows-build-and-test
 
 # env variables
 env:

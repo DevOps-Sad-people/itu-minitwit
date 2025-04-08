@@ -76,6 +76,21 @@ jobs:
           docker compose -f docker-compose.github.yml down -v
           docker compose -f docker-compose.github.yml up -d
 
+      - name: Wait for the server to be ready
+        run: |
+          echo "Waiting for web service"
+          for i in {1..100}; do
+            if curl -s http://0.0.0.0:4567 > /dev/null; then
+              echo "Web service is ready"
+              exit 0
+            fi
+            echo -n "."
+            sleep 0.1
+          done
+          echo "Web service did not become ready in time"
+          docker logs minitwit
+          exit 1
+
       - name: Run Simulator tests
         run: |
           cd simulator

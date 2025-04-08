@@ -16,6 +16,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      TAG: ${{ steps.set-tag.outputs.TAG }}
 
     steps:
       - name: Checkout

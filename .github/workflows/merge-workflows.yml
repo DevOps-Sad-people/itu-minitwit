@@ -31,7 +31,7 @@ jobs:
 
       - name: Build container image
         run: |
-          TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
+          export TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
           docker build -t ${{ env.REGISTRY_NAME }}/minitwit:$TAG .
 
       - name: Push image to DigitalOcean Container Registry

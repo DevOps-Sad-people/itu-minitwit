@@ -1,6 +1,6 @@
 services:
   web:
-    image: registry.digitalocean.com/sad-containers/minitwit:processing
+    image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     container_name: minitwit
     depends_on:
       db:

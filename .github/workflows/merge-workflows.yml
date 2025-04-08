@@ -4,7 +4,7 @@ name: Test merged workflows
 on:
   push:
     branches:
-      - 162-merge-workflows-build-and-test
+      - some-branch
 
 # env variables
 env:
@@ -14,30 +14,34 @@ env:
   SSH_HOST: "157.245.22.36" # refers to the reserved IP address of the droplet
 
 jobs:
-  #  build:
-  #    runs-on: ubuntu-latest
-  #
-  #    steps:
-  #      - name: Checkout
-  #        uses: actions/checkout@v4
-  #
-  #      - name: Install doctl
-  #        uses: digitalocean/action-doctl@v2
-  #        with:
-  #          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-  #
-  #      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-  #        run: doctl registry login --expiry-seconds 600
-  #
-  #      - name: Build container image
-  #        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:processing .
-  #
-  #      - name: Push image to DigitalOcean Container Registry
-  #        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:processing
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      - name: Build container image
+        run: |
+          TAG=${{ github.ref_name }}
+          docker build -t ${{ env.REGISTRY_NAME }}/minitwit:processing:$TAG .
+
+      - name: Push image to DigitalOcean Container Registry
+        run: |
+          TAG=${{ github.ref_name }}
+          docker push ${{ env.REGISTRY_NAME }}/minitwit:processing:$TAG
 
   test:
     runs-on: ubuntu-latest
-    #needs: build
+    needs: build
 
     steps:
       - name: Checkout
@@ -52,7 +56,9 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Setup environment variables
-        run: cp .env.test .env
+        run: |
+          export TAG=${{ github.ref_name }}
+          cp .env.test .env
 
       - name: Run Ruby Tests
         run: |
@@ -98,7 +104,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [build, test]
 
     steps:
       - name: Checkout
@@ -120,10 +126,9 @@ jobs:
           SSH_HOST: ${{ env.SSH_HOST }}
 
       - name: Deploy to server
-        # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
-        run: >
-          ssh $SSH_USER@$SSH_HOST
-          'cd /minitwit; ./deploy.sh'
+        run: |
+          TAG=${{ github.ref_name }}
+          ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
         env:
           SSH_USER: ${{ env.SSH_USER }}
           SSH_HOST: ${{ env.SSH_HOST }}

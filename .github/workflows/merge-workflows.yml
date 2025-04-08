@@ -37,21 +37,17 @@ jobs:
 
       - name: Build container image
         run: |
-          docker build -t ${{ env.REGISTRY_NAME }}/minitwit:$TAG .
-        env:
-          TAG: ${{ steps.set-tag.outputs.TAG }}
+          docker build -t ${{ env.REGISTRY_NAME }}/minitwit:${{ steps.set-tag.outputs.TAG }} .
 
       - name: Push image to DigitalOcean Container Registry
         run: |
-          docker push ${{ env.REGISTRY_NAME }}/minitwit:$TAG
-        env:
-          TAG: ${{ steps.set-tag.outputs.TAG }}
+          docker push ${{ env.REGISTRY_NAME }}/minitwit:${{ steps.set-tag.outputs.TAG }}
 
   test:
     runs-on: ubuntu-latest
     needs: build
     env:
-      TAG: ${{ steps.set-tag.outputs.TAG }}
+      TAG: ${{ needs.build.outputs.TAG }}
 
     steps:
       - name: Checkout
@@ -108,17 +104,13 @@ jobs:
       - name: Run Simulator tests
         run: |
           cd simulator
-            python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)
+          python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)
 
   deploy:
     runs-on: ubuntu-latest
     needs: [build, test]
-
     env:
-      TAG: ${{ steps.set-tag.outputs.TAG }}
-      SSH_KEY: ${{ secrets.SSH_KEY }}
-      SSH_USER: ${{ env.SSH_USER }}
-      SSH_HOST: ${{ env.SSH_HOST }}
+      TAG: ${{ needs.build.outputs.TAG }}
 
     steps:
       - name: Checkout
@@ -127,12 +119,12 @@ jobs:
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          echo -e "Host $SSH_HOST\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
+          echo -e "Host ${{ env.SSH_HOST }}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
 
       - name: Copy remote_files to server
-        run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit
+        run: scp -r ./remote_files/* ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/minitwit
 
       - name: Deploy to server
-        run: ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
+        run: ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd /minitwit; ./deploy.sh ${{ env.TAG }}"

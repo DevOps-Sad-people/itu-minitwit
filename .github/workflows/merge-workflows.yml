@@ -27,11 +27,12 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
+        run: |
+          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
+          doctl registry login --expiry-seconds 600
 
       - name: Build container image
         run: |
-          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
           docker build -t ${{ env.REGISTRY_NAME }}/minitwit:$TAG .
 
       - name: Push image to DigitalOcean Container Registry
@@ -109,12 +110,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure SSH
+      - name: Configure SSH & set up environment variables
         run: |
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           echo -e "Host $SSH_HOST\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
+          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
@@ -125,9 +127,7 @@ jobs:
           SSH_HOST: ${{ env.SSH_HOST }}
 
       - name: Deploy to server
-        run: |
-          echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
-          ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
+        run: ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
         env:
           SSH_USER: ${{ env.SSH_USER }}
           SSH_HOST: ${{ env.SSH_HOST }}

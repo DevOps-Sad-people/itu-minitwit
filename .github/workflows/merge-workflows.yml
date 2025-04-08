@@ -93,11 +93,12 @@ jobs:
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
+          echo -e "Host $SSH_HOST\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
 
       - name: Copy remote_files to server
-        run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
+        run: scp -r ./remote_files/* $SSH_USER@$SSH_HOST:/minitwit
         env:
           SSH_USER: ${{ env.SSH_USER }}
           SSH_HOST: ${{ env.SSH_HOST }}
@@ -106,7 +107,6 @@ jobs:
         # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
         run: >
           ssh $SSH_USER@$SSH_HOST
-          -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
           'cd /minitwit; ./deploy.sh'
         env:
           SSH_USER: ${{ env.SSH_USER }}

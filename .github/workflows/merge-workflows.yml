@@ -29,9 +29,12 @@ jobs:
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login --expiry-seconds 600
 
+      - name: Setup TAG name for containers
+        id: set-tag
+        run: echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_ENV
+
       - name: Build container image
         run: |
-          export TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
           docker build -t ${{ env.REGISTRY_NAME }}/minitwit:$TAG .
 
       - name: Push image to DigitalOcean Container Registry
@@ -55,9 +58,7 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Setup environment variables
-        run: |
-          TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
-          cp .env.test .env
+        run: cp .env.test .env
 
       - name: Run Ruby Tests
         run: |
@@ -125,9 +126,7 @@ jobs:
           SSH_HOST: ${{ env.SSH_HOST }}
 
       - name: Deploy to server
-        run: |
-          TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')
-          ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
+        run: ssh $SSH_USER@$SSH_HOST "cd /minitwit; ./deploy.sh $TAG"
         env:
           SSH_USER: ${{ env.SSH_USER }}
           SSH_HOST: ${{ env.SSH_HOST }}

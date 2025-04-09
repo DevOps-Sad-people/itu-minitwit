@@ -24,7 +24,7 @@ jobs:
 
       - name: Setup Simulator Environment
         run: |
-          docker compose -f docker-compose.testing.yml run test "ruby minitwit.rb" -d
+          docker compose -f docker-compose.testing.yml run -d test ruby ./minitwit.rb
           sudo apt-get update
           sudo apt-get install -y python3
           pip install -r requirements.txt

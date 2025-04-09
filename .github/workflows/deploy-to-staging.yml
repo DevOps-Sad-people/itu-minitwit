@@ -5,7 +5,12 @@ on:
   push:
     # Run workflow every time something is pushed to the main branch
     branches:
-      - develop
+      # - develop
+      - 162-merge-workflows-build-and-test
+
+concurrency:
+  group: deploy-to-staging
+  cancel-in-progress: true
 
 # env variables
 env:

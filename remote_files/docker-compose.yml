@@ -2,7 +2,7 @@ version: "3.8" # version to be compatible with docker swarm/stack deployments
 
 services:
   web:
-    image: registry.digitalocean.com/sad-containers/minitwit:latest
+    image: registry.digitalocean.com/sad-containers/minitwit:${TAG:-latest}
     container_name: minitwit
     depends_on:
       - db

@@ -38,7 +38,7 @@ jobs:
               exit 0
             fi
             echo -n "."
-            sleep 0.1
+            sleep 0.2
           done
           echo "Web service did not become ready in time"
           docker logs minitwit

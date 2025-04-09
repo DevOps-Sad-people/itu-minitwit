@@ -5,9 +5,7 @@ on:
   push:
     # Run workflow every time something is pushed to the main branch
     branches:
-      # - develop
-      # - staging
-      - 162-merge-workflows-build-and-test
+      - develop
 
 concurrency:
   group: deploy-to-staging

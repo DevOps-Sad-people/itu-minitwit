@@ -1,0 +1,82 @@
+---
+name: Continuous Deployment Test
+
+on:
+  push:
+    # Run workflow every time something is pushed to the main branch
+    branches:
+      - 164-efk-logging
+
+# env variables
+env:
+  DROPLET_NAME: "minitwit-test"
+  REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
+  SSH_USER: "root"
+  SSH_HOST: "64.226.77.52" # refers to the reserved IP address of the droplet
+
+# I've split the workflow into three jobs: build_and_push, test, and deploy.
+# The three jobs makes it easy to see which part fails in the Github Actions UI.
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test
+
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 600
+
+      # check rate limit for digital ocean
+      - name: Check rate limit
+        run: doctl account ratelimit --format Remaining
+
+      # BUILD AND PUSH MINITWIT IMAGE - works now?
+      - name: Build container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest .
+
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy to server
+        # Configure the ~./bash_profile and deploy.sh file on the Vagrantfile
+        run: >
+          ssh $SSH_USER@$SSH_HOST
+          -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no
+          'cd /minitwit; ./deploy.sh'
+        env:
+          SSH_USER: ${{ env.SSH_USER }}
+          SSH_HOST: ${{ env.SSH_HOST }}

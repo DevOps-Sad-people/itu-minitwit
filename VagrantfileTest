@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder '.', '/vagrant', disabled: true
   config.vm.provision "file", source: ".env", destination: "/minitwit/.env"
 
-  config.vm.define "minitwit.staging", primary: true do |server|
+  config.vm.define "minitwit.test", primary: true do |server|
     server.vm.provider :digital_ocean do |provider|
       provider.ssh_key_name = ENV["SSH_KEY_NAME"]
       provider.token = ENV["DIGITAL_OCEAN_TOKEN"]
@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
       provider.size = 's-2vcpu-4gb'
     end
 
-    server.vm.hostname = "minitwit.staging"
+    server.vm.hostname = "minitwit.test"
     
     server.vm.provision "shell", inline: <<-SHELL
 

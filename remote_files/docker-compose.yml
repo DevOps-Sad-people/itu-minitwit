@@ -99,10 +99,6 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"    
     volumes:
-      - ./elk/elasticsearch/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-      - ./elk/elasticsearch/setup/lib.sh:/lib.sh:ro,Z
-      - ./elk/elasticsearch/setup/roles:/roles:ro,Z
-      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
     ports:
       - 9200:9200

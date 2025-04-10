@@ -2,6 +2,11 @@ ARG ELASTIC_VERSION
 
 FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
 
+COPY setup/entrypoint.sh /entrypoint.sh
+COPY setup/lib.sh /lib.sh
+COPY setup/roles /roles
+COPY config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
+
 ENTRYPOINT ["/setup/entrypoint.sh"]
 
 # Add your elasticsearch plugins setup here

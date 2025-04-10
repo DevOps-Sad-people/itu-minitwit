@@ -12,7 +12,7 @@ env:
   DROPLET_NAME: "minitwit-test"
   REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
   SSH_USER: "root"
-  SSH_HOST: "64.226.77.52" # refers to the reserved IP address of the droplet
+  SSH_HOST: "134.199.188.166" # refers to the reserved IP address of the droplet
 
 # I've split the workflow into three jobs: build_and_push, test, and deploy.
 # The three jobs makes it easy to see which part fails in the Github Actions UI.

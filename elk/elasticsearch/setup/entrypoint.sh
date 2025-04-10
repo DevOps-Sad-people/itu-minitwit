@@ -122,7 +122,7 @@ if [ ! -f "$MARKER_FILE" ]; then
 			create_user "$user" "${users_passwords[$user]}" "${users_roles[$user]}"
 		fi
 	done
-
+	touch "$MARKER_FILE"
 else
 	echo "Setup already done, skipping."
 fi

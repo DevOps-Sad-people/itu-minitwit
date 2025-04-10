@@ -174,10 +174,20 @@ services:
       - elasticsearch
 
   filebeat:
+    image: filebeat:8.10.2
     build:
       context: elk/filebeat/
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 10s
+        order: start-first
+      placement:
+        constraints:
+          - "node.hostname!=dbvm"
+          - "node.role==manager"
     # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
     # 'docker.sock' and the host's filesystem.
     user: root

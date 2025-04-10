@@ -133,6 +133,9 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"    
     volumes:
+      - ./elk/elasticsearch/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/elasticsearch/setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/elasticsearch/setup/roles:/roles:ro,Z
       - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
     ports:
@@ -141,6 +144,15 @@ services:
       node.name: elasticsearch
       ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
 
@@ -195,10 +207,37 @@ services:
     depends_on:
       - elasticsearch
 
-  # filebeat: # Uses another docker compose file to setup filebeat.
-  #   extends:
-  #     file: elk/filebeat/filebeat-compose.yml
-  #     service: filebeat
+  filebeat:
+    build:
+      context: elk/filebeat/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
+    # 'docker.sock' and the host's filesystem.
+    user: root
+    command:
+      # Log to stderr.
+      - -e
+      # Disable config file permissions checks. Allows mounting
+      # 'config/filebeat.yml' even if it's not owned by root.
+      # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
+      - --strict.perms=false
+    volumes:
+      - ./elk/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /var/lib/docker/containers
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    environment:
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    depends_on:
+      - elasticsearch
 
 # networks:
 #   minitwit_network:

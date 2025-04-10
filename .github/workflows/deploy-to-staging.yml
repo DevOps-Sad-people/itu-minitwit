@@ -7,6 +7,7 @@ on:
     branches:
       - develop
       - swarm
+      - swarm-logging-fix
 
 
 # env variables

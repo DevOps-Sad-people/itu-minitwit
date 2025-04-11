@@ -51,12 +51,47 @@ jobs:
       - name: Check rate limit
         run: doctl account ratelimit --format Remaining
 
-      # BUILD AND PUSH MINITWIT IMAGE - works now?
-      - name: Build container image
+      # BUILD AND PUSH MINITWIT IMAGE
+      - name: Build minitwit container image
         run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest .
-
-      - name: Push image to DigitalOcean Container Registry
+      - name: Push minitwit image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
+
+      # BUILD AND PUSH PROMETHEUS IMAGE
+      - name: Build prometheus container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/prometheus:latest . -f prometheus/Dockerfile
+      - name: Push prometheus image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/prometheus:latest
+
+      # BUILD AND PUSH GRAFANA IMAGE
+      - name: Build grafana container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/grafana:latest . -f grafana/Dockerfile
+      - name: Push grafana image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/grafana:latest
+
+      # BUILD AND PUSH FILEBEAT IMAGE
+      - name: Build filebeat container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest . -f elk/filebeat/Dockerfile
+      - name: Push filebeat image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
+
+      # BUILD AND PUSH LOGSTASH IMAGE
+      - name: Build logstash container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/logstash:latest . -f elk/logstash/Dockerfile
+      - name: Push logstash image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/logstash:latest
+
+      # BUILD AND PUSH ELASTICSEARCH IMAGE
+      - name: Build elasticsearch container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/elasticsearch:latest . -f elk/elasticsearch/Dockerfile
+      - name: Push elasticsearch image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/elasticsearch:latest
+
+      # BUILD AND PUSH KIBANA IMAGE
+      - name: Build kibana container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/kibana:latest . -f elk/kibana/Dockerfile
+      - name: Push kibana image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/kibana:latest
 
   deploy:
     runs-on: ubuntu-latest

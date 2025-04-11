@@ -134,8 +134,8 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"
     volumes:
-      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
-      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
+#      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
+#      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     ports:
       - 5044:5044
     environment:
@@ -160,7 +160,7 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"
     volumes:
-      - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+#      - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
     environment:
@@ -195,7 +195,7 @@ services:
       # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
       - --strict.perms=false
     volumes:
-      - ./elk/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+#      - ./elk/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
       - type: bind
         source: /var/lib/docker/containers
         target: /var/lib/docker/containers

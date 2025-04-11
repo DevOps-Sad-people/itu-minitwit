@@ -1,8 +1,8 @@
-version: '3.8' # version to be compatible with docker swarm/stack deployments
+version: "3.8" # version to be compatible with docker swarm/stack deployments
 
 services:
   web:
-    image: registry.digitalocean.com/sad-containers/minitwit:latest
+    image: registry.digitalocean.com/sad-containers/minitwit:${TAG:-latest}
     container_name: minitwit
     depends_on:
       - db
@@ -66,33 +66,33 @@ services:
       - minitwit_network
 
   setup:
-      profiles:
-        - setup
-      build:
-        context: elk/setup/
-        args:
-          ELASTIC_VERSION: ${ELASTIC_VERSION}
-      init: true
-      volumes:
-        - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-        - ./elk/setup/lib.sh:/lib.sh:ro,Z
-        - ./elk/setup/roles:/roles:ro,Z
-      environment:
-        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-        LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-        KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-        METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-        FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-        HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-        MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
-        BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-      networks:
-        - minitwit_elk
-      depends_on:
-        - elasticsearch
+    profiles:
+      - setup
+    build:
+      context: elk/setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/setup/roles:/roles:ro,Z
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
     container_name: elasticsearch

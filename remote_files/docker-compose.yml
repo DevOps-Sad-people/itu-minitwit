@@ -21,13 +21,13 @@ services:
   db:
     image: postgres:15
     deploy:
-      replicas: 1
+      mode: global # global mode to ensure one instance of the services is deployed
       update_config:
         delay: 10s
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
+          # - "node.hostname==minitwit.manager"
           - "node.role==manager"
     environment:
       POSTGRES_USER: postgres

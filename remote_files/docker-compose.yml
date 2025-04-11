@@ -37,7 +37,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   prometheus:
-    image: prom/prometheus:v3.2.1
+    image: registry.digitalocean.com/sad-containers/prometheus:latest
     deploy:
       replicas: 1
       update_config:
@@ -49,10 +49,9 @@ services:
           - "node.role==manager"
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus/prometheus.prod.yml:/etc/prometheus/prometheus.yml
 
   grafana:
-    image: grafana/grafana:11.5.2
+    image: registry.digitalocean.com/sad-containers/grafana:latest
     deploy:
       replicas: 1
       update_config:
@@ -76,10 +75,6 @@ services:
       - GF_SMTP_FROM_ADDRESS=${GRAFANA_SMTP_FROM_ADDRESS}
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./grafana/alerting:/etc/grafana/provisioning/alerting
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./grafana/predefined-dashboards:/predefined-dashboards
     ports:
       - "3000:3000"
 

@@ -59,37 +59,37 @@ jobs:
 
       # BUILD AND PUSH PROMETHEUS IMAGE
       - name: Build prometheus container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/prometheus:latest . -f prometheus/Dockerfile
+        run: docker build -t ${{ env.REGISTRY_NAME }}/prometheus:latest ./prometheus
       - name: Push prometheus image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/prometheus:latest
 
       # BUILD AND PUSH GRAFANA IMAGE
       - name: Build grafana container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/grafana:latest . -f grafana/Dockerfile
+        run: docker build -t ${{ env.REGISTRY_NAME }}/grafana:latest ./grafana
       - name: Push grafana image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/grafana:latest
 
       # BUILD AND PUSH FILEBEAT IMAGE
       - name: Build filebeat container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest . -f elk/filebeat/Dockerfile
+        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest ./elk/filebeat
       - name: Push filebeat image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
 
       # BUILD AND PUSH LOGSTASH IMAGE
       - name: Build logstash container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/logstash:latest . -f elk/logstash/Dockerfile
+        run: docker build -t ${{ env.REGISTRY_NAME }}/logstash:latest ./elk/logstash
       - name: Push logstash image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/logstash:latest
 
       # BUILD AND PUSH ELASTICSEARCH IMAGE
       - name: Build elasticsearch container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/elasticsearch:latest . -f elk/elasticsearch/Dockerfile
+        run: docker build -t ${{ env.REGISTRY_NAME }}/elasticsearch:latest ./elk/elasticsearch
       - name: Push elasticsearch image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/elasticsearch:latest
 
       # BUILD AND PUSH KIBANA IMAGE
       - name: Build kibana container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/kibana:latest . -f elk/kibana/Dockerfile
+        run: docker build -t ${{ env.REGISTRY_NAME }}/kibana:latest ./elk/kibana
       - name: Push kibana image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/kibana:latest
 

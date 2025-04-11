@@ -71,9 +71,9 @@ jobs:
 
       # BUILD AND PUSH FILEBEAT IMAGE
       - name: Build filebeat container image
-        run: docker build -t ${{ env.REGISTRY_NAME }}/minitwit:latest ./elk/filebeat
+        run: docker build -t ${{ env.REGISTRY_NAME }}/filebeat:latest ./elk/filebeat
       - name: Push filebeat image to DigitalOcean Container Registry
-        run: docker push ${{ env.REGISTRY_NAME }}/minitwit:latest
+        run: docker push ${{ env.REGISTRY_NAME }}/filebeat:latest
 
       # BUILD AND PUSH LOGSTASH IMAGE
       - name: Build logstash container image

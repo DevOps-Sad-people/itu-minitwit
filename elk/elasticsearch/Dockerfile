@@ -1,6 +1,6 @@
 ARG ELASTIC_VERSION
 
-FROM docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+FROM docker.elastic.co/elasticsearch/elasticsearch:8.17.3
 
 COPY setup/entrypoint.sh /entrypoint.sh
 COPY setup/lib.sh /lib.sh

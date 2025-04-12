@@ -37,7 +37,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   prometheus:
-    image: registry.digitalocean.com/sad-containers/prometheus:latest
+    image: prometheus:v3.2.1 #registry.digitalocean.com/sad-containers/prometheus:latest
     deploy:
       replicas: 1
       update_config:
@@ -49,9 +49,12 @@ services:
           - "node.role==manager"
     volumes:
       - prometheus-data:/prometheus
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
 
   grafana:
-    image: registry.digitalocean.com/sad-containers/grafana:latest
+    image: grafana:11.5.2 #registry.digitalocean.com/sad-containers/grafana:latest
     deploy:
       replicas: 1
       update_config:
@@ -77,9 +80,24 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
+    configs:
+      - source: grafana_alert_rules
+        target: /etc/grafana/provisioning/alerting/alert_rules.yaml
+      - source: grafana_contact_points
+        target: /etc/grafana/provisioning/alerting/contact_points.yaml
+      - source: grafana_policies
+        target: /etc/grafana/provisioning/alerting/policies.yaml
+      - source: grafana_dashboard_provider
+        target: /etc/grafana/provisioning/dashboards/dashboard-provider.yaml
+      - source: grafana_postgres_datasource
+        target: /etc/grafana/provisioning/datasources/postgres.yaml
+      - source: grafana_prometheus_datasource
+        target: /etc/grafana/provisioning/datasources/prometheus.yaml
+      - source: grafana_minitwit_dashboard
+        target: /predefined-dashboards/minitwit_dashboards.json
 
   elasticsearch:
-    image: registry.digitalocean.com/sad-containers/elasticsearch:latest 
+    image: elasticsearch:8.17.3 #registry.digitalocean.com/sad-containers/elasticsearch:latest 
 #    build:
 #      context: elk/elasticsearch/
 #      args:
@@ -112,9 +130,24 @@ services:
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
+    configs:
+      - source: elasticsearch_entrypoint
+        target: /entrypoint.sh
+      - source: elasticsearch_lib
+        target: /lib.sh
+      - source: elasticsearch_role_filebeat_writer
+        target: /roles/filebeat_writer.json
+      - source: elasticsearch_role_heartbeat_writer
+        target: /roles/heartbeat_writer.json
+      - source: elasticsearch_role_logstash_writer
+        target: /roles/logstash_writer.json
+      - source: elasticsearch_role_metricbeat_writer
+        target: /roles/metricbeat_writer.json
+      - source: elasticsearch_config
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
 
   logstash:
-    image: registry.digitalocean.com/sad-containers/logstash:latest
+    image: logstash:8.17.3 #registry.digitalocean.com/sad-containers/logstash:latest
 #    build:
 #      context: elk/logstash/
 #      args:
@@ -136,11 +169,16 @@ services:
     environment:
       LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
       LS_JAVA_OPTS: -Xms256m -Xmx256m
+    configs:
+      - source: logstash_config
+        target: /usr/share/logstash/config/logstash.yml
+      - source: logstash_pipeline
+        target: /usr/share/logstash/pipeline/logstash.conf
     depends_on:
       - elasticsearch
 
   kibana:
-    image: registry.digitalocean.com/sad-containers/kibana:latest
+    image: kibana:8.17.3 #registry.digitalocean.com/sad-containers/kibana:latest
 #    build:
 #      context: elk/kibana/
 #      args:
@@ -161,11 +199,14 @@ services:
     environment:
       KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
       KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+    configs:
+      - source: kibana_config
+        target: /usr/share/kibana/config/kibana.yml
     depends_on:
       - elasticsearch
 
   filebeat:
-    image: registry.digitalocean.com/sad-containers/filebeat:latest
+    image: filebeat:8.17.3 #registry.digitalocean.com/sad-containers/filebeat:latest
 #    build:
 #      context: elk/filebeat/
 #      args:
@@ -203,6 +244,9 @@ services:
       FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
       BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
       BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    configs:
+      - source: filebeat_config
+        target: /usr/share/filebeat/filebeat.yml
     depends_on:
       - elasticsearch
 
@@ -217,3 +261,58 @@ volumes:
   prometheus-data:
   grafana-data:
   elasticsearch-data:
+
+configs:
+  # GRAFANA
+  grafana_alert_rules:
+    file: ./grafana/alerting/alert_rules.yaml
+  grafana_contact_points:
+    file: ./grafana/alerting/contact_points.yaml
+  grafana_policies:
+    file: ./grafana/alerting/policies.yaml
+  grafana_dashboard_provider:
+    file: ./grafana/dashboards/dashboards-provider.yaml
+  grafana_postgres_datasource:
+    file: ./grafana/datasources/postgres.yaml
+  grafana_prometheus_datasource:
+    file: ./grafana/datasources/prometheus.yaml
+  grafana_minitwit_dashboard:
+    file: ./grafana/predefined-dashboards/minitwit_dashboards.json
+  #PROMETHEUS
+  prometheus_config:
+    file: ./prometheus/prometheus.prod.yml
+  #ELASTICSEARCH
+  elasticsearch_entrypoint:
+    file: ./elk/elasticsearch/setup/entrypoint.sh
+  elasticsearch_lib:
+    file: ./elk/elasticsearch/setup/lib.sh
+  elasticsearch_role_filebeat_writer:
+    file: ./elk/elasticsearch/setup/roles/filebeat_writer.json
+  elasticsearch_role_heartbeat_writer:
+    file: ./elk/elasticsearch/setup/roles/heartbeat_writer.json
+  elasticsearch_role_logstash_writer:
+    file: ./elk/elasticsearch/setup/roles/logstash_writer.json
+  elasticsearch_role_metricbeat_writer:
+    file: ./elk/elasticsearch/setup/roles/metricbeat_writer.json
+  elasticsearch_config:
+    file: ./elk/elasticsearch/config/elasticsearch.yml
+  #FILEBEAT
+  filebeat_config:
+    file: ./elk/filebeat/config/filebeat.yml
+  #KIBANA
+  kibana_config:
+    file: ./elk/kibana/config/kibana.yml
+  #LOGSTASH
+  logstash_config:
+    file: ./elk/logstash/config/logstash.yml
+  logstash_pipeline:
+    file: ./elk/logstash/pipeline/logstash.conf
+
+
+
+
+
+
+
+
+

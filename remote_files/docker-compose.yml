@@ -37,7 +37,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   prometheus:
-    image: prometheus:v3.2.1 #registry.digitalocean.com/sad-containers/prometheus:latest
+    image: prom/prometheus:v3.2.1 #registry.digitalocean.com/sad-containers/prometheus:latest
     deploy:
       replicas: 1
       update_config:
@@ -54,7 +54,7 @@ services:
         target: /etc/prometheus/prometheus.yml
 
   grafana:
-    image: grafana:11.5.2 #registry.digitalocean.com/sad-containers/grafana:latest
+    image: grafana/grafana:11.5.2 #registry.digitalocean.com/sad-containers/grafana:latest
     deploy:
       replicas: 1
       update_config:
@@ -161,7 +161,7 @@ services:
         constraints:
           - "node.hostname!=dbvm"
           - "node.role==manager"
-    volumes:
+    #volumes:
 #      - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
 #      - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     ports:
@@ -206,7 +206,7 @@ services:
       - elasticsearch
 
   filebeat:
-    image: filebeat:8.17.3 #registry.digitalocean.com/sad-containers/filebeat:latest
+    image: beats/filebeat:8.17.3 #registry.digitalocean.com/sad-containers/filebeat:latest
 #    build:
 #      context: elk/filebeat/
 #      args:
@@ -277,7 +277,7 @@ configs:
   grafana_prometheus_datasource:
     file: ./grafana/datasources/prometheus.yaml
   grafana_minitwit_dashboard:
-    file: ./grafana/predefined-dashboards/minitwit_dashboards.json
+    file: ./grafana/predefined-dashboards/minitwit_dashboard.json
   #PROMETHEUS
   prometheus_config:
     file: ./prometheus/prometheus.prod.yml

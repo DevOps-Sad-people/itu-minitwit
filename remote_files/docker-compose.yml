@@ -192,7 +192,7 @@ services:
         constraints:
           - "node.hostname!=dbvm"
           - "node.role==manager"
-    volumes:
+    #volumes:
 #      - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601

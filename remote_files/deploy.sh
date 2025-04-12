@@ -1,5 +1,5 @@
 # Converts the contents of the .env file into docker secrets
-bash convert_env_to_secrets.sh
+bash convert_env_into_secrets.sh
 
 # Deletes all docker configs so we recreate from the compose
 docker config ls -q | xargs -r docker config rm

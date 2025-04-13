@@ -8,6 +8,3 @@ COPY setup/roles /roles
 COPY config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
 
 CMD ["/entrypoint.sh"]
-
-# Add your elasticsearch plugins setup here
-# Example: RUN elasticsearch-plugin install analysis-icu

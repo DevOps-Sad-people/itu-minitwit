@@ -279,7 +279,7 @@ volumes:
 #    file: ./grafana/predefined-dashboards/minitwit_dashboard.json
 #  #PROMETHEUS
 #  prometheus_config:
-#    file: ./prometheus/prometheus.prod.yml
+#    file: ./prometheus/prometheus.yml
 #  #ELASTICSEARCH
 #  elasticsearch_entrypoint:
 #    file: ./elk/elasticsearch/setup/entrypoint.sh

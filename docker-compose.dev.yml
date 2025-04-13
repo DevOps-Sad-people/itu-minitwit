@@ -1,7 +1,7 @@
 version: '3.8' # version to be compatible with docker swarm/stack deployments
 
 services:
-  dev:
+  web:
     image: ruby:3.3
     container_name: minitwit_dev
     volumes:
@@ -31,15 +31,13 @@ services:
       - minitwit_network_dev
     volumes:
       - pg_data:/var/lib/postgresql/data
-      # - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-      # - ./create_tables.rb:/docker-entrypoint-initdb.d/create_tables.rb:ro
 
   prometheus:
     image: prom/prometheus:v3.2.1
     container_name: prometheus
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus/prometheus.dev.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     networks:
@@ -160,11 +158,40 @@ services:
       - elasticsearch
     restart: unless-stopped
 
-  filebeat: # Uses another docker compose file to setup filebeat.
+  filebeat:
     container_name: filebeat
-    extends:
-      file: elk/filebeat/filebeat-compose.yml
-      service: filebeat
+    build:
+      context: elk/filebeat/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
+    # 'docker.sock' and the host's filesystem.
+    user: root
+    command:
+      # Log to stderr.
+      - -e
+      # Disable config file permissions checks. Allows mounting
+      # 'config/filebeat.yml' even if it's not owned by root.
+      # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
+      - --strict.perms=false
+    volumes:
+      - ./elk/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /var/lib/docker/containers
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    environment:
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
 
 networks:
   minitwit_network_dev:

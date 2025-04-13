@@ -126,5 +126,3 @@ if [ ! -f "$MARKER_FILE" ]; then
 else
 	echo "Setup already done, skipping."
 fi
-
-exec /usr/share/elasticsearch/bin/elasticsearch

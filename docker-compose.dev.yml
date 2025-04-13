@@ -16,11 +16,11 @@ services:
       - "4567:4567" # Exposing the default Sinatra port, adjust as needed
     env_file:
       - .env
+    restart: unless-stopped
 
   db:
     image: postgres:15
     container_name: minitwit_dev_db
-    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -31,6 +31,7 @@ services:
       - minitwit_network_dev
     volumes:
       - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:v3.2.1
@@ -42,6 +43,7 @@ services:
       - "9090:9090"
     networks:
       - minitwit_network_dev
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:11.5.2
@@ -68,51 +70,48 @@ services:
       - "3000:3000"
     networks:
       - minitwit_network_dev
+    restart: unless-stopped
 
-  setup:
-      profiles:
-        - setup
-      build:
-        context: elk/setup/
-        args:
-          ELASTIC_VERSION: ${ELASTIC_VERSION}
-      init: true
-      volumes:
-        - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-        - ./elk/setup/lib.sh:/lib.sh:ro,Z
-        - ./elk/setup/roles:/roles:ro,Z
-      environment:
-        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-        LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-        KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-        METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-        FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-        HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-        MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
-        BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-      networks:
-        - minitwit_elk
-      depends_on:
-        - elasticsearch
+  elasticsearch-setup:
+    profiles:
+      - setup
+    image: ubuntu:latest
+    container_name: elasticsearch-setup
+    volumes:
+      - elasticsearch-init:/data
+      - ./elk/elasticsearch/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/elasticsearch/setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/elasticsearch/setup/roles:/roles:ro,Z
+    entrypoint: ["/bin/bash", "-c", "apt-get update && apt-get install -y curl && /entrypoint.sh"]
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     container_name: elasticsearch
-    build:
-      context: elk/elasticsearch/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
     ports:
       - 9200:9200
     environment:
-      node.name: elasticsearch
       ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      node.name: elasticsearch
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     networks:
@@ -120,11 +119,8 @@ services:
     restart: unless-stopped
 
   logstash:
+    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
     container_name: logstash
-    build:
-      context: elk/logstash/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
@@ -140,11 +136,8 @@ services:
     restart: unless-stopped
 
   kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
     container_name: kibana
-    build:
-      context: elk/kibana/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
@@ -159,11 +152,8 @@ services:
     restart: unless-stopped
 
   filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
     container_name: filebeat
-    build:
-      context: elk/filebeat/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
     # 'docker.sock' and the host's filesystem.
     user: root
@@ -192,6 +182,7 @@ services:
       - minitwit_elk
     depends_on:
       - elasticsearch
+    restart: unless-stopped
 
 networks:
   minitwit_network_dev:
@@ -204,3 +195,4 @@ volumes:
   prometheus-data:
   grafana-data:
   elasticsearch-data:
+  elasticsearch-init:

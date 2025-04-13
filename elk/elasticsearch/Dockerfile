@@ -7,4 +7,5 @@ COPY setup/lib.sh /lib.sh
 COPY setup/roles /roles
 COPY config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/entrypoint.sh"]

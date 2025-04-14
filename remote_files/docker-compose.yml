@@ -86,13 +86,12 @@ services:
     image: registry.digitalocean.com/sad-containers/elasticsearch-setup:latest  #elasticsearch-setup:8.17.3
     deploy:
       replicas: 1
-      update_config:
-        delay: 10s
-        order: start-first
       placement:
         constraints:
           - "node.hostname!=dbvm"
-          - "node.role==manager"    
+          - "node.role==manager"
+      restart_policy:
+        condition: none
     volumes:
       - elasticsearch-init:/data
     environment:

@@ -52,7 +52,7 @@ jobs:
         run: doctl account ratelimit --format Remaining
 
       # BUILD AND PUSH MINITWIT IMAGE
-      - name: Build minitwit image & push if changed
+      - name: Build minitwit image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: minitwit
@@ -60,7 +60,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH PROMETHEUS IMAGE
-      - name: Build prometheus image & push if changed
+      - name: Build prometheus image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: prometheus
@@ -68,7 +68,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH GRAFANA IMAGE
-      - name: Build grafana image & push if changed
+      - name: Build grafana image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: grafana
@@ -76,7 +76,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH FILEBEAT IMAGE
-      - name: Build filebeat image & push if changed
+      - name: Build filebeat image & push if changversion incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: filebeat
@@ -84,7 +84,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH LOGSTASH IMAGE
-      - name: Build logstash image & push if changed
+      - name: Build logstash image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: logstash
@@ -92,7 +92,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
       
       # BUILD AND PUSH ELASTICSEARCH SETUP IMAGE
-      - name: Build elasticsearch setup image & push if changed
+      - name: Build elasticsearch setup image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: elasticsearch-setup
@@ -100,7 +100,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH ELASTICSEARCH IMAGE
-      - name: Build elasticsearch image & push if changed
+      - name: Build elasticsearch image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: elasticsearch
@@ -108,7 +108,7 @@ jobs:
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH KIBANA IMAGE
-      - name: Build kibana image & push if changed
+      - name: Build kibana image & push if version incremented
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: kibana

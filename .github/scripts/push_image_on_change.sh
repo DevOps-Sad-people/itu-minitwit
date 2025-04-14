@@ -2,33 +2,25 @@
 
 set -e
 
-IMAGE_NAME="${IMAGE_NAME:-filebeat}"
-CONTEXT_PATH="${CONTEXT_PATH:-./elk/filebeat/}"
-REGISTRY_NAME="${REGISTRY_NAME:-registry.digitalocean.com/sad-containers}"
-FULL_IMAGE="$REGISTRY_NAME/$IMAGE_NAME:latest"
+source .VERSION
 
-echo "1. Building $IMAGE_NAME image..."
-docker build -t "$FULL_IMAGE" "$CONTEXT_PATH"
-LOCAL_ID=$(docker images --filter=reference="$FULL_IMAGE" --format '{{.ID}}')
+IMAGE_NAME="${IMAGE_NAME}"
+CONTEXT_PATH="${CONTEXT_PATH}"
+VERSION_VAR_NAME=$(echo "${IMAGE_NAME^^}")_VERSION
+VERSION="${!VERSION_VAR_NAME}"
+REGISTRY_NAME="${REGISTRY_NAME}"
 
-echo "2. Checking if image has changed..."
-REMOTE_DIGEST=$(doctl registry repository list-tags "$IMAGE_NAME" --format Tag,ManifestDigest --no-header | grep '^latest' | awk '{print $2}' || true)
+echo "Building $IMAGE_NAME:$VERSION image..."
+VERSION_TAG="$REGISTRY_NAME/$IMAGE_NAME:$VERSION"
+LATEST_TAG="$REGISTRY_NAME/$IMAGE_NAME:latest"
+docker build -t "$VERSION_TAG" -t "$LATEST_TAG" "$CONTEXT_PATH"
 
-if [ -z "$REMOTE_DIGEST" ]; then
-  echo "No remote image found — pushing new image..."
-  docker push "$FULL_IMAGE"
+echo "Checking $IMAGE_NAME:$VERSION in registry..."
+if doctl registry repository list-tags "$IMAGE_NAME" --format Tag --no-header | grep -q "^$VERSION$"; then
+  echo "Image already exists, skipping push."
   exit 0
 fi
 
-docker pull "$REGISTRY_NAME/$IMAGE_NAME@$REMOTE_DIGEST"
-REMOTE_ID=$(docker images --filter=reference="$REGISTRY_NAME/$IMAGE_NAME@$REMOTE_DIGEST" --format '{{.ID}}')
-
-echo "Local ID:  $LOCAL_ID"
-echo "Remote ID: $REMOTE_ID"
-
-if [ "$LOCAL_ID" = "$REMOTE_ID" ]; then
-  echo "Image unchanged, skipping push."
-else
-  echo "Image has changed. Pushing..."
-  docker push "$FULL_IMAGE"
-fi
+echo "Pushing $VERSION_TAG to registry..."
+docker push "$VERSION_TAG"
+docker push "$LATEST_TAG"

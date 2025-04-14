@@ -49,9 +49,6 @@ services:
           - "node.role==manager"
     volumes:
       - prometheus-data:/prometheus
-#    configs:
-#      - source: prometheus_config
-#        target: /etc/prometheus/prometheus.yml
 
   grafana:
     image: registry.digitalocean.com/sad-containers/grafana:latest #grafana/grafana:11.5.2
@@ -65,17 +62,17 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"
     environment:
-      GF_SECURITY_ADMIN_USER_FILE: /run/secrets/GRAFANA_USERNAME
-      GF_SECURITY_ADMIN_PASSWORD_FILE: /run/secrets/GRAFANA_PASSWORD
-      GF_POSTGRES_USERNAME_FILE: /run/secrets/GRAFANA_POSTGRES_USERNAME
-      GF_POSTGRES_PASSWORD_FILE: /run/secrets/GRAFANA_POSTGRES_PASSWORD
-      GF_SMTP_ENABLED_FILE: /run/secrets/GRAFANA_SMTP_ENABLED
-      GF_SMTP_HOST_FILE: /run/secrets/GRAFANA_SMTP_HOST
-      GF_SMTP_USER_FILE: /run/secrets/GRAFANA_SMTP_USER
-      GF_SMTP_PASSWORD_FILE: /run/secrets/GRAFANA_SMTP_PASSWORD
-      GF_SMTP_SKIP_VERIFY_FILE: /run/secrets/GRAFANA_SMTP_SKIP_VERIFY
-      GF_SMTP_FROM_NAME_FILE: /run/secrets/GRAFANA_SMTP_FROM_NAME
-      GF_SMTP_FROM_ADDRESS_FILE: /run/secrets/GRAFANA_SMTP_FROM_ADDRESS
+      GF_SECURITY_ADMIN_USER: /run/secrets/GRAFANA_USERNAME
+      GF_SECURITY_ADMIN_PASSWORD: /run/secrets/GRAFANA_PASSWORD
+      GF_POSTGRES_USERNAME: /run/secrets/GRAFANA_POSTGRES_USERNAME
+      GF_POSTGRES_PASSWORD: /run/secrets/GRAFANA_POSTGRES_PASSWORD
+      GF_SMTP_ENABLED: /run/secrets/GRAFANA_SMTP_ENABLED
+      GF_SMTP_HOST: /run/secrets/GRAFANA_SMTP_HOST
+      GF_SMTP_USER: /run/secrets/GRAFANA_SMTP_USER
+      GF_SMTP_PASSWORD: /run/secrets/GRAFANA_SMTP_PASSWORD
+      GF_SMTP_SKIP_VERIFY: /run/secrets/GRAFANA_SMTP_SKIP_VERIFY
+      GF_SMTP_FROM_NAME: /run/secrets/GRAFANA_SMTP_FROM_NAME
+      GF_SMTP_FROM_ADDRESS: /run/secrets/GRAFANA_SMTP_FROM_ADDRESS
     secrets:
       - GRAFANA_USERNAME
       - GRAFANA_PASSWORD
@@ -92,21 +89,43 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
-#    configs:
-#      - source: grafana_alert_rules
-#        target: /etc/grafana/provisioning/alerting/alert_rules.yaml
-#      - source: grafana_contact_points
-#        target: /etc/grafana/provisioning/alerting/contact_points.yaml
-#      - source: grafana_policies
-#        target: /etc/grafana/provisioning/alerting/policies.yaml
-#      - source: grafana_dashboard_provider
-#        target: /etc/grafana/provisioning/dashboards/dashboard-provider.yaml
-#      - source: grafana_postgres_datasource
-#        target: /etc/grafana/provisioning/datasources/postgres.yaml
-#      - source: grafana_prometheus_datasource
-#        target: /etc/grafana/provisioning/datasources/prometheus.yaml
-#      - source: grafana_minitwit_dashboard
-#        target: /predefined-dashboards/minitwit_dashboards.json
+  
+  elasticsearch-setup:
+    image: registry.digitalocean.com/sad-containers/elasticsearch-setup:latest  #elasticsearch-setup:8.17.3
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: none
+      placement:
+        constraints:
+          - "node.hostname!=dbvm"
+          - "node.role==manager"    
+    volumes:
+      - elasticsearch-init:/data
+    environment:
+      ELASTIC_USERNAME: /run/secrets/ELASTIC_USERNAME
+      ELASTIC_PASSWORD: /run/secrets/ELASTIC_PASSWORD
+      LOGSTASH_INTERNAL_PASSWORD: /run/secrets/LOGSTASH_INTERNAL_PASSWORD
+      KIBANA_SYSTEM_USERNAME: /run/secrets/KIBANA_SYSTEM_USERNAME
+      KIBANA_SYSTEM_PASSWORD: /run/secrets/KIBANA_SYSTEM_PASSWORD
+      METRICBEAT_INTERNAL_PASSWORD: /run/secrets/METRICBEAT_INTERNAL_PASSWORD
+      FILEBEAT_INTERNAL_PASSWORD: /run/secrets/FILEBEAT_INTERNAL_PASSWORD
+      HEARTBEAT_INTERNAL_PASSWORD: /run/secrets/HEARTBEAT_INTERNAL_PASSWORD
+      MONITORING_INTERNAL_PASSWORD: /run/secrets/MONITORING_INTERNAL_PASSWORD
+      BEATS_SYSTEM_USERNAME: /run/secrets/BEATS_SYSTEM_USERNAME
+      BEATS_SYSTEM_PASSWORD: /run/secrets/BEATS_SYSTEM_PASSWORD
+    secrets:
+      - ELASTIC_USERNAME
+      - ELASTIC_PASSWORD
+      - LOGSTASH_INTERNAL_PASSWORD
+      - KIBANA_SYSTEM_USERNAME
+      - KIBANA_SYSTEM_PASSWORD
+      - METRICBEAT_INTERNAL_PASSWORD
+      - FILEBEAT_INTERNAL_PASSWORD
+      - HEARTBEAT_INTERNAL_PASSWORD
+      - MONITORING_INTERNAL_PASSWORD
+      - BEATS_SYSTEM_USERNAME
+      - BEATS_SYSTEM_PASSWORD
 
   elasticsearch:
     image: registry.digitalocean.com/sad-containers/elasticsearch:latest  #elasticsearch:8.17.3
@@ -121,50 +140,15 @@ services:
           - "node.role==manager"    
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
-    ports:
-      - 9200:9200
     environment:
+      ELASTIC_USERNAME: /run/secrets/ELASTIC_USERNAME
+      ELASTIC_PASSWORD: /run/secrets/ELASTIC_PASSWORD
       node.name: elasticsearch
-      ELASTIC_USERNAME_FILE: /run/secrets/ELASTIC_USERNAME
-      ELASTIC_PASSWORD_FILE: /run/secrets/ELASTIC_PASSWORD
-      LOGSTASH_INTERNAL_PASSWORD_FILE: /run/secrets/LOGSTASH_INTERNAL_PASSWORD
-      KIBANA_SYSTEM_USERNAME_FILE: /run/secrets/KIBANA_SYSTEM_USERNAME
-      KIBANA_SYSTEM_PASSWORD_FILE: /run/secrets/KIBANA_SYSTEM_PASSWORD
-      METRICBEAT_INTERNAL_PASSWORD_FILE: /run/secrets/METRICBEAT_INTERNAL_PASSWORD
-      FILEBEAT_INTERNAL_PASSWORD_FILE: /run/secrets/FILEBEAT_INTERNAL_PASSWORD
-      HEARTBEAT_INTERNAL_PASSWORD_FILE: /run/secrets/HEARTBEAT_INTERNAL_PASSWORD
-      MONITORING_INTERNAL_PASSWORD_FILE: /run/secrets/MONITORING_INTERNAL_PASSWORD
-      BEATS_SYSTEM_USERNAME_FILE: /run/secrets/BEATS_SYSTEM_USERNAME
-      BEATS_SYSTEM_PASSWORD_FILE: /run/secrets/BEATS_SYSTEM_PASSWORD
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     secrets:
       - ELASTIC_USERNAME
       - ELASTIC_PASSWORD
-      - LOGSTASH_INTERNAL_PASSWORD
-      - KIBANA_SYSTEM_USERNAME
-      - KIBANA_SYSTEM_PASSWORD
-      - METRICBEAT_INTERNAL_PASSWORD
-      - FILEBEAT_INTERNAL_PASSWORD
-      - HEARTBEAT_INTERNAL_PASSWORD
-      - MONITORING_INTERNAL_PASSWORD
-      - BEATS_SYSTEM_USERNAME
-      - BEATS_SYSTEM_PASSWORD
-#    configs:
-#      - source: elasticsearch_entrypoint
-#        target: /entrypoint.sh
-#      - source: elasticsearch_lib
-#        target: /lib.sh
-#      - source: elasticsearch_role_filebeat_writer
-#        target: /roles/filebeat_writer.json
-#      - source: elasticsearch_role_heartbeat_writer
-#        target: /roles/heartbeat_writer.json
-#      - source: elasticsearch_role_logstash_writer
-#        target: /roles/logstash_writer.json
-#      - source: elasticsearch_role_metricbeat_writer
-#        target: /roles/metricbeat_writer.json
-#      - source: elasticsearch_config
-#        target: /usr/share/elasticsearch/config/elasticsearch.yml
 
   logstash:
     image: registry.digitalocean.com/sad-containers/logstash:latest #logstash:8.17.3
@@ -177,18 +161,11 @@ services:
         constraints:
           - "node.hostname!=dbvm"
           - "node.role==manager"
-    ports:
-      - 5044:5044
     environment:
-      LOGSTASH_INTERNAL_PASSWORD_FILE: /run/secrets/LOGSTASH_INTERNAL_PASSWORD
+      LOGSTASH_INTERNAL_PASSWORD: /run/secrets/LOGSTASH_INTERNAL_PASSWORD
       LS_JAVA_OPTS: -Xms256m -Xmx256m
     secrets:
       - LOGSTASH_INTERNAL_PASSWORD
-#    configs:
-#      - source: logstash_config
-#        target: /usr/share/logstash/config/logstash.yml
-#      - source: logstash_pipeline
-#        target: /usr/share/logstash/pipeline/logstash.conf
     depends_on:
       - elasticsearch
 
@@ -206,14 +183,11 @@ services:
     ports:
       - 5601:5601
     environment:
-      KIBANA_SYSTEM_USERNAME_FILE: /run/secrets/KIBANA_SYSTEM_USERNAME
-      KIBANA_SYSTEM_PASSWORD_FILE: /run/secrets/KIBANA_SYSTEM_PASSWORD
+      KIBANA_SYSTEM_USERNAME: /run/secrets/KIBANA_SYSTEM_USERNAME
+      KIBANA_SYSTEM_PASSWORD: /run/secrets/KIBANA_SYSTEM_PASSWORD
     secrets:
       - KIBANA_SYSTEM_USERNAME
       - KIBANA_SYSTEM_PASSWORD
-#    configs:
-#      - source: kibana_config
-#        target: /usr/share/kibana/config/kibana.yml
     depends_on:
       - elasticsearch
 
@@ -242,16 +216,13 @@ services:
         target: /var/run/docker.sock
         read_only: true
     environment:
-      FILEBEAT_INTERNAL_PASSWORD_FILE: /run/secrets/FILEBEAT_INTERNAL_PASSWORD
-      BEATS_SYSTEM_USERNAME_FILE: /run/secrets/BEATS_SYSTEM_USERNAME
-      BEATS_SYSTEM_PASSWORD_FILE: /run/secrets/BEATS_SYSTEM_PASSWORD
+      FILEBEAT_INTERNAL_PASSWORD: /run/secrets/FILEBEAT_INTERNAL_PASSWORD
+      BEATS_SYSTEM_USERNAME: /run/secrets/BEATS_SYSTEM_USERNAME
+      BEATS_SYSTEM_PASSWORD: /run/secrets/BEATS_SYSTEM_PASSWORD
     secrets:
       - FILEBEAT_INTERNAL_PASSWORD
       - BEATS_SYSTEM_USERNAME
       - BEATS_SYSTEM_PASSWORD
-#    configs:
-#      - source: filebeat_config
-#        target: /usr/share/filebeat/filebeat.yml
     depends_on:
       - elasticsearch
 
@@ -260,52 +231,7 @@ volumes:
   prometheus-data:
   grafana-data:
   elasticsearch-data:
-
-#configs:
-#  # GRAFANA
-#  grafana_alert_rules:
-#    file: ./grafana/alerting/alert_rules.yaml
-#  grafana_contact_points:
-#    file: ./grafana/alerting/contact_points.yaml
-#  grafana_policies:
-#    file: ./grafana/alerting/policies.yaml
-#  grafana_dashboard_provider:
-#    file: ./grafana/dashboards/dashboards-provider.yaml
-#  grafana_postgres_datasource:
-#    file: ./grafana/datasources/postgres.yaml
-#  grafana_prometheus_datasource:
-#    file: ./grafana/datasources/prometheus.yaml
-#  grafana_minitwit_dashboard:
-#    file: ./grafana/predefined-dashboards/minitwit_dashboard.json
-#  #PROMETHEUS
-#  prometheus_config:
-#    file: ./prometheus/prometheus.yml
-#  #ELASTICSEARCH
-#  elasticsearch_entrypoint:
-#    file: ./elk/elasticsearch/setup/entrypoint.sh
-#  elasticsearch_lib:
-#    file: ./elk/elasticsearch/setup/lib.sh
-#  elasticsearch_role_filebeat_writer:
-#    file: ./elk/elasticsearch/setup/roles/filebeat_writer.json
-#  elasticsearch_role_heartbeat_writer:
-#    file: ./elk/elasticsearch/setup/roles/heartbeat_writer.json
-#  elasticsearch_role_logstash_writer:
-#    file: ./elk/elasticsearch/setup/roles/logstash_writer.json
-#  elasticsearch_role_metricbeat_writer:
-#    file: ./elk/elasticsearch/setup/roles/metricbeat_writer.json
-#  elasticsearch_config:
-#    file: ./elk/elasticsearch/config/elasticsearch.yml
-#  #FILEBEAT
-#  filebeat_config:
-#    file: ./elk/filebeat/config/filebeat.yml
-#  #KIBANA
-#  kibana_config:
-#    file: ./elk/kibana/config/kibana.yml
-#  #LOGSTASH
-#  logstash_config:
-#    file: ./elk/logstash/config/logstash.yml
-#  logstash_pipeline:
-#    file: ./elk/logstash/pipeline/logstash.conf
+  elasticsearch-init:
 
 secrets:
   DB_HOST:
@@ -370,11 +296,3 @@ secrets:
     external: true
   MONITORING_INTERNAL_PASSWORD:
     external: true
-
-
-
-
-
-
-
-

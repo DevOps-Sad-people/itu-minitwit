@@ -80,6 +80,12 @@ jobs:
         run: docker build -t ${{ env.REGISTRY_NAME }}/logstash:latest ./elk/logstash
       - name: Push logstash image to DigitalOcean Container Registry
         run: docker push ${{ env.REGISTRY_NAME }}/logstash:latest
+      
+      # BUILD AND PUSH ELASTICSEARCH SETUP IMAGE
+      - name: Build elasticsearch setup container image
+        run: docker build -t ${{ env.REGISTRY_NAME }}/elasticsearch-setup:latest ./elk/elasticsearch/setup
+      - name: Push elasticsearch setup image to DigitalOcean Container Registry
+        run: docker push ${{ env.REGISTRY_NAME }}/elasticsearch-setup:latest
 
       # BUILD AND PUSH ELASTICSEARCH IMAGE
       - name: Build elasticsearch container image

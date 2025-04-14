@@ -11,12 +11,16 @@ services:
       placement:
         constraints:
           - "node.hostname!=dbvm"
-    depends_on:
-      - db
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      SIMULATOR_IP: ${SIMULATOR_IP}
     ports:
-      - "4567:4567"
-    env_file:
-      - .env
+      - 4567:4567
 
   db:
     image: postgres:15
@@ -62,40 +66,29 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"
     environment:
-      GF_SECURITY_ADMIN_USER: /run/secrets/GRAFANA_USERNAME
-      GF_SECURITY_ADMIN_PASSWORD: /run/secrets/GRAFANA_PASSWORD
-      GF_POSTGRES_USERNAME: /run/secrets/GRAFANA_POSTGRES_USERNAME
-      GF_POSTGRES_PASSWORD: /run/secrets/GRAFANA_POSTGRES_PASSWORD
-      GF_SMTP_ENABLED: /run/secrets/GRAFANA_SMTP_ENABLED
-      GF_SMTP_HOST: /run/secrets/GRAFANA_SMTP_HOST
-      GF_SMTP_USER: /run/secrets/GRAFANA_SMTP_USER
-      GF_SMTP_PASSWORD: /run/secrets/GRAFANA_SMTP_PASSWORD
-      GF_SMTP_SKIP_VERIFY: /run/secrets/GRAFANA_SMTP_SKIP_VERIFY
-      GF_SMTP_FROM_NAME: /run/secrets/GRAFANA_SMTP_FROM_NAME
-      GF_SMTP_FROM_ADDRESS: /run/secrets/GRAFANA_SMTP_FROM_ADDRESS
-    secrets:
-      - GRAFANA_USERNAME
-      - GRAFANA_PASSWORD
-      - GRAFANA_POSTGRES_USERNAME
-      - GRAFANA_POSTGRES_PASSWORD
-      - GRAFANA_SMTP_ENABLED
-      - GRAFANA_SMTP_HOST
-      - GRAFANA_SMTP_USER
-      - GRAFANA_SMTP_PASSWORD
-      - GRAFANA_SMTP_SKIP_VERIFY
-      - GRAFANA_SMTP_FROM_NAME
-      - GRAFANA_SMTP_FROM_ADDRESS
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USERNAME}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_POSTGRES_USERNAME: ${GRAFANA_POSTGRES_USERNAME}
+      GF_POSTGRES_PASSWORD: ${GRAFANA_POSTGRES_PASSWORD}
+      GF_SMTP_ENABLED: ${GRAFANA_SMTP_ENABLED}
+      GF_SMTP_HOST: ${GRAFANA_SMTP_HOST}
+      GF_SMTP_USER: ${GRAFANA_SMTP_USER}
+      GF_SMTP_PASSWORD: ${GRAFANA_SMTP_PASSWORD}
+      GF_SMTP_SKIP_VERIFY: ${GRAFANA_SMTP_SKIP_VERIFY}
+      GF_SMTP_FROM_NAME: ${GRAFANA_SMTP_FROM_NAME}
+      GF_SMTP_FROM_ADDRESS: ${GRAFANA_SMTP_FROM_ADDRESS}
     volumes:
       - grafana-data:/var/lib/grafana
     ports:
-      - "3000:3000"
+      - 3000:3000
   
   elasticsearch-setup:
     image: registry.digitalocean.com/sad-containers/elasticsearch-setup:latest  #elasticsearch-setup:8.17.3
     deploy:
       replicas: 1
-      restart_policy:
-        condition: none
+      update_config:
+        delay: 10s
+        order: start-first
       placement:
         constraints:
           - "node.hostname!=dbvm"
@@ -103,29 +96,17 @@ services:
     volumes:
       - elasticsearch-init:/data
     environment:
-      ELASTIC_USERNAME: /run/secrets/ELASTIC_USERNAME
-      ELASTIC_PASSWORD: /run/secrets/ELASTIC_PASSWORD
-      LOGSTASH_INTERNAL_PASSWORD: /run/secrets/LOGSTASH_INTERNAL_PASSWORD
-      KIBANA_SYSTEM_USERNAME: /run/secrets/KIBANA_SYSTEM_USERNAME
-      KIBANA_SYSTEM_PASSWORD: /run/secrets/KIBANA_SYSTEM_PASSWORD
-      METRICBEAT_INTERNAL_PASSWORD: /run/secrets/METRICBEAT_INTERNAL_PASSWORD
-      FILEBEAT_INTERNAL_PASSWORD: /run/secrets/FILEBEAT_INTERNAL_PASSWORD
-      HEARTBEAT_INTERNAL_PASSWORD: /run/secrets/HEARTBEAT_INTERNAL_PASSWORD
-      MONITORING_INTERNAL_PASSWORD: /run/secrets/MONITORING_INTERNAL_PASSWORD
-      BEATS_SYSTEM_USERNAME: /run/secrets/BEATS_SYSTEM_USERNAME
-      BEATS_SYSTEM_PASSWORD: /run/secrets/BEATS_SYSTEM_PASSWORD
-    secrets:
-      - ELASTIC_USERNAME
-      - ELASTIC_PASSWORD
-      - LOGSTASH_INTERNAL_PASSWORD
-      - KIBANA_SYSTEM_USERNAME
-      - KIBANA_SYSTEM_PASSWORD
-      - METRICBEAT_INTERNAL_PASSWORD
-      - FILEBEAT_INTERNAL_PASSWORD
-      - HEARTBEAT_INTERNAL_PASSWORD
-      - MONITORING_INTERNAL_PASSWORD
-      - BEATS_SYSTEM_USERNAME
-      - BEATS_SYSTEM_PASSWORD
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD}
 
   elasticsearch:
     image: registry.digitalocean.com/sad-containers/elasticsearch:latest  #elasticsearch:8.17.3
@@ -141,14 +122,11 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
     environment:
-      ELASTIC_USERNAME: /run/secrets/ELASTIC_USERNAME
-      ELASTIC_PASSWORD: /run/secrets/ELASTIC_PASSWORD
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       node.name: elasticsearch
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
-    secrets:
-      - ELASTIC_USERNAME
-      - ELASTIC_PASSWORD
 
   logstash:
     image: registry.digitalocean.com/sad-containers/logstash:latest #logstash:8.17.3
@@ -162,12 +140,8 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"
     environment:
-      LOGSTASH_INTERNAL_PASSWORD: /run/secrets/LOGSTASH_INTERNAL_PASSWORD
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD}
       LS_JAVA_OPTS: -Xms256m -Xmx256m
-    secrets:
-      - LOGSTASH_INTERNAL_PASSWORD
-    depends_on:
-      - elasticsearch
 
   kibana:
     image: registry.digitalocean.com/sad-containers/kibana:latest #kibana:8.17.3
@@ -183,13 +157,8 @@ services:
     ports:
       - 5601:5601
     environment:
-      KIBANA_SYSTEM_USERNAME: /run/secrets/KIBANA_SYSTEM_USERNAME
-      KIBANA_SYSTEM_PASSWORD: /run/secrets/KIBANA_SYSTEM_PASSWORD
-    secrets:
-      - KIBANA_SYSTEM_USERNAME
-      - KIBANA_SYSTEM_PASSWORD
-    depends_on:
-      - elasticsearch
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD}
 
   filebeat:
     image: registry.digitalocean.com/sad-containers/filebeat:latest #docker.elastic.co/beats/filebeat:8.17.3
@@ -216,15 +185,9 @@ services:
         target: /var/run/docker.sock
         read_only: true
     environment:
-      FILEBEAT_INTERNAL_PASSWORD: /run/secrets/FILEBEAT_INTERNAL_PASSWORD
-      BEATS_SYSTEM_USERNAME: /run/secrets/BEATS_SYSTEM_USERNAME
-      BEATS_SYSTEM_PASSWORD: /run/secrets/BEATS_SYSTEM_PASSWORD
-    secrets:
-      - FILEBEAT_INTERNAL_PASSWORD
-      - BEATS_SYSTEM_USERNAME
-      - BEATS_SYSTEM_PASSWORD
-    depends_on:
-      - elasticsearch
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD}
 
 volumes:
   pg_data:
@@ -232,67 +195,3 @@ volumes:
   grafana-data:
   elasticsearch-data:
   elasticsearch-init:
-
-secrets:
-  DB_HOST:
-    external: true
-  DB_PORT:
-    external: true
-  DB_NAME:
-    external: true
-  DB_USER:
-    external: true
-  DB_PASSWORD:
-    external: true
-  SIM_TRACKER_FILE:
-    external: true
-  SECRET_KEY:
-    external: true
-  SIMULATOR_IP:
-    external: true
-  GRAFANA_USERNAME:
-    external: true
-  GRAFANA_PASSWORD:
-    external: true
-  GRAFANA_POSTGRES_USERNAME:
-    external: true
-  GRAFANA_POSTGRES_PASSWORD:
-    external: true
-  GRAFANA_SMTP_ENABLED:
-    external: true
-  GRAFANA_SMTP_HOST:
-    external: true
-  GRAFANA_SMTP_USER:
-    external: true
-  GRAFANA_SMTP_PASSWORD:
-    external: true
-  GRAFANA_SMTP_SKIP_VERIFY:
-    external: true
-  GRAFANA_SMTP_FROM_NAME:
-    external: true
-  GRAFANA_SMTP_FROM_ADDRESS:
-    external: true
-  ELASTIC_VERSION:
-    external: true
-  ELASTIC_USERNAME:
-    external: true
-  ELASTIC_PASSWORD:
-    external: true
-  KIBANA_SYSTEM_USERNAME:
-    external: true
-  KIBANA_SYSTEM_PASSWORD:
-    external: true
-  BEATS_SYSTEM_USERNAME:
-    external: true
-  BEATS_SYSTEM_PASSWORD:
-    external: true
-  LOGSTASH_INTERNAL_PASSWORD:
-    external: true
-  FILEBEAT_INTERNAL_PASSWORD:
-    external: true
-  METRICBEAT_INTERNAL_PASSWORD:
-    external: true
-  HEARTBEAT_INTERNAL_PASSWORD:
-    external: true
-  MONITORING_INTERNAL_PASSWORD:
-    external: true

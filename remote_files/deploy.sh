@@ -1,6 +1,7 @@
-# Converts the contents of the .env file into docker secrets
-bash convert_env_into_secrets.sh
+#!/bin/bash
 
+# Pull images from registry
 docker compose -f docker-compose.yml pull
-# docker compose -f docker-compose.yml up -d
-docker stack deploy -c docker-compose.yml minitwit
+
+# Interpolate env variables for swarm, then deploy
+bash interpolate_compose_file.sh | docker stack deploy -c - minitwit

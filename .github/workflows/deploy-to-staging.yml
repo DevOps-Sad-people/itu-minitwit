@@ -50,9 +50,6 @@ jobs:
       # check rate limit for digital ocean
       - name: Check rate limit
         run: doctl account ratelimit --format Remaining
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
       # BUILD AND PUSH MINITWIT IMAGE
       - name: Build minitwit image & push if changed

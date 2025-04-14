@@ -2,13 +2,13 @@
 
 set -e
 
-IMAGE_NAME="${IMAGE_NAME}"
-CONTEXT_PATH="${CONTEXT_PATH}"
-REGISTRY_NAME="${REGISTRY_NAME}"
+IMAGE_NAME="${IMAGE_NAME:-filebeat}"
+CONTEXT_PATH="${CONTEXT_PATH:-./elk/filebeat/}"
+REGISTRY_NAME="${REGISTRY_NAME:-registry.digitalocean.com/sad-containers}"
 FULL_IMAGE="$REGISTRY_NAME/$IMAGE_NAME:latest"
 
 echo "1. Building $IMAGE_NAME image..."
-docker buildx build --cache-from=type=registry,ref=$FULL_IMAGE --load -t "$FULL_IMAGE" "$CONTEXT_PATH"
+docker build -t "$FULL_IMAGE" "$CONTEXT_PATH"
 LOCAL_ID=$(docker images --filter=reference="$FULL_IMAGE" --format '{{.ID}}')
 
 echo "2. Checking if image has changed..."

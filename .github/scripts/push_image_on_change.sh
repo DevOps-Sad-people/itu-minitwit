@@ -8,7 +8,7 @@ REGISTRY_NAME="${REGISTRY_NAME}"
 FULL_IMAGE="$REGISTRY_NAME/$IMAGE_NAME:latest"
 
 echo "1. Building $IMAGE_NAME image..."
-docker build -t "$FULL_IMAGE" "$CONTEXT_PATH"
+docker buildx build --cache-from=type=registry,ref=$FULL_IMAGE --load -t "$FULL_IMAGE" "$CONTEXT_PATH"
 LOCAL_ID=$(docker images --filter=reference="$FULL_IMAGE" --format '{{.ID}}')
 
 echo "2. Checking if image has changed..."

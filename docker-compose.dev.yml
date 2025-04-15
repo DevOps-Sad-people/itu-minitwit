@@ -79,9 +79,9 @@ services:
     container_name: elasticsearch-setup
     volumes:
       - elasticsearch-init:/data
-      - ./elk/elasticsearch/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-      - ./elk/elasticsearch/setup/lib.sh:/lib.sh:ro,Z
-      - ./elk/elasticsearch/setup/roles:/roles:ro,Z
+      - ./elk/elasticsearch-setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/elasticsearch-setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/elasticsearch-setup/roles:/roles:ro,Z
     entrypoint: ["/bin/bash", "-c", "apt-get update && apt-get install -y curl && /entrypoint.sh"]
     environment:
       ELASTIC_USERNAME: ${ELASTIC_USERNAME}

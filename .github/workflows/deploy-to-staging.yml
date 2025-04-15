@@ -102,7 +102,7 @@ jobs:
         env:
           IMAGE_NAME: elasticsearch-setup
           REF_NAME: ${{ github.ref_name }}
-          CONTEXT_PATH: ./elk/elasticsearch/setup
+          CONTEXT_PATH: ./elk/elasticsearch-setup
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH ELASTICSEARCH IMAGE

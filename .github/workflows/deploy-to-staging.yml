@@ -52,66 +52,74 @@ jobs:
         run: doctl account ratelimit --format Remaining
 
       # BUILD AND PUSH MINITWIT IMAGE
-      - name: Build minitwit image & push if version incremented
+      - name: Build minitwit image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: minitwit
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: .
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH PROMETHEUS IMAGE
-      - name: Build prometheus image & push if version incremented
+      - name: Build prometheus image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: prometheus
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./prometheus
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH GRAFANA IMAGE
-      - name: Build grafana image & push if version incremented
+      - name: Build grafana image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: grafana
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./grafana
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH FILEBEAT IMAGE
-      - name: Build filebeat image & push if changversion incremented
+      - name: Build filebeat image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: filebeat
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./elk/filebeat
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH LOGSTASH IMAGE
-      - name: Build logstash image & push if version incremented
+      - name: Build logstash image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: logstash
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./elk/logstash
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
       
       # BUILD AND PUSH ELASTICSEARCH SETUP IMAGE
-      - name: Build elasticsearch setup image & push if version incremented
+      - name: Build elasticsearch setup image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: elasticsearch-setup
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./elk/elasticsearch/setup
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH ELASTICSEARCH IMAGE
-      - name: Build elasticsearch image & push if version incremented
+      - name: Build elasticsearch image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: elasticsearch
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./elk/elasticsearch
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 
       # BUILD AND PUSH KIBANA IMAGE
-      - name: Build kibana image & push if version incremented
+      - name: Build kibana image & push if changed
         run: ./.github/scripts/push_image_on_change.sh
         env:
           IMAGE_NAME: kibana
+          REF_NAME: ${{ github.ref_name }}
           CONTEXT_PATH: ./elk/kibana
           REGISTRY_NAME: ${{ env.REGISTRY_NAME }}
 

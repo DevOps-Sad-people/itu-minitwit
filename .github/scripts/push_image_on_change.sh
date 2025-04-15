@@ -5,22 +5,20 @@ set -e
 source .VERSION
 
 IMAGE_NAME="${IMAGE_NAME}"
+REF_NAME=${REF_NAME}
 CONTEXT_PATH="${CONTEXT_PATH}"
-VERSION_VAR_NAME=$(echo "${IMAGE_NAME^^}" | tr '-' '_')_VERSION
-VERSION="${!VERSION_VAR_NAME}"
 REGISTRY_NAME="${REGISTRY_NAME}"
 
-echo "Building $IMAGE_NAME:$VERSION image..."
-VERSION_TAG="$REGISTRY_NAME/$IMAGE_NAME:$VERSION"
-LATEST_TAG="$REGISTRY_NAME/$IMAGE_NAME:latest"
-docker build -t "$VERSION_TAG" -t "$LATEST_TAG" "$CONTEXT_PATH"
+echo "Checking for changes in the image files..."
+if ! git rev-parse HEAD~1 >/dev/null 2>&1 || ! git diff --quiet HEAD HEAD~1 --; then
+  echo "Building $IMAGE_NAME:$REF_NAME image..."
+  VERSION_TAG="$REGISTRY_NAME/$IMAGE_NAME:$REF_NAME"
+  LATEST_TAG="$REGISTRY_NAME/$IMAGE_NAME:latest"
+  docker build -t "$VERSION_TAG" -t "$LATEST_TAG" "$CONTEXT_PATH"
 
-echo "Checking $IMAGE_NAME:$VERSION in registry..."
-if doctl registry repository list-tags "$IMAGE_NAME" --format Tag --no-header | grep -q "^$VERSION$"; then
-  echo "Image already exists, skipping push."
-  exit 0
+  echo "Pushing $IMAGE_NAME:$REF_NAME to registry..."
+  docker push "$VERSION_TAG"
+  docker push "$LATEST_TAG"
+else
+  echo "No changes in image files, skipping push."
 fi
-
-echo "Pushing $VERSION_TAG to registry..."
-docker push "$VERSION_TAG"
-docker push "$LATEST_TAG"

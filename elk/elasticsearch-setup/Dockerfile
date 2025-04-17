@@ -1,8 +1,8 @@
 ARG ELASTIC_VERSION
 
-FROM ubuntu:latest
+FROM ubuntu:25.04
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y curl=8.12.1-3ubuntu1
 
 COPY ./entrypoint.sh /entrypoint.sh
 COPY ./lib.sh /lib.sh

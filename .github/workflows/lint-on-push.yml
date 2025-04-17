@@ -52,4 +52,9 @@ jobs:
 
       - name: DockerFile linting
         if: '!cancelled()'
-        run: docker run --rm -i hadolint/hadolint < Dockerfile
+        run: |
+          for file in $(find . -name 'Dockerfile*'); do
+            echo "Linting $file"
+            docker run --rm -i hadolint/hadolint < "$file"
+          done
+

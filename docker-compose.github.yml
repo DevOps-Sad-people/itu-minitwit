@@ -1,8 +1,6 @@
-version: "3.8" # version to be compatible with docker swarm/stack deployments
-
 services:
-  test:
-    build: .
+  web:
+    image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     container_name: minitwit
     depends_on:
       db:
@@ -10,14 +8,13 @@ services:
     ports:
       - "4567:4567"
     networks:
-      - minitwit_network_test
-    command: ["rspec"]
+      - minitwit_network
     env_file:
-      - .env.test
+      - .env
 
   db:
     image: postgres:15
-    container_name: minitwit_test_db
+    container_name: minitwit_db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -26,7 +23,7 @@ services:
     expose:
       - "5432"
     networks:
-      - minitwit_network_test
+      - minitwit_network
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -36,7 +33,7 @@ services:
       retries: 5
 
 networks:
-  minitwit_network_test:
+  minitwit_network:
     driver: bridge
 
 volumes:

@@ -1,16 +1,9 @@
-version: '3.8' # version to be compatible with docker swarm/stack deployments
+version: "3.8" # version to be compatible with docker swarm/stack deployments
 
 services:
   web:
-    image: registry.digitalocean.com/sad-containers/minitwit:latest
-    deploy:
-      replicas: 2
-      update_config:
-        delay: 10s
-        order: start-first
-      placement:
-        constraints:
-          - "node.hostname!=dbvm"
+    image: registry.digitalocean.com/sad-containers/minitwit:${TAG:-latest}
+    container_name: minitwit
     depends_on:
       - db
     ports:
@@ -83,39 +76,34 @@ services:
     ports:
       - "3000:3000"
 
-  # setup:
-  #   build:
-  #     context: elk/setup/
-  #     args:
-  #       ELASTIC_VERSION: ${ELASTIC_VERSION}
-  #   deploy:
-  #     replicas: 1
-  #     update_config:
-  #       delay: 10s
-  #       order: start-first
-  #     placement:
-  #       constraints:
-  #         - "node.hostname!=dbvm"
-  #         - "node.role==manager"
-  #   init: true
-  #   volumes:
-  #     - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-  #     - ./elk/setup/lib.sh:/lib.sh:ro,Z
-  #     - ./elk/setup/roles:/roles:ro,Z
-  #   environment:
-  #     ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-  #     ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-  #     LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-  #     KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-  #     KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-  #     METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-  #     FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-  #     HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-  #     MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-  #     BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
-  #     BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-  #   depends_on:
-  #     - elasticsearch
+  setup:
+    profiles:
+      - setup
+    build:
+      context: elk/setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/setup/roles:/roles:ro,Z
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
     image: elasticsearch:8.10.2

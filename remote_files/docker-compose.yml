@@ -34,8 +34,8 @@ services:
           - "node.hostname!=dbvm"
           - "node.role==manager"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: minitwit
     volumes:
       - pg_data:/var/lib/postgresql/data

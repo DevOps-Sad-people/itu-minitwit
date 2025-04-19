@@ -4,6 +4,6 @@ require "sequel"
 Sequel.extension :migration
 
 def migrate_db(db)
-  Sequel::Migrator.run(db, "migrations")
+  Sequel::Migrator.run(db, "migrations", current: 1)
   puts "Database migrated"
 end

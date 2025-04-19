@@ -1,9 +1,7 @@
 #!/bin/bash
 
-TAG=${1:-latest} # Default to 'latest' if no tag is provided
-
-# Pull the specific image tag
+# Pull images from registry
 docker compose -f docker-compose.yml pull
 
-# Deploy the stack with the specified tag
-TAG=$TAG docker stack deploy -c docker-compose.yml minitwit
+# Interpolate env variables for swarm, then deploy
+bash interpolate_compose_file.sh | docker stack deploy -c - --with-registry-auth minitwit -d

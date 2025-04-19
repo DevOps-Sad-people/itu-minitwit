@@ -1,7 +1,7 @@
 version: '3.8' # version to be compatible with docker swarm/stack deployments
 
 services:
-  dev:
+  web:
     image: ruby:3.3
     container_name: minitwit_dev
     volumes:
@@ -16,11 +16,11 @@ services:
       - "4567:4567" # Exposing the default Sinatra port, adjust as needed
     env_file:
       - .env
+    restart: unless-stopped
 
   db:
     image: postgres:15
     container_name: minitwit_dev_db
-    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -31,35 +31,35 @@ services:
       - minitwit_network_dev
     volumes:
       - pg_data:/var/lib/postgresql/data
-      # - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-      # - ./create_tables.rb:/docker-entrypoint-initdb.d/create_tables.rb:ro
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:v3.2.1
     container_name: prometheus
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus/prometheus.dev.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     networks:
       - minitwit_network_dev
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:11.5.2
     container_name: grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-      - GF_POSTGRES_USERNAME=${GRAFANA_POSTGRES_USERNAME}
-      - GF_POSTGRES_PASSWORD=${GRAFANA_POSTGRES_PASSWORD}
-      - GF_SMTP_ENABLED=${GRAFANA_SMTP_ENABLED}
-      - GF_SMTP_HOST=${GRAFANA_SMTP_HOST}
-      - GF_SMTP_USER=${GRAFANA_SMTP_USER}
-      - GF_SMTP_PASSWORD=${GRAFANA_SMTP_PASSWORD}
-      - GF_SMTP_SKIP_VERIFY=${GRAFANA_SMTP_SKIP_VERIFY}
-      - GF_SMTP_FROM_NAME=${GRAFANA_SMTP_FROM_NAME}
-      - GF_SMTP_FROM_ADDRESS=${GRAFANA_SMTP_FROM_ADDRESS}
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USERNAME}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_POSTGRES_USERNAME: ${GRAFANA_POSTGRES_USERNAME}
+      GF_POSTGRES_PASSWORD: ${GRAFANA_POSTGRES_PASSWORD}
+      GF_SMTP_ENABLED: ${GRAFANA_SMTP_ENABLED}
+      GF_SMTP_HOST: ${GRAFANA_SMTP_HOST}
+      GF_SMTP_USER: ${GRAFANA_SMTP_USER}
+      GF_SMTP_PASSWORD: ${GRAFANA_SMTP_PASSWORD}
+      GF_SMTP_SKIP_VERIFY: ${GRAFANA_SMTP_SKIP_VERIFY}
+      GF_SMTP_FROM_NAME: ${GRAFANA_SMTP_FROM_NAME}
+      GF_SMTP_FROM_ADDRESS: ${GRAFANA_SMTP_FROM_ADDRESS}
     volumes:
       - grafana-data:/var/lib/grafana
       - ./grafana/alerting:/etc/grafana/provisioning/alerting
@@ -70,51 +70,48 @@ services:
       - "3000:3000"
     networks:
       - minitwit_network_dev
+    restart: unless-stopped
 
-  setup:
-      profiles:
-        - setup
-      build:
-        context: elk/setup/
-        args:
-          ELASTIC_VERSION: ${ELASTIC_VERSION}
-      init: true
-      volumes:
-        - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-        - ./elk/setup/lib.sh:/lib.sh:ro,Z
-        - ./elk/setup/roles:/roles:ro,Z
-      environment:
-        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-        LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-        KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-        METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-        FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-        HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-        MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
-        BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-      networks:
-        - minitwit_elk
-      depends_on:
-        - elasticsearch
+  elasticsearch-setup:
+    profiles:
+      - setup
+    image: ubuntu:latest
+    container_name: elasticsearch-setup
+    volumes:
+      - elasticsearch-init:/data
+      - ./elk/elasticsearch-setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/elasticsearch-setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/elasticsearch-setup/roles:/roles:ro,Z
+    entrypoint: ["/bin/bash", "-c", "apt-get update && apt-get install -y curl && /entrypoint.sh"]
+    environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD}
+      METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD}
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD}
+      HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD}
+      MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     container_name: elasticsearch
-    build:
-      context: elk/elasticsearch/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
     ports:
       - 9200:9200
     environment:
+      ELASTIC_USERNAME: ${ELASTIC_USERNAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       node.name: elasticsearch
-      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     networks:
@@ -122,18 +119,15 @@ services:
     restart: unless-stopped
 
   logstash:
+    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
     container_name: logstash
-    build:
-      context: elk/logstash/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     ports:
       - 5044:5044
     environment:
-      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
+      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD}
       LS_JAVA_OPTS: -Xms256m -Xmx256m
     networks:
       - minitwit_elk
@@ -142,29 +136,53 @@ services:
     restart: unless-stopped
 
   kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
     container_name: kibana
-    build:
-      context: elk/kibana/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
     environment:
-      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME}
+      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD}
     networks:
       - minitwit_elk
     depends_on:
       - elasticsearch
     restart: unless-stopped
 
-  filebeat: # Uses another docker compose file to setup filebeat.
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
     container_name: filebeat
-    extends:
-      file: elk/filebeat/filebeat-compose.yml
-      service: filebeat
+    # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
+    # 'docker.sock' and the host's filesystem.
+    user: root
+    command:
+      # Log to stderr.
+      - -e
+      # Disable config file permissions checks. Allows mounting
+      # 'config/filebeat.yml' even if it's not owned by root.
+      # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
+      - --strict.perms=false
+    volumes:
+      - ./elk/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /var/lib/docker/containers
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    environment:
+      FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD}
+      BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME}
+      BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD}
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
 
 networks:
   minitwit_network_dev:
@@ -177,3 +195,4 @@ volumes:
   prometheus-data:
   grafana-data:
   elasticsearch-data:
+  elasticsearch-init:

@@ -11,7 +11,6 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "grafana", "/minitwit/grafana", type: "rsync"
   config.vm.synced_folder "elk", "/minitwit/elk", type: "rsync"
   config.vm.synced_folder '.', '/vagrant', disabled: true
-  config.vm.provision "file", source: "schema.sql", destination: "/minitwit/schema.sql"
   config.vm.provision "file", source: ".env", destination: "/minitwit/.env"
 
   config.vm.define "minitwit", primary: true do |server|
@@ -27,18 +26,23 @@ Vagrant.configure("2") do |config|
     
     server.vm.provision "shell", inline: <<-SHELL
 
-    sudo apt-get update
+    echo -e "Running apt-get update..."
+    while ! sudo apt-get update; do
+      echo "apt-get update failed... retrying in 3s"
+      sleep 3
+    done
 
     # Replace keys
     rm -rf /root/.ssh/authorized_keys
     mv /minitwit/authorized_keys /root/.ssh/authorized_keys
 
-    # The following address an issue in DO's Ubuntu images, which still contain a lock file
-    sudo killall apt-get
-    sudo rm /var/lib/dpkg/lock-frontend
-
     # Install docker and docker compose
-    sudo apt-get install -y docker.io docker-compose-v2
+    echo -e "Installing Docker and Docker Compose..."
+    while ! sudo apt-get install -y docker.io docker-compose-v2; do
+      echo "Docker install failed... retrying in 3s"
+      sleep 3
+    done
+
     sudo systemctl status docker
 
     echo -e "\nOpening port for minitwit and SSH ...\n"

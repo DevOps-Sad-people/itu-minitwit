@@ -139,34 +139,34 @@ jobs:
       - name: Deploy to server
         run: ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd /minitwit; ./deploy.sh ${{ env.TAG }}"
 
-  tag_and_release:
-    runs-on: ubuntu-latest
-    needs: [build, test]
+  # tag_and_release:
+  #   runs-on: ubuntu-latest
+  #   needs: [build, test]
 
-    permissions:
-      contents: write
+  #   permissions:
+  #     contents: write
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: "0"
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: "0"
 
-      - name: Bump version and create tag
-        id: create_tag
-        uses: anothrNick/github-tag-action@1.71.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
-          DEFAULT_BUMP: minor
-          BRANCH_HISTORY: last
+  #     - name: Bump version and create tag
+  #       id: create_tag
+  #       uses: anothrNick/github-tag-action@1.71.0
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         WITH_V: true
+  #         DEFAULT_BUMP: minor
+  #         BRANCH_HISTORY: last
 
-      - name: Create release
-        run: |
-          if [[ -n "$OLD_TAG" && "$NEW_TAG" != "$OLD_TAG" ]]; then
-            gh release create ${{ steps.create_tag.outputs.new_tag }} --title ${{ steps.create_tag.outputs.new_tag }} --generate-notes --notes-start-tag ${{ steps.create_tag.outputs.old_tag }}
-          fi
-        env:
-          NEW_TAG: ${{ steps.create_tag.outputs.new_tag }}
-          OLD_TAG: ${{ steps.create_tag.outputs.old_tag }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Create release
+  #       run: |
+  #         if [[ -n "$OLD_TAG" && "$NEW_TAG" != "$OLD_TAG" ]]; then
+  #           gh release create ${{ steps.create_tag.outputs.new_tag }} --title ${{ steps.create_tag.outputs.new_tag }} --generate-notes --notes-start-tag ${{ steps.create_tag.outputs.old_tag }}
+  #         fi
+  #       env:
+  #         NEW_TAG: ${{ steps.create_tag.outputs.new_tag }}
+  #         OLD_TAG: ${{ steps.create_tag.outputs.old_tag }}
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

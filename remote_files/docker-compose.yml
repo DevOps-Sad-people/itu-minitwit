@@ -25,10 +25,7 @@ services:
   db:
     image: postgres:15
     deploy:
-      replicas: 1
-      update_config:
-        delay: 10s
-        order: start-first
+      mode: global # global mode to ensure one instance of the services is deployed
       placement:
         constraints:
           - "node.hostname!=dbvm"
@@ -36,7 +33,8 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: minitwit
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_HOST: ${DB_HOST}
     volumes:
       - pg_data:/var/lib/postgresql/data
 

@@ -6,9 +6,6 @@ on:
     # Run workflow every time something is pushed to the main branch
     branches:
       - develop
-      - swarm
-      - swarm-logging-fix
-
 
 # env variables
 env:

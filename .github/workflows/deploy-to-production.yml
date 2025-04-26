@@ -135,7 +135,7 @@ jobs:
         run: scp -r ./remote_files/* ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/minitwit
 
       - name: Deploy to server
-        run: ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd /minitwit; ./deploy.sh ${{ env.TAG }}"
+        run: ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd /minitwit; ./deploy.sh ${{ env.TAG }} production"
 
   tag_and_release:
     runs-on: ubuntu-latest

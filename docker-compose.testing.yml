@@ -19,10 +19,8 @@ services:
     image: postgres:15
     container_name: minitwit_test_db
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: minitwit
+    env_file:
+      - .env.test
     expose:
       - "5432"
     networks:

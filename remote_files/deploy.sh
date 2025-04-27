@@ -1,9 +1,11 @@
 #!/bin/bash
 
 TAG=${1:-latest} # Default to 'latest' if no tag is provided
+TYPE=${2:-staging} # Default to 'dev' if no type is provided
 
-# Pull the specific image tag
-docker compose -f docker-compose.yml pull
+if [ "$TYPE" == "staging" ]; then
+  TAG=$TAG docker stack deploy -c docker-compose.staging.yml --with-registry-auth minitwit -d
+else
+  TAG=$TAG docker stack deploy -c docker-compose.yml --with-registry-auth minitwit -d
+fi
 
-# Deploy the stack with the specified tag
-TAG=$TAG docker stack deploy -c docker-compose.yml minitwit

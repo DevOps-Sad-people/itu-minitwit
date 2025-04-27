@@ -4,13 +4,13 @@ services:
   web:
     image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     deploy:
-      replicas: 1
+      replicas: 4
       update_config:
         delay: 10s
         order: start-first
       placement:
         constraints:
-          - "node.role==manager"
+          - "node.role!=manager"
     depends_on:
       - db
     ports:

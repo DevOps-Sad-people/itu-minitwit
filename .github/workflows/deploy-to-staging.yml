@@ -114,7 +114,7 @@ jobs:
   
   build-images:
     runs-on: ubuntu-latest
-    needs: test
+    needs: [build-minitwit, test]
     env:
       TAG: ${{ needs.build-minitwit.outputs.TAG }}
 
@@ -183,9 +183,9 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build-images
+    needs: [build-minitwit, build-images]
     env:
-      TAG: ${{ needs.build.outputs.TAG }}
+      TAG: ${{ needs.build-minitwit.outputs.TAG }}
 
     steps:
       - name: Checkout

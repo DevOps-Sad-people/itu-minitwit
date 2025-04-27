@@ -15,6 +15,8 @@ services:
       - .env
     ports:
       - "4567:4567"
+    networks:
+      - minitwit_network
 
   db:
     image: postgres:15
@@ -30,6 +32,8 @@ services:
       - .env
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - minitwit_network
 
   prometheus:
     image: registry.digitalocean.com/sad-containers/prometheus:${TAG}
@@ -43,6 +47,8 @@ services:
           - "node.role==manager"
     volumes:
       - prometheus-data:/prometheus
+    networks:
+      - minitwit_network
 
   grafana:
     image: registry.digitalocean.com/sad-containers/grafana:${TAG}
@@ -60,6 +66,8 @@ services:
       - grafana-data:/var/lib/grafana
     ports:
       - "3000:3000"
+    networks:
+      - minitwit_network
 
   elasticsearch-setup:
     image: registry.digitalocean.com/sad-containers/elasticsearch-setup:${TAG}
@@ -74,6 +82,8 @@ services:
       - .env
     volumes:
       - elasticsearch-init:/data
+    networks:
+      - minitwit_network
 
   elasticsearch:
     image: registry.digitalocean.com/sad-containers/elasticsearch:${TAG}
@@ -93,6 +103,8 @@ services:
       - .env
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
+    networks:
+      - minitwit_network
 
   logstash:
     image: registry.digitalocean.com/sad-containers/logstash:${TAG}
@@ -108,6 +120,8 @@ services:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
     env_file:
       - .env
+    networks:
+      - minitwit_network
 
   kibana:
     image: registry.digitalocean.com/sad-containers/kibana:${TAG}
@@ -123,6 +137,8 @@ services:
       - "5601:5601"
     env_file:
       - .env
+    networks:
+      - minitwit_network
 
   filebeat:
     image: registry.digitalocean.com/sad-containers/filebeat:${TAG}
@@ -149,6 +165,8 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
         read_only: true
+    networks:
+      - minitwit_network
 
 volumes:
   pg_data:
@@ -156,3 +174,7 @@ volumes:
   grafana-data:
   elasticsearch-data:
   elasticsearch-init:
+
+networks:
+  minitwit_network:
+    driver: overlay

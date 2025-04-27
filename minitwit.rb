@@ -17,6 +17,7 @@ require_relative "prometheus_config"
 PER_PAGE = 30
 DEBUG = true
 DB_URL = "postgres://#{ENV.fetch("DB_USER")}:#{ENV.fetch("DB_PASSWORD")}@#{ENV.fetch("DB_HOST")}:#{ENV.fetch("DB_PORT")}/#{ENV.fetch("DB_NAME")}"
+puts "Connecting to database: #{DB_URL}"
 
 use Rack::Deflater
 use Prometheus::Middleware::Exporter

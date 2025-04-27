@@ -4,6 +4,21 @@ services:
   web:
     image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     deploy:
+      replicas: 2
+      update_config:
+        delay: 10s
+        order: start-first
+      placement:
+        constraints:
+          - "node.role!=manager"
+    env_file:
+      - .env
+    ports:
+      - "4567:4567"
+
+  db:
+    image: postgres:15
+    deploy:
       replicas: 1
       update_config:
         delay: 10s
@@ -11,35 +26,13 @@ services:
       placement:
         constraints:
           - "node.role==manager"
-    depends_on:
-      - db
-    ports:
-      - "4567:4567"
     env_file:
       - .env
-    networks:
-      - minitwit_network
-
-  db:
-    image: postgres:15
-    restart: always
-    deploy:
-      replicas: 1 # global mode to ensure one instance of the services is deployed
-      update_config:
-        delay: 10s
-        order: start-first
-      placement:
-        constraints:
-          - "node.role==manager"
-    env_file:
-      - .env
-    networks:
-      - minitwit_network
     volumes:
       - pg_data:/var/lib/postgresql/data
 
   prometheus:
-    image: registry.digitalocean.com/sad-containers/prometheus:latest #prom/prometheus:v3.2.1
+    image: registry.digitalocean.com/sad-containers/prometheus:${TAG}
     deploy:
       replicas: 1
       update_config:
@@ -47,15 +40,12 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
     volumes:
       - prometheus-data:/prometheus
-    networks:
-      - minitwit_network
 
   grafana:
-    image: registry.digitalocean.com/sad-containers/grafana:latest #grafana/grafana:11.5.2
+    image: registry.digitalocean.com/sad-containers/grafana:${TAG}
     deploy:
       replicas: 1
       update_config:
@@ -63,34 +53,30 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
     env_file:
       - .env
     volumes:
       - grafana-data:/var/lib/grafana
     ports:
-      - 3000:3000
-    networks:
-      - minitwit_network
+      - "3000:3000"
 
   elasticsearch-setup:
-    image: registry.digitalocean.com/sad-containers/elasticsearch-setup:latest #elasticsearch-setup:8.17.3
+    image: registry.digitalocean.com/sad-containers/elasticsearch-setup:${TAG}
     deploy:
       replicas: 1
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
       restart_policy:
         condition: none
-    volumes:
-      - elasticsearch-init:/data
     env_file:
       - .env
+    volumes:
+      - elasticsearch-init:/data
 
   elasticsearch:
-    image: registry.digitalocean.com/sad-containers/elasticsearch:latest #elasticsearch:8.17.3
+    image: registry.digitalocean.com/sad-containers/elasticsearch:${TAG}
     deploy:
       replicas: 1
       update_config:
@@ -98,19 +84,18 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data:Z
     environment:
       node.name: elasticsearch
       discovery.type: single-node
       ES_JAVA_OPTS: -Xms512m -Xmx512m
     env_file:
       - .env
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data:Z
 
   logstash:
-    image: registry.digitalocean.com/sad-containers/logstash:latest #logstash:8.17.3
+    image: registry.digitalocean.com/sad-containers/logstash:${TAG}
     deploy:
       replicas: 1
       update_config:
@@ -118,7 +103,6 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
@@ -126,7 +110,7 @@ services:
       - .env
 
   kibana:
-    image: registry.digitalocean.com/sad-containers/kibana:latest #kibana:8.17.3
+    image: registry.digitalocean.com/sad-containers/kibana:${TAG}
     deploy:
       replicas: 1
       update_config:
@@ -134,15 +118,14 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
     ports:
-      - 5601:5601
+      - "5601:5601"
     env_file:
       - .env
 
   filebeat:
-    image: registry.digitalocean.com/sad-containers/filebeat:latest #docker.elastic.co/beats/filebeat:8.17.3
+    image: registry.digitalocean.com/sad-containers/filebeat:${TAG}
     deploy:
       replicas: 1
       update_config:
@@ -150,12 +133,13 @@ services:
         order: start-first
       placement:
         constraints:
-          - "node.hostname!=dbvm"
           - "node.role==manager"
     user: root
     command:
       - -e
       - --strict.perms=false
+    env_file:
+      - .env
     volumes:
       - type: bind
         source: /var/lib/docker/containers
@@ -165,8 +149,6 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
         read_only: true
-    env_file:
-      - .env
 
 volumes:
   pg_data:
@@ -174,9 +156,3 @@ volumes:
   grafana-data:
   elasticsearch-data:
   elasticsearch-init:
-
-networks:
-  minitwit_network:
-    driver: overlay
-  minitwit_elk:
-    driver: overlay

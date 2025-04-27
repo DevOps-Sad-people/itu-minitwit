@@ -1,7 +1,7 @@
 version: "3.8" # version to be compatible with docker swarm/stack deployments
 
 services:
-  dev:
+  web:
     image: ruby:3.3
     container_name: minitwit_dev
     volumes:
@@ -17,11 +17,11 @@ services:
       - "4567:4567" # Exposing the default Sinatra port, adjust as needed
     env_file:
       - .env
+    restart: unless-stopped
 
   db:
     image: postgres:15
     container_name: minitwit_dev_db
-    restart: always
     env_file:
       - .env
     ports:
@@ -30,17 +30,19 @@ services:
       - minitwit_network_dev
     volumes:
       - pg_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   prometheus:
     image: prom/prometheus:v3.2.1
     container_name: prometheus
     volumes:
       - prometheus-data:/prometheus
-      - ./prometheus/prometheus.dev.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     networks:
       - minitwit_network_dev
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:11.5.2
@@ -57,19 +59,19 @@ services:
       - "3000:3000"
     networks:
       - minitwit_network_dev
+    restart: unless-stopped
 
-  setup:
+  elasticsearch-setup:
     profiles:
       - setup
-    build:
-      context: elk/setup/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
-    init: true
+    image: ubuntu:latest
+    container_name: elasticsearch-setup
     volumes:
-      - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-      - ./elk/setup/lib.sh:/lib.sh:ro,Z
-      - ./elk/setup/roles:/roles:ro,Z
+      - elasticsearch-init:/data
+      - ./elk/elasticsearch-setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/elasticsearch-setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/elasticsearch-setup/roles:/roles:ro,Z
+    entrypoint: ["/bin/bash", "-c", "apt-get update && apt-get install -y curl && /entrypoint.sh"]
     env_file:
       - .env
     networks:
@@ -78,14 +80,11 @@ services:
       - elasticsearch
 
   elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     container_name: elasticsearch
-    build:
-      context: elk/elasticsearch/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
-      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
       - elasticsearch-data:/usr/share/elasticsearch/data:Z
+      - ./elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,Z
     ports:
       - 9200:9200
     environment:
@@ -99,11 +98,8 @@ services:
     restart: unless-stopped
 
   logstash:
+    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
     container_name: logstash
-    build:
-      context: elk/logstash/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro,Z
       - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
@@ -120,11 +116,8 @@ services:
     restart: unless-stopped
 
   kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
     container_name: kibana
-    build:
-      context: elk/kibana/
-      args:
-        ELASTIC_VERSION: ${ELASTIC_VERSION}
     volumes:
       - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
@@ -137,11 +130,36 @@ services:
       - elasticsearch
     restart: unless-stopped
 
-  filebeat: # Uses another docker compose file to setup filebeat.
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
     container_name: filebeat
-    extends:
-      file: elk/filebeat/filebeat-compose.yml
-      service: filebeat
+    # Run as 'root' instead of 'filebeat' (uid 1000) to allow reading
+    # 'docker.sock' and the host's filesystem.
+    user: root
+    command:
+      # Log to stderr.
+      - -e
+      # Disable config file permissions checks. Allows mounting
+      # 'config/filebeat.yml' even if it's not owned by root.
+      # see: https://www.elastic.co/guide/en/beats/libbeat/current/config-file-permissions.html
+      - --strict.perms=false
+    volumes:
+      - ./elk/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro,Z
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /var/lib/docker/containers
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    env_file:
+      - .env
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
 
 networks:
   minitwit_network_dev:
@@ -154,3 +172,4 @@ volumes:
   prometheus-data:
   grafana-data:
   elasticsearch-data:
+  elasticsearch-init:

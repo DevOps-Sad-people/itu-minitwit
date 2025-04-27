@@ -3,7 +3,7 @@ name: Continuous Deployment Staging
 
 on:
   push:
-    # Run workflow every time something is pushed to the main branch
+    # Run workflow every time something is pushed to the develop branch
     branches:
       - develop
 
@@ -19,7 +19,7 @@ env:
   SSH_HOST: "157.245.22.36" # refers to the reserved IP address of the droplet
 
 jobs:
-  build:
+  build-minitwit:
     runs-on: ubuntu-latest
     outputs:
       TAG: ${{ steps.set-tag.outputs.TAG }}
@@ -40,19 +40,20 @@ jobs:
         id: set-tag
         run: echo "TAG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9._-]/-/g')" >> $GITHUB_OUTPUT
 
-      - name: Build container image
+      # BUILD AND PUSH MINITWIT IMAGE
+      - name: Build minitwit image
         run: |
           docker build -t ${{ env.REGISTRY_NAME }}/minitwit:${{ steps.set-tag.outputs.TAG }} .
 
-      - name: Push image to DigitalOcean Container Registry
+      - name: Push minitwit image to DigitalOcean Container Registry
         run: |
           docker push ${{ env.REGISTRY_NAME }}/minitwit:${{ steps.set-tag.outputs.TAG }}
 
   test:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-minitwit
     env:
-      TAG: ${{ needs.build.outputs.TAG }}
+      TAG: ${{ needs.build-minitwit.outputs.TAG }}
 
     steps:
       - name: Checkout
@@ -110,10 +111,79 @@ jobs:
         run: |
           cd simulator
           python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)
+  
+  build-images:
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+      TAG: ${{ needs.build-minitwit.outputs.TAG }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "2"
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DigitalOcean Container Registry with longer-lived credentials
+        run: doctl registry login --expiry-seconds 1200
+
+      # BUILD AND PUSH PROMETHEUS IMAGE
+      - name: Build prometheus image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: prometheus
+          CONTEXT_PATH: ./prometheus
+
+      # BUILD AND PUSH GRAFANA IMAGE
+      - name: Build grafana image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: grafana
+          CONTEXT_PATH: ./grafana
+
+      # BUILD AND PUSH FILEBEAT IMAGE
+      - name: Build filebeat image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: filebeat
+          CONTEXT_PATH: ./elk/filebeat
+
+      # BUILD AND PUSH LOGSTASH IMAGE
+      - name: Build logstash image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: logstash
+          CONTEXT_PATH: ./elk/logstash
+      
+      # BUILD AND PUSH ELASTICSEARCH SETUP IMAGE
+      - name: Build elasticsearch setup image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: elasticsearch-setup
+          CONTEXT_PATH: ./elk/elasticsearch-setup
+
+      # BUILD AND PUSH ELASTICSEARCH IMAGE
+      - name: Build elasticsearch image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: elasticsearch
+          CONTEXT_PATH: ./elk/elasticsearch
+
+      # BUILD AND PUSH KIBANA IMAGE
+      - name: Build kibana image & push if changed
+        run: ./.github/scripts/push_image_on_change.sh
+        env:
+          IMAGE_NAME: kibana
+          CONTEXT_PATH: ./elk/kibana
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [build, test]
+    needs: build-images
     env:
       TAG: ${{ needs.build.outputs.TAG }}
 

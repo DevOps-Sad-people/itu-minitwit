@@ -75,8 +75,6 @@ Vagrant.configure("2") do |config|
     # run the deploy.sh script
     cd /minitwit
     mkdir tmp
-    docker compose -f docker-compose.yml up setup
-    docker compose -f docker-compose.yml down setup
     sh deploy.sh
 
 

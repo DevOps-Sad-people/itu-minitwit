@@ -1,4 +1,5 @@
 Sequel.migration do
+  transaction
   change do
     create_table(:follower) do
       Integer :who_id

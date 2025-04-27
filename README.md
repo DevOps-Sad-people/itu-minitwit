@@ -189,9 +189,9 @@ The release version is determined by the contents of the last commit message, fo
 - Otherwise, if you don't include any of the above options, the *minor* version will be bumped by default.
 
 ## Deployment
-We use Vagrant to deploy an instance to Digital Ocean. For this to work, a few configuration steps must be taken. Once instantiated, the github workflows must be adjusted in accordance.
+We use Vagrant to provision a droplet to Digital Ocean. For this to work, a few configuration steps must be taken. The github workflows refer to the reserved IPs, so after provisioning, you need to assign these IPs to the droplets.
 
-Before starting, you are required to have an [ssh-key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and a [digital ocean token](https://docs.digitalocean.com/reference/api/create-personal-access-token/), with access to the container registry & droplets. Likewise, you are required to have at least the BASIS plan of container registry at Digital Ocean. Add your SSH key to DO, such that it knows your key.
+Before starting, you are required to have an [ssh-key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and a [digital ocean token](https://docs.digitalocean.com/reference/api/create-personal-access-token/), with access to the container registry & droplets. Likewise, you are required to have the PROFESSIONAL plan of container registry at Digital Ocean. Add your SSH key to DO, such that it knows your key.
 
 
 ### PREPARE FOR DEPLOYMENT
@@ -218,9 +218,9 @@ VAGRANT_VAGRANTFILE=VagrantfileStaging vagrant up --provider=digital_ocean
 ```
 
 ### Auto deployment
-The `deploy-to-XXX.yml` file is setup to trigger an automatic deployment. Ensure that you have set up the correct env variables and secrets as explained in section `PREPARE FOR DEPLOYMENT`. *Remember to specify which branch you want the action to be triggered by*.
+The `deploy-to-XXX.yml` file is setup to trigger an automatic deployment. Ensure that you have set up the correct env variables and secrets as explained in section `PREPARE FOR DEPLOYMENT`.
 
-After this, every push should successfully build, test and deploy the application.
+After this, every push should successfully build, test and deploy the application. Pushes to develop trigger deploy to the staging, and pushes to main trigger deploy to the prod environment. 
 
 ### Other observations 
 - Hashing sha256

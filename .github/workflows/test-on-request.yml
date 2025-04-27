@@ -1,0 +1,50 @@
+---
+name: Pull Request Test
+
+on:
+  pull_request:
+    # Run workflow every time something is in a pull request
+    branches:
+      - "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup environment variables
+        run: cp .env.test .env
+
+      - name: Run Ruby Tests
+        run: |
+          docker compose -f docker-compose.testing.yml
+
+      - name: Setup Simulator Environment
+        run: |
+          docker compose -f docker-compose.testing.yml run -P -d test ruby ./minitwit.rb
+          sudo apt-get update
+          sudo apt-get install -y python3
+          pip install -r requirements.txt
+
+      - name: Wait for the server to be ready
+        run: |
+          echo "Waiting for web service"
+          for i in {1..100}; do
+            if curl -s http://0.0.0.0:4567 > /dev/null; then
+              echo "Web service is ready"
+              exit 0
+            fi
+            echo -n "."
+            sleep 0.2
+          done
+          echo "Web service did not become ready in time"
+          docker logs minitwit
+          exit 1
+
+      - name: Run Simulator tests
+        run: |
+          cd simulator
+            python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)

@@ -1,3 +1,5 @@
+version: "3.8" # version to be compatible with docker swarm/stack deployments
+
 services:
   dev:
     image: ruby:3.3
@@ -5,7 +7,8 @@ services:
     volumes:
       - .:/app # Mount your project directory into the container
     working_dir: /app
-    entrypoint: ["/bin/bash", "-c", "bundle install && ruby minitwit.rb && /bin/bash"]
+    entrypoint:
+      ["/bin/bash", "-c", "bundle install && ruby minitwit.rb && /bin/bash"]
     depends_on:
       - db
     networks:
@@ -19,18 +22,14 @@ services:
     image: postgres:15
     container_name: minitwit_dev_db
     restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: minitwit
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     networks:
       - minitwit_network_dev
     volumes:
       - pg_data:/var/lib/postgresql/data
-      # - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-      # - ./create_tables.rb:/docker-entrypoint-initdb.d/create_tables.rb:ro
 
   prometheus:
     image: prom/prometheus:v3.2.1
@@ -46,18 +45,8 @@ services:
   grafana:
     image: grafana/grafana:11.5.2
     container_name: grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-      - GF_POSTGRES_USERNAME=${GRAFANA_POSTGRES_USERNAME}
-      - GF_POSTGRES_PASSWORD=${GRAFANA_POSTGRES_PASSWORD}
-      - GF_SMTP_ENABLED=${GRAFANA_SMTP_ENABLED}
-      - GF_SMTP_HOST=${GRAFANA_SMTP_HOST}
-      - GF_SMTP_USER=${GRAFANA_SMTP_USER}
-      - GF_SMTP_PASSWORD=${GRAFANA_SMTP_PASSWORD}
-      - GF_SMTP_SKIP_VERIFY=${GRAFANA_SMTP_SKIP_VERIFY}
-      - GF_SMTP_FROM_NAME=${GRAFANA_SMTP_FROM_NAME}
-      - GF_SMTP_FROM_ADDRESS=${GRAFANA_SMTP_FROM_ADDRESS}
+    env_file:
+      - .env
     volumes:
       - grafana-data:/var/lib/grafana
       - ./grafana/alerting:/etc/grafana/provisioning/alerting
@@ -70,33 +59,23 @@ services:
       - minitwit_network_dev
 
   setup:
-      profiles:
-        - setup
-      build:
-        context: elk/setup/
-        args:
-          ELASTIC_VERSION: ${ELASTIC_VERSION}
-      init: true
-      volumes:
-        - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
-        - ./elk/setup/lib.sh:/lib.sh:ro,Z
-        - ./elk/setup/roles:/roles:ro,Z
-      environment:
-        ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
-        LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
-        KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-        KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
-        METRICBEAT_INTERNAL_PASSWORD: ${METRICBEAT_INTERNAL_PASSWORD:-}
-        FILEBEAT_INTERNAL_PASSWORD: ${FILEBEAT_INTERNAL_PASSWORD:-}
-        HEARTBEAT_INTERNAL_PASSWORD: ${HEARTBEAT_INTERNAL_PASSWORD:-}
-        MONITORING_INTERNAL_PASSWORD: ${MONITORING_INTERNAL_PASSWORD:-}
-        BEATS_SYSTEM_USERNAME: ${BEATS_SYSTEM_USERNAME:-}
-        BEATS_SYSTEM_PASSWORD: ${BEATS_SYSTEM_PASSWORD:-}
-      networks:
-        - minitwit_elk
-      depends_on:
-        - elasticsearch
+    profiles:
+      - setup
+    build:
+      context: elk/setup/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    init: true
+    volumes:
+      - ./elk/setup/entrypoint.sh:/entrypoint.sh:ro,Z
+      - ./elk/setup/lib.sh:/lib.sh:ro,Z
+      - ./elk/setup/roles:/roles:ro,Z
+    env_file:
+      - .env
+    networks:
+      - minitwit_elk
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
     container_name: elasticsearch
@@ -111,10 +90,10 @@ services:
       - 9200:9200
     environment:
       node.name: elasticsearch
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-      ELASTIC_USERNAME: ${ELASTIC_USERNAME:-}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:-}
       discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    env_file:
+      - .env
     networks:
       - minitwit_elk
     restart: unless-stopped
@@ -130,9 +109,10 @@ services:
       - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro,Z
     ports:
       - 5044:5044
+    env_file:
+      - .env
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
-      LOGSTASH_INTERNAL_PASSWORD: ${LOGSTASH_INTERNAL_PASSWORD:-}
     networks:
       - minitwit_elk
     depends_on:
@@ -149,9 +129,8 @@ services:
       - ./elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
     ports:
       - 5601:5601
-    environment:
-      KIBANA_SYSTEM_USERNAME: ${KIBANA_SYSTEM_USERNAME:-}
-      KIBANA_SYSTEM_PASSWORD: ${KIBANA_SYSTEM_PASSWORD:-}
+    env_file:
+      - .env
     networks:
       - minitwit_elk
     depends_on:

@@ -13,7 +13,6 @@ concurrency:
 
 # env variables
 env:
-  DROPLET_NAME: "minitwit-staging"
   REGISTRY_NAME: "registry.digitalocean.com/sad-containers"
   SSH_USER: "root"
   SSH_HOST: "157.245.22.36" # refers to the reserved IP address of the droplet
@@ -117,12 +116,13 @@ jobs:
     needs: [build-minitwit, test]
     env:
       TAG: ${{ needs.build-minitwit.outputs.TAG }}
+      COMMIT_SHA: ${{ github.sha }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: "2"
+          fetch-depth: 0
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2

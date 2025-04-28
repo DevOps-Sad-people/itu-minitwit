@@ -1,4 +1,4 @@
-version: '3.8' # version to be compatible with docker swarm/stack deployments
+version: "3.8"
 
 services:
 

@@ -198,7 +198,7 @@ jobs:
           echo -e "Host ${{ env.SSH_HOST }}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_ed25519" > ~/.ssh/config
 
       - name: Copy remote_files to server
-        run: scp -v -r ./remote_files/* ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/minitwit
+        run: scp -r ./remote_files/* ${{ env.SSH_USER }}@${{ env.SSH_HOST }}:/minitwit
 
       - name: Deploy to server
         run: ssh ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "cd /minitwit; ./deploy.sh ${{ env.TAG }}"

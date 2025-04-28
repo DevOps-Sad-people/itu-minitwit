@@ -6,8 +6,7 @@ IMAGE_NAME="${IMAGE_NAME}"
 TAG_NAME="${TAG}"
 CONTEXT_PATH="${CONTEXT_PATH}"
 REGISTRY_NAME="${REGISTRY_NAME}"
-
-CURRENT_COMMIT_SHA="$(git rev-parse HEAD)"
+CURRENT_COMMIT_SHA="${COMMIT_SHA}"
 
 build_and_push() {
     echo "Building $IMAGE_NAME:$TAG_NAME image..."
@@ -39,7 +38,7 @@ fi
 echo "Image already exists in registry. It was last pushed at commit $LAST_COMMIT_SHA."
 echo "Checking for changes in the image files..."
 
-if ! git diff --quiet HEAD "$LAST_COMMIT_SHA" -- "$CONTEXT_PATH" 2>/dev/null; then
+if ! git diff --quiet "$CURRENT_COMMIT_SHA" "$LAST_COMMIT_SHA" -- "$CONTEXT_PATH" 2>/dev/null; then
     build_and_push
 else
     echo "No changes in image files, skipping build & push."

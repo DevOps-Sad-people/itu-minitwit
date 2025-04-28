@@ -116,6 +116,7 @@ jobs:
     needs: [build-minitwit, test]
     env:
       TAG: ${{ needs.build-minitwit.outputs.TAG }}
+      COMMIT_SHA: ${{ github.sha }}
 
     steps:
       - name: Checkout

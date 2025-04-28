@@ -35,7 +35,7 @@ if [ -z "$LAST_COMMIT_SHA" ]; then
     exit 0
 fi
 
-echo "Image already exists in registry. It was last pushed at commit $LAST_COMMIT_SHA."
+echo "Image already exists in registry."
 echo "Checking for changes in the image files..."
 
 if ! git diff --quiet "$CURRENT_COMMIT_SHA" "$LAST_COMMIT_SHA" -- "$CONTEXT_PATH" 2>/dev/null; then

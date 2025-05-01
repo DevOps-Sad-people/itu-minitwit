@@ -11,6 +11,11 @@ services:
       placement:
         constraints:
           - "node.role!=manager"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     env_file:
       - .env
     ports:
@@ -28,6 +33,11 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     env_file:
       - .env
     volumes:
@@ -45,6 +55,11 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     volumes:
       - prometheus-data:/prometheus
     networks:
@@ -60,6 +75,11 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     env_file:
       - .env
     volumes:
@@ -78,6 +98,11 @@ services:
           - "node.role==manager"
       restart_policy:
         condition: none
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     env_file:
       - .env
     volumes:
@@ -95,6 +120,11 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     environment:
       node.name: elasticsearch
       discovery.type: single-node
@@ -116,6 +146,11 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
     env_file:
@@ -135,6 +170,11 @@ services:
           - "node.role==manager"
     ports:
       - "5601:5601"
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     env_file:
       - .env
     networks:
@@ -151,6 +191,11 @@ services:
     command:
       - -e
       - --strict.perms=false
+    logging:
+        driver: "json-file"
+        options:
+            max-file: 4
+            max-size: 250m
     env_file:
       - .env
     volumes:

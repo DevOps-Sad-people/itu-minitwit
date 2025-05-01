@@ -4,7 +4,7 @@ services:
   web:
     image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     deploy:
-      replicas: 2
+      mode: global
       update_config:
         delay: 10s
         order: start-first
@@ -143,13 +143,10 @@ services:
   filebeat:
     image: registry.digitalocean.com/sad-containers/filebeat:${TAG}
     deploy:
-      replicas: 1
+      mode: global
       update_config:
         delay: 10s
         order: start-first
-      placement:
-        constraints:
-          - "node.role==manager"
     user: root
     command:
       - -e

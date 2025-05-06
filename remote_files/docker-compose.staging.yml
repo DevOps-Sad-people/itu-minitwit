@@ -12,10 +12,10 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     env_file:
       - .env
     ports:
@@ -34,14 +34,21 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     env_file:
       - .env
     volumes:
       - pg_data:/var/lib/postgresql/data
+    networks:
+      - minitwit_network
+
+  backup:
+    image: eeshugerman/postgres-backup-s3:15
+    env_file:
+      - .env
     networks:
       - minitwit_network
 
@@ -56,10 +63,10 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     volumes:
       - prometheus-data:/prometheus
     networks:
@@ -76,10 +83,10 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     env_file:
       - .env
     volumes:
@@ -99,10 +106,10 @@ services:
       restart_policy:
         condition: none
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     env_file:
       - .env
     volumes:
@@ -121,10 +128,10 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     environment:
       node.name: elasticsearch
       discovery.type: single-node
@@ -147,10 +154,10 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     environment:
       LS_JAVA_OPTS: -Xms256m -Xmx256m
     env_file:
@@ -171,10 +178,10 @@ services:
     ports:
       - "5601:5601"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     env_file:
       - .env
     networks:
@@ -191,10 +198,10 @@ services:
         constraints:
           - "node.role==manager"
     logging:
-        driver: "json-file"
-        options:
-            max-file: 2
-            max-size: 250m
+      driver: "json-file"
+      options:
+        max-file: 2
+        max-size: 250m
     user: root
     command:
       - -e

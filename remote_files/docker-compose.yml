@@ -4,6 +4,7 @@ services:
   web:
     image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     deploy:
+      replicas: 4
       mode: global
       update_config:
         delay: 10s
@@ -51,6 +52,14 @@ services:
       - .env
     networks:
       - minitwit_network
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 10s
+        order: start-first
+      placement:
+        constraints:
+          - "node.role==manager"
 
   prometheus:
     image: registry.digitalocean.com/sad-containers/prometheus:${TAG}

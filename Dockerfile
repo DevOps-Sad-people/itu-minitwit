@@ -1,5 +1,5 @@
 # Use the official ruby
-FROM ruby:3.3.7-slim-bullseye
+FROM ruby:3.4.3-slim-bullseye
 
 # Set the working directory
 WORKDIR /usr/src/app

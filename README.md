@@ -7,6 +7,7 @@
 - [Deployment](./docs/deployment.md)  
 - [Development](./docs/development.md)  
 - [Monitoring+logging](./docs/monitoring-logging.md)  
+- [Testing](./docs/testing.md)  
 - [Workflows](./docs/workflows.md)  
 
 

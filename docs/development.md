@@ -1,5 +1,6 @@
 # Development
 
+- [Playwright](#Playwright)
 
 ## Playwright
 
@@ -13,38 +14,31 @@ You can download a VS Code extension "Playwright Test for VSCode" to help with t
 pip install -r requirements.txt
 ```
 
-### How to run
-How to run all test locally - this will find the test automatically
+2. Install Playwright
 
 ```bash
-pytest
+pip install playwright
 ```
 
-if you want to see the test you can run
-```bash
-pytest --browser chromium --headed --slowmo 200
-```
-
-if you want to only run ONE file
+3. Install the browsers
 
 ```bash
-pytest Playwright/test_signup.py  --browser chrome --headed --slowmo 200
+playwright install
 ```
-### Create a new test
-1. Create a new file in the `Playwright` folder with the name `test_<new_test>.py`
-1. The file should have functions to test the new functionality
-1. The function take in the `Page` class from `playwright.sync_api` 
-1. The function should have `page.goto("<url_of_page_to_test>")`
-1. Then the rest of the function should test the functionality of the page
-1. You can read the next section to see how to record the test
-
 
 ### How to record and generate
 
-You can record test by running this command
+You can start the application with the following command
+```bash
+docker compose -f docker-compose.dev.yml run --rm --service-ports web bash
+```
+
+
+
+Open a new terminal and enter the following to record a new test:
 ```bash
 playwright codegen http://localhost:4567/public
 ```
 
-Then you can use the recorder tool to create the test and copy it to the python file and function you have created.
+Then you can use the recorder tool to create the test and copy it to the python file `test_<new_test>.py` and function you have created.
 

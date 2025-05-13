@@ -2,6 +2,14 @@
 
 - [Playwright](#Playwright)
 
+## Development Worflow
+
+1. Create a new branch from `develop` with the name `<ticket_number>_<new_feature>` or `bugfix/<bug_fix>`
+1. Fix the bug or add the new feature
+1. Create a Pull Request to `develop`
+1. The pull reqeuest is reviewed by minimum 1 other person
+1. The pull request is merged to `develop` 
+
 ## Playwright
 
 ### Setting up

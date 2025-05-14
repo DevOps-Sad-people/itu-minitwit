@@ -46,7 +46,33 @@ sudo apt install -y awscli
 ```
 
 ### Add secrets
-TODO
+You need to add a file called `secrets` in the `terraform` directory. You can use the `secrets_template` file as a template.
+You can copy it with the following command:
+
+```bash
+cp secrets_template secrets
+```
+
+This file should contain the following variables:
+
+```bash
+export TF_VAR_do_token=<TF_VAR_do_token>
+export SPACE_NAME=sadpeople
+export STATE_FILE=minitwit/terraform.tfstate
+export AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID>
+export AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
+export DIGITAL_OCEAN_KEY=<DIGITAL_OCEAN_KEY>
+```
+
+The space name and state file are already set to the values we use in production.
+
+
+The `TF_VAR_do_token` is used to allow terraform to create resources in your DigitalOcean account. You can create a new token in the DigitalOcean API control panel. Make sure to give it the `read` and `write` permissions.
+
+The `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are your DigitalOcean Spaces Object Storage credentials. You can create them in the DigitalOcean Spaces Object Storage control panel
+
+The `DIGITAL_OCEAN_KEY` is used to sign to the regestry. You can create one in the DigitalOcean API control panel.
+
 
 ## Usage
 ### Modifying the infrastructure

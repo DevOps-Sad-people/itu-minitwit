@@ -1,6 +1,35 @@
 # Development
 
+- [Local development](#How-to-run-locally)
 - [Playwright](#Playwright)
+
+## How to run locally
+
+To start up all docker services:
+
+`docker compose -f docker-compose.dev.yml up -d`
+
+After this, the minitwit application will be avaible at http://localhost:4567/.
+
+To run a specific service:
+
+`docker compose -f docker-compose.dev.yml up <service_name> -d`
+
+To run the tests:
+
+`docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test`
+
+To stop and delete running containers:
+
+`docker compose -f docker-compose.dev.yml down`
+
+To stop and delete a specific container:
+
+`docker compose -f docker-compose.dev.yml down <service_name>`
+
+To clean up volumes afterwards: (***WARNING:*** deletes all persisted project data)
+
+`docker compose -f docker-compose.dev.yml down --volumes`
 
 ## Playwright
 

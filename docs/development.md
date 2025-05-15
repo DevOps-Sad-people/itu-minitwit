@@ -14,14 +14,14 @@ You can download a VS Code extension "Playwright Test for VSCode" to help with t
 pip install -r requirements.txt
 ```
 
-2. Install Playwright
+2. Install Playwright  
 If you are having problems with the installation of playwright you can try to install it manually.
  
 ```bash
 pip install playwright
 ```
 
-3. Install the browsers
+3. Install the browsers  
 Once you have install playwright you have to install the browsers if you want to run playwright locally 
 
 ```bash

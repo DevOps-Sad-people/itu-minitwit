@@ -15,12 +15,14 @@ pip install -r requirements.txt
 ```
 
 2. Install Playwright
-
+If you are having problems with the installation of playwright you can try to install it manually.
+ 
 ```bash
 pip install playwright
 ```
 
 3. Install the browsers
+Once you have install playwright you have to install the browsers if you want to run playwright locally 
 
 ```bash
 playwright install

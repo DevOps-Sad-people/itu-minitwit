@@ -1,4 +1,16 @@
 # itu-minitwit
+
+## TOC
+
+- [Overview](./docs/overview.md)  
+- [Architecture](./docs/architecture.md)  
+- [Deployment](./docs/deployment.md)  
+- [Development](./docs/development.md)  
+- [Monitoring+logging](./docs/monitoring-logging.md)  
+- [Testing](./docs/testing.md)  
+- [Workflows](./docs/workflows.md)  
+
+
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-production.yml/badge.svg)
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-staging.yml/badge.svg)
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/test-on-pull-request.yml/badge.svg)
@@ -36,40 +48,7 @@ Clean up database afterwards:
 ## Testing
 All tests are performed using RSpec, which is a great DSL for expressing tests. To add tests, use `spec/minitwit_spec.rb` as inspiration. Add `XXXX_spec.rb` to the `spec/` folder, import `spec_helper`, and write as many tests as you should require.
 
-## Testing with Playwright and pytest
 
-### Setting up
-
-You can download a VS Code extension "Playwright Test for VSCode" to help with the test.
-
-1. Install python requirements
-
-
-### How to run
-How to run all test locally - this will find the test automatically
-
-```bash
-pytest
-```
-if you want to see the test you can run
-```bash
-pytest --browser chromium --headed --slowmo 200
-```
-
-if you want to only run ONE file
-
-```bash
-pytest Playwright/test_signup.py  --browser chrome --headed --slowmo 200
-```
-
-### How to record and generate
-
-You can record test by running this command
-```bash
-playwright codegen http://localhost:4567/public
-```
-
-Then you can use the recorder tool to create the test and copy it to the python file and function you have created.
 
 ## developing erb files
 

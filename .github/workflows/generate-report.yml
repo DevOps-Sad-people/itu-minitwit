@@ -22,6 +22,7 @@ jobs:
         run: |
           mkdir -p report/tmp
           mkdir -p report/build
+          mkdir -p out
           find report -maxdepth 1 -name "*.md" | sort | while read file; do
             cat "$file"
             echo ""
@@ -44,6 +45,6 @@ jobs:
           mv out/report.pdf report/build/report.pdf
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A report/build/report.md
+          git add -A report/build/report.pdf
           git commit -m "Auto-generate report PDF" || echo "No changes to commit"
           git push

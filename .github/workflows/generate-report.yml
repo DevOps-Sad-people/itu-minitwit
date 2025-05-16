@@ -5,7 +5,7 @@ on:
   push:
     # Run workflow every time something is pushed to the develop branch
     branches:
-      - main # refers to the reserved IP address of the droplet
+      - main
     paths:
       - "report/**.md"
       - "report/images/**"

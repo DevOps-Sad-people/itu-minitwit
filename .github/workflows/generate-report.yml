@@ -33,7 +33,8 @@ jobs:
           input_path: report/tmp/report.md
           images_dir: report/images
           image_import: ./images
-          output_path: report/build"
+          output_path: report/build
+          build_pdf: true
           build_html: false
 
       - name: Commit and push generated report

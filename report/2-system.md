@@ -13,7 +13,6 @@ A description and illustration of the:
 ###   Similarly, another illustrative sequence diagram that shows how requests from the simulator traverse your system.
 
 
-
 ## [G] Describe the current state of your systems, for example using results of static analysis and quality assessments.
 
 

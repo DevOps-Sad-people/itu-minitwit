@@ -22,7 +22,6 @@ jobs:
         run: |
           mkdir -p report/tmp
           mkdir -p report/build
-          mkdir -p out
           find report -maxdepth 1 -name "*.md" | sort | while read file; do
             cat "$file"
             echo ""
@@ -34,16 +33,14 @@ jobs:
           input_path: report/tmp
           images_dir: report/images
           image_import: ./images
-          output_path: out
+          output_dir: report/build
           build_pdf: true
           build_html: false
 
       - name: Commit and push generated report
         run: |
-          git add .
-          git status
-          ls -la report
-          ls -la out
-          mv out/report.pdf report/build/report.pdf
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add report/build/report.pdf
+          git commit -m "Generate pdf report"
+          git push origin HEAD:main

@@ -107,6 +107,7 @@ e.g. /:username would match /login or /logout
 | `/msgs/:username`    | `GET, POST`  | GET: Public messages for a specific user. POST: post a new message for a specific username.                 |
 | `/fllws/:username`   | `GET, POST`  | GET: Returns a list of users whom the given user follows. POST: Allows a user to follow or unfollow another user                 |
 | `/latest`            | `GET`  | Retrieves the latest processed command ID                 |
+| `/register`            | `POST`  | Create a new user               |
 
 
 ## Database

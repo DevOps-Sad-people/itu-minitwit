@@ -11,5 +11,6 @@ IT University of Copenhagen
 - *Sebastian Andersen* - seaa@itu.dk
 
 ### Subject
+- **School:** *IT-University of Copenhagen*
 - **Course manager:** *Helge Pfeiffer* - ropf@itu.dk
 - **Course Code:** KSDSESM1KU

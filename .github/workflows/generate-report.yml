@@ -29,7 +29,7 @@ jobs:
       - name: Markdown to PDF and HTML
         uses: BaileyJM02/markdown-to-pdf@v1.2.0
         with:
-          input_path: report/tmp/tmp.md
+          input_path: report/tmp/report.md
           images_dir: report/images
           image_import: ./images
           output_path: report/build"

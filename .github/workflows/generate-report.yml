@@ -18,27 +18,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Merge files
-        run: |
-          mkdir -p report/tmp
-          mkdir -p report/build
-          find report -maxdepth 1 -name "*.md" | sort | while read file; do
-            cat "$file"
-            echo ""
-          done > "report/tmp/report.md"
-
-      - name: Markdown to PDF and HTML
-        uses: BaileyJM02/markdown-to-pdf@v1.2.0
+      - name: Publish PDF Document
+        uses: shrink/actions-document-publish@v1
+        id: publish-document
         with:
-          input_path: report/tmp
-          images_dir: report/images
-          image_import: ./images
-          output_path: report/build
-          build_pdf: true
-          build_html: false
+          sources: "report/*.md"
 
       - name: Commit and push generated report
         run: |
+          mv document.pdf report/build/report.pdf
           ls -la report
           ls -la report/build
           git config --global user.name "github-actions[bot]"

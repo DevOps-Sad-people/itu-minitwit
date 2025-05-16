@@ -1,4 +1,13 @@
-# itu-minitwit
+# ITU MiniTwit - A DevOps Education Project
+ITU MiniTwit is a lightweight Twitter clone developed for the DevOps course at IT University of Copenhagen. This project demonstrates modern software development practices with a focus on DevOps principles, continuous integration/deployment, and infrastructure automation.
+
+The application is built using Ruby with Sinatra, backed by PostgreSQL, and features a complete CI/CD pipeline with automated testing and deployment. The system architecture utilizes Docker containers orchestrated with Docker Compose, with deployments managed through GitHub Actions to Digital Ocean infrastructure.
+
+MiniTwit provides core social media functionality including user registration, authentication, message posting, and following other users. The application exposes both HTML endpoints for browser interaction and JSON API endpoints for programmatic access.
+
+This project serves as a practical example of DevOps best practices including infrastructure as code, monitoring, logging, and automated testing while maintaining a well-documented codebase with thorough deployment instructions.
+
+
 
 ## TOC
 
@@ -8,12 +17,12 @@
 - [Development](./docs/development.md)  
 - [Monitoring+logging](./docs/monitoring-logging.md)  
 - [Testing](./docs/testing.md)  
-- [Workflows](./docs/workflows.md)  
+- [Workflows](./docs/workflows.md)
+- [Environment Variables](./environment-variables.md)  
 
 
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-production.yml/badge.svg)
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-staging.yml/badge.svg)
-![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/test-on-pull-request.yml/badge.svg)
 
 ## Project architecture
 
@@ -107,6 +116,7 @@ e.g. /:username would match /login or /logout
 | `/msgs/:username`    | `GET, POST`  | GET: Public messages for a specific user. POST: post a new message for a specific username.                 |
 | `/fllws/:username`   | `GET, POST`  | GET: Returns a list of users whom the given user follows. POST: Allows a user to follow or unfollow another user                 |
 | `/latest`            | `GET`  | Retrieves the latest processed command ID                 |
+| `/register`            | `POST`  | Create a new user               |
 
 
 ## Database

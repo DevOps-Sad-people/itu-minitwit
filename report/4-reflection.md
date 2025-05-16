@@ -12,7 +12,12 @@ Finishing a sprint and adding a new feature
 ### [G/Z] Logging deployment: put config images in
 
 
-### [Nic] Migrating from SQLite to PostgreSQL
+### [Nic] Database migrating from SQLite to PostgreSQL to PostgreSQL
+The migration from SQLite to Postgresql happened at a stage, where no active users was using our platform (The simulator was yet to start). This meant that we could safely upgrade without having to move over data, which would have otherwise been a hassle given the SQL dissimilarities.
+
+Given the educational purpose of the project, we later sought out an opportunity to perform a database migration. Such an opportunity arose when database optimization became a necessity. Before optimizing, we deemed it necessary to introduce an ORM, which would improve the developer experience as well as migration experience going forward. Given the new database structure introduced by the ORM, although quite similar, we needed to migrate from one database with one schema, to another database with another schema. The approach taken involved extracting data from one postgres instance in the shape of SQL Insertion statement, which we then manipulated to fit the new data scheme, and then simply ran the sql insertion statements in the new database.
+
+As soon as the migration was done, we switched to the new application image, meaning we now served requests from the new database. This approach involved having 5 minutes of forgotten data, and 3 seconds of lost availability. We found this price and strategy reasonable, although the 5 minutes of lost data, could have had serious impact on the business. As we will later discuss, we found that using logical replication, proved to be a much nicer approach to copying data.
 
 
 ### [Nic] Transition from docker compose to docker swarm (networking problems).
@@ -37,7 +42,7 @@ Second, the swarm nodes were able to communicate with each other, but self-insta
 Keep the system running
 
 ### [Nic] Database logical replication resulting in db crash
-Migrating from docker compose to the docker swarm included the use of logical replication of data from the active production machine, onto the new production database machine. This meant at Postgres would actively sync data from the current machine to the new one, and allowed us to switch from one stack to the other with zero downtime.
+Migrating from docker compose to the docker swarm included the use of postgres feature: Logical replication, which allows postgres instances to live sync data from running postgres instance to the other. This feature is typically used to keep a hot stand-in database ready. In our case, it meant we would actively sync data from the active production database, onto the new production database, and allow us to switch from one stack to the other with zero downtime, as the stand-in database would become the new default.
 
 Unfortunately, after switching a few days later, the pub/sub mechanism of logical replication in Postgres accidentally corrupted a tracking file, meaning the postgres would immediately crash on start. This problem was accomodated by immediately running `pg_resetwal` on startup to reset the corrputed file, and then unsubscriping from the expired subscription. The subscription does not provide any value at this point, as we swapped from the old to the new production machine, and the old one has been turned off.
 

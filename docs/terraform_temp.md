@@ -1,8 +1,10 @@
 # !!!should be moved when merged with new docs!!!
 # TODO
 - Read database from backup
-- Setup ssl for domain
+- How Setup ssl for domain
 - Make sure minitwit_stack is up to date
+- Add ssh keys
+
 # Terraform
 We use Terraform to manage our production infrastructure. The Terraform code is located in the `terraform` directory.
 

@@ -17,7 +17,7 @@
 
 ## Project architecture
 
-![Project architecture](./images/architecture.png)
+![Project architecture](./docs/images/architecture.png)
 
 ## Setup & Run:
 *NOT RECOMMENDED - USE DOCKER INSTEAD*

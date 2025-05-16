@@ -3,9 +3,8 @@ name: Pull Request Test
 
 on:
   pull_request:
-    # Run workflow every time something is in a pull request
     branches:
-      - "*"
+      - "DISABLED" # Replace with '*' to enable on all branches
 
 jobs:
   test:

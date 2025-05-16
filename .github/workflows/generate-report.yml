@@ -1,0 +1,36 @@
+---
+name: Generate Report
+
+on:
+  push:
+    # Run workflow every time something is pushed to the develop branch
+    branches:
+      - main # refers to the reserved IP address of the droplet
+    paths:
+      - "report/**.md"
+      - "report/images/**"
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Markdown to PDF and HTML
+        uses: BaileyJM02/markdown-to-pdf@v1.2.0
+        with:
+          input_path: "./report"
+          images_dir: "./report/images"
+          image_import: ./images
+          output_path: "./report/build"
+          build_html: false
+
+      - name: Commit and push generated report
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A ./report/build
+          git commit -m "Auto-generate report PDF/HTML" || echo "No changes to commit"
+          git push

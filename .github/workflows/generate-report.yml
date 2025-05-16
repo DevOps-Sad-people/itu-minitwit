@@ -21,6 +21,7 @@ jobs:
       - name: Merge files
         run: |
           mkdir -p report/tmp
+          mkdir -p report/build
           find report -maxdepth 1 -name "*.md" | sort | while read file; do
             cat "$file"
             echo ""

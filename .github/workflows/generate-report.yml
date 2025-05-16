@@ -18,13 +18,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Merge files
+        run: |
+          mkdir -p report/tmp
+          find report -maxdepth 1 -name "*.md" | sort | while read file; do
+            cat "$file"
+            echo ""
+          done > "report/tmp/tmp.md"
+
       - name: Markdown to PDF and HTML
         uses: BaileyJM02/markdown-to-pdf@v1.2.0
         with:
-          input_path: "./report"
-          images_dir: "./report/images"
+          input_path: report/tmp/tmp.md
+          images_dir: report/images
           image_import: ./images
-          output_path: "./report/build"
+          output_path: report/build"
           build_html: false
 
       - name: Commit and push generated report

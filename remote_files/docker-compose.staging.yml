@@ -51,6 +51,14 @@ services:
       - .env
     networks:
       - minitwit_network
+    deploy:
+      replicas: 1
+      update_config:
+        delay: 10s
+        order: start-first
+      placement:
+        constraints:
+          - "node.role==manager"
 
   prometheus:
     image: registry.digitalocean.com/sad-containers/prometheus:${TAG}

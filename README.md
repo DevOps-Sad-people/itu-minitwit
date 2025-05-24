@@ -1,11 +1,32 @@
-# itu-minitwit
+# ITU MiniTwit - A DevOps Education Project
+ITU MiniTwit is a lightweight Twitter clone developed for the DevOps course at IT University of Copenhagen. This project demonstrates modern software development practices with a focus on DevOps principles, continuous integration/deployment, and infrastructure automation.
+
+The application is built using Ruby with Sinatra, backed by PostgreSQL, and features a complete CI/CD pipeline with automated testing and deployment. The system architecture utilizes Docker containers orchestrated with Docker Compose, with deployments managed through GitHub Actions to Digital Ocean infrastructure.
+
+MiniTwit provides core social media functionality including user registration, authentication, message posting, and following other users. The application exposes both HTML endpoints for browser interaction and JSON API endpoints for programmatic access.
+
+This project serves as a practical example of DevOps best practices including infrastructure as code, monitoring, logging, and automated testing while maintaining a well-documented codebase with thorough deployment instructions.
+
+
+
+## TOC
+
+- [Overview](./docs/overview.md)  
+- [Architecture](./docs/architecture.md)  
+- [Deployment](./docs/deployment.md)  
+- [Development](./docs/development.md)  
+- [Monitoring+logging](./docs/monitoring-logging.md)  
+- [Testing](./docs/testing.md)  
+- [Workflows](./docs/workflows.md)
+- [Environment Variables](./environment-variables.md)  
+
+
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-production.yml/badge.svg)
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-staging.yml/badge.svg)
-![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/test-on-pull-request.yml/badge.svg)
 
 ## Project architecture
 
-![Project architecture](./images/architecture.png)
+![Project architecture](./docs/images/architecture.png)
 
 ## Setup & Run:
 *NOT RECOMMENDED - USE DOCKER INSTEAD*
@@ -36,40 +57,7 @@ Clean up database afterwards:
 ## Testing
 All tests are performed using RSpec, which is a great DSL for expressing tests. To add tests, use `spec/minitwit_spec.rb` as inspiration. Add `XXXX_spec.rb` to the `spec/` folder, import `spec_helper`, and write as many tests as you should require.
 
-## Testing with Playwright and pytest
 
-### Setting up
-
-You can download a VS Code extension "Playwright Test for VSCode" to help with the test.
-
-1. Install python requirements
-
-
-### How to run
-How to run all test locally - this will find the test automatically
-
-```bash
-pytest
-```
-if you want to see the test you can run
-```bash
-pytest --browser chromium --headed --slowmo 200
-```
-
-if you want to only run ONE file
-
-```bash
-pytest Playwright/test_signup.py  --browser chrome --headed --slowmo 200
-```
-
-### How to record and generate
-
-You can record test by running this command
-```bash
-playwright codegen http://localhost:4567/public
-```
-
-Then you can use the recorder tool to create the test and copy it to the python file and function you have created.
 
 ## developing erb files
 
@@ -128,7 +116,7 @@ e.g. /:username would match /login or /logout
 | `/msgs/:username`    | `GET, POST`  | GET: Public messages for a specific user. POST: post a new message for a specific username.                 |
 | `/fllws/:username`   | `GET, POST`  | GET: Returns a list of users whom the given user follows. POST: Allows a user to follow or unfollow another user                 |
 | `/latest`            | `GET`  | Retrieves the latest processed command ID                 |
-| `/illegal-route'`    | `POST`  | Request validation check, if from simulator or not                |
+| `/register`            | `POST`  | Create a new user               |
 
 
 ## Database

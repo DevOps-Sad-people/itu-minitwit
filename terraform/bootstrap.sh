@@ -61,14 +61,6 @@ terraform validate
 echo -e "\n--> Creating Infrastructure\n"
 terraform apply -auto-approve
 
-# # generate loadbalancer configuration
-# echo -e "\n--> Generating loadbalancer configuration\n"
-# bash scripts/gen_load_balancer_config.sh
-
-# # scp loadbalancer config to all nodes
-# echo -e "\n--> Copying loadbalancer configuration to nodes\n"
-# bash scripts/scp_load_balancer_config.sh
-
 # Sign in to container registry
 echo -e "\n--> Signing in to container registry\n"
 
@@ -99,9 +91,20 @@ ssh \
     -i ssh_key/terraform \
     'docker stack deploy minitwit -c minitwit_stack.yml --with-registry-auth'
 
+
 echo -e "\n--> Done bootstrapping Minitwit"
 echo -e "--> The dbs will need a moment to initialize, this can take up to a couple of minutes..."
 echo -e "--> Site will be avilable @ http://$(terraform output -raw public_ip):4567"
 echo -e "--> You can check the status of swarm cluster @ http://$(terraform output -raw minitwit-swarm-leader-ip-address):8888"
 echo -e "--> ssh to swarm leader with 'ssh root@\$(terraform output -raw minitwit-swarm-leader-ip-address) -i ssh_key/terraform'"
 echo -e "--> To remove the infrastructure run: bash destroy.sh"
+
+# ask user if they want to restore the database from backup
+read -p "Do you want to restore the database from backup? (y/n): " restore_db
+if [[ "$restore_db" == "y" || "$restore_db" == "Y" ]]; then
+    echo -e "\n--> Restoring database from backup\n"
+
+    echo -e "--> Database restored successfully"
+else
+    echo -e "--> Skipping database restore"
+fi

@@ -50,6 +50,17 @@ To roll back, it would require manually SSH'ing into the server and modifying th
 
 Once the feature is successfully integrated into the production codebase, we use Prometheus and Grafana to monitor the application, ensuring that the feature introduces no error, and that operation levels remain the same. In case of noticeable changes, we use Kibana to navigate logs to help diagnose the problem. Kibana queries Elasticsearch, which receives logs from Logstash, who in turn accesses log-files using Filebeat.
 
+### Choice of Architecture & Technologies
+We chose to have a staging environment, as it helped us understand how to properly integrate features and architecture changes before proceeding to do so on production. Given this projects work included a lot of architecture change and adding new technologies, this helped us immensely in preventing down-time by ensuring that the config worked on a deployed environment.
+
+We chose Github as it is a well establish standard for git and code control. On top, it granted us access to Github Actions, which is a great tool for building workflows to establish a CI/CD pipeline. Github Action was a great choice, as it integrated well into the Github environment.   
+
+Using Digital Oceans container registry became our choice given it's integration with the DigitalOcean platform. Only after using it, did we realize that the biggest upsides are primary for users of digital oceans other deployment tools, that are not running on rented VMs. Given the price of DO's container registry, we would most likely migrate to Docker Hub, if the project had continued.
+
+We chose SonarQube for static analysis as it gave us an ability to understand code duplication while being simple to integrate into our CD/CI pipeline.
+
+
+
 ## [Z/G] How do you monitor your systems and what precisely do you monitor?
 
 

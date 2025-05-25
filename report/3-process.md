@@ -5,65 +5,50 @@ This perspective should clarify how code or other artifacts come from idea into 
 In particular, the following descriptions should be included:
 
 ## [Nic] A complete description of stages and tools included in the CI/CD chains, including deployment and release of your systems.
+In the following section, we will discuss the CI/CD pipeline of our system, and for this, we discuss two key branches: `main` and `develop`. The `main` branch includes the code running on our production environment, and `develop` branch includes the code running on our staging environment. For the sake of communication, we will simply address these branches by `production` and `staging`.
 
-1. Source Code Management
-We use Github for handling our repository and tracking process with their issue system. We use a branching strategy, where features written in issues are created in `feature`-branches, which are then merged into `staging` and then into `main`. This enables us to test and deploy the feature before production, at the cost of slightly longer delivery times. Before being able to merge into staging and main, code needs to pass all unit, e2e and simulation tests, check Sonar Cubes quality gate, and lastly be approved by another member of the team.
+We use GitHub for handling our repository and tracking the process with their issue system. We use a branching strategy, where features written in issues are worked on in `feature`-branches. Once ready, they are then merged into `staging` and then into `production`. This enables us to test and deploy the feature before production, at the cost of slightly longer delivery times. This means that for features to make it through to production, it includes three phases:
 
-1. Continuous Integration
-On push to staging and main, we built and test using Github Actions. 
+1. We work on the issue using a `feature`-branch. Developers work on and finalize the feature on this branch.
+2. Once ready, a pull-request is created to merge the `feature`-branch into `staging`, where tests, linting, static code analysis and a fellow team member, must pass or approve the request, before being able to merge it into staging.
+3. Once deployed to the staging environment, if the staging environment sees no failures and passes a manual test, a pull-request into `production` is made. Once approved by tests, linting, static code analysis and a fellow team member, the feature is pushed into main.
 
-Build tools & environments (e.g., Docker, Make, Gradle)
+### Automated Testing and Quality Gates
 
-Automated tests (unit, integration, linting)
+Pull-requests as well as pushing to staging and production, include several tests that are performed using workflows that trigger a GitHub action, which builds a Docker container with which these tests can be performed. On top of the web API container, an associated PostgreSQL database is instantiated, to perform E2E and simulation tests.
 
-Test orchestration tools (e.g., Jest, Pytest, Mocha, Cypress)
+- Unit tests are performed using Ruby Rack
+- E2E tests are performed using Playwright
+- Simulation tests are performed by instantiating a new environment, and using Python to perform requests
+- Static code analysis using SonarQube, which requires ≤3.0% code duplication in the Ruby application.
 
-3. Artifact Management
-Build artifacts (e.g., JARs, Docker images, binaries)
+GitHub branch protection rules ensure that developers follow this workflow. Concretely it prevents users from merging directly into the `staging` and `production` branch.
 
-Artifact storage (e.g., Nexus, JFrog Artifactory, GitHub Packages)
+On top of the above, Ruby and Docker code is formatted and linted on push to any branch. This is done using the GitHub action modules `standardrb/standard-ruby-action@v1` and `hadolint/hadolint` respectively.
 
-4. Continuous Delivery
-Staging environments
+### Build and Deployment Process
 
-Deployment automation tools (e.g., GitHub Actions, GitLab CI, Jenkins, CircleCI)
+We deploy using GitHub Actions, which builds containers and uploads them to Digital Ocean's container registry. We also upload a new version of the Ruby application, and if there are updates to the configs for either our monitoring or logging stack, we also push a new version of that. If tests pass, then we automatically continue to deploy. Currently we differentiate between containers designated for the staging and production environment by assigning them such a tag.
 
-Infrastructure as Code (e.g., Terraform, Pulumi, Ansible)
+The deployment process involves SSH'ing into the manager node of the Docker Swarm, that is running as droplets (virtual machines) on Digital Ocean, and running a deploy.sh script, which simply pulls the newest version of the stack from the container registry.
 
-5. Continuous Deployment
-Rollout strategy (e.g., canary, blue/green, rolling)
+On pushes to main, we automatically create a new release, which includes bumping the application with a new minor-update, meaning 1.0.0 turns into 1.1.0. If we wish to introduce a patch or major update, we can specify in the commit message.
 
-Orchestration platform (e.g., Kubernetes, ECS, Nomad)
+We orchestrate the containers using Docker Swarm, and given the size of our application, we currently follow the direct deployment rollout strategy, where we simply push a new version to all worker nodes at once. This is a point for improvement.
 
-Deployment verification (e.g., smoke tests, health checks)
+### Environment Management and Infrastructure
 
-6. Release Management
-Versioning strategy (e.g., SemVer)
+We have manually set up instances using Digital Ocean's interface, but have prepared a Terraform script for setting up a new environment in the future. For artifact management, we use Digital Ocean's container registry, where we only differentiate between container versions using staging and production tags.
 
-Release approval workflows
+To distribute secrets that GitHub Actions can access, we set up GitHub secrets to keep an access key to Digital Ocean on which we deploy our application.
 
-Feature flagging (e.g., LaunchDarkly, Unleash)
+### Rollback Strategy
 
-Changelog generation
+To roll back, it would require manually SSH'ing into the server and modifying the compose script to depend on a specific container in Digital Ocean's registry. This is definitely a weak point, making it time consuming to rollback and represents an area for future improvement.
 
-7. Monitoring & Feedback
-Logging and error tracking (e.g., ELK, Sentry, Datadog)
+### Monitoring and Observability
 
-Metrics & dashboards (e.g., Prometheus, Grafana)
-
-Alerting setup (e.g., PagerDuty, Opsgenie)
-
-8. Security & Compliance
-Static and dynamic code analysis tools (e.g., SonarQube, Snyk, CodeQL)
-
-Secrets management (e.g., HashiCorp Vault, AWS Secrets Manager)
-
-Policy enforcement (e.g., OPA, GitHub branch protection rules)
-
-- Github Issues
-- Local branch
-- 
-
+Once the feature is successfully integrated into the production codebase, we use Prometheus and Grafana to monitor the application, ensuring that the feature introduces no error, and that operation levels remain the same. In case of noticeable changes, we use Kibana to navigate logs to help diagnose the problem. Kibana queries Elasticsearch, which receives logs from Logstash, who in turn accesses log-files using Filebeat.
 
 ## [Z/G] How do you monitor your systems and what precisely do you monitor?
 

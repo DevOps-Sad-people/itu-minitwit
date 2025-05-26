@@ -3,7 +3,7 @@
 - [Development Workflow](#Development%20Workflow)
 - [Playwright](#Playwright)
 
-## Development-Workflow
+## Development Workflow
 
 ### Development Environment
 

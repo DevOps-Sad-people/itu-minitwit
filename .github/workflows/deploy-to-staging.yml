@@ -5,7 +5,7 @@ on:
   push:
     # Run workflow every time something is pushed to the develop branch
     branches:
-      - develop
+      - develop-DISABLED
 
 concurrency:
   group: deploy-to-staging
@@ -110,7 +110,7 @@ jobs:
         run: |
           cd simulator
           python3 minitwit_simulator_test.py http://0.0.0.0:4567 || (docker logs minitwit && exit 1)
-  
+
   build-images:
     runs-on: ubuntu-latest
     needs: [build-minitwit, test]
@@ -159,7 +159,7 @@ jobs:
         env:
           IMAGE_NAME: logstash
           CONTEXT_PATH: ./elk/logstash
-      
+
       # BUILD AND PUSH ELASTICSEARCH SETUP IMAGE
       - name: Build elasticsearch setup image & push if changed
         run: ./.github/scripts/push_image_on_change.sh

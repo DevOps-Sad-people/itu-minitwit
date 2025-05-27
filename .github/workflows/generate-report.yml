@@ -1,0 +1,48 @@
+---
+name: Generate Report
+
+on:
+  push:
+    # Run workflow every time something is pushed to the develop branch
+    branches:
+      - main
+    paths:
+      - "report/**.md"
+      - "report/images/**"
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge files
+        run: |
+          mkdir -p report/tmp
+          mkdir -p report/build
+          find report -maxdepth 1 -name "*.md" | sort | while read file; do
+            cat "$file"
+            echo ""
+          done > "report/tmp/report.md"
+
+      - name: Markdown to PDF and HTML
+        uses: BaileyJM02/markdown-to-pdf@v1.2.0
+        with:
+          input_path: report/tmp
+          images_dir: report/images
+          image_import: ./images
+          output_dir: report/build/
+          build_pdf: true
+          build_html: false
+
+      - name: Commit and push generated report
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "github@action.com"
+          git add report/build/report.pdf
+          git commit -m "Generate pdf report" || echo "No changes to commit"
+          git push

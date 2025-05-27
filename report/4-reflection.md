@@ -71,6 +71,19 @@ Refactoring simulator requests to only be accepted from a single IP address help
 ## Style of work
 Reflect and describe what was the "DevOps" style of your work.
 ### [Seb/Nick] Reflect on the workflow. Extensive Friday meeting. Split work into three groups
+
+Each Friday after the lectures we met up to have an extensive meeting about the current state of the project. First we shared what features we had worked on the past week, what kind of problems we had faced and how we had solved them. We did this to keep everyone up to date with all the different new technologies and featues implemented. 
+
+Second we discussed the content of the lecture and inspected what new features to implement in the next week. Then we discussed how to implement the new features and the pros and cons of the different options. 
+The group members had different schedules and varying capacity due to other commitments such as handins for other courses. We also took that into account in the discussion of *when* to implement the *what* when delegating the work. We typically worked in three teams:
+
+1. Nicolaj
+2. Gabor and Zalan
+3. Sebastian and Nicklas
+
+These Friday meetings worked very well for us, as we all had a very busy schedule. These meetings allowed us to delegate the work, inspect the progess, adapt the plan and be up to date in terms of the implementation details. While still going in depth into almost all subject.
+
+
 ### [Seb/Nick] Development environemnt: local => branch => staging => production
 ### [Seb/Nick] Repo settings. Workflows on merge. Require 1 team member on pull requests.
 ### [Seb/Nick] Running simulator in workflows

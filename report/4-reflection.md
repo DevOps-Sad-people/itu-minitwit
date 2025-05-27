@@ -39,7 +39,11 @@ Second, the swarm nodes were able to communicate with each other, but self-insta
 
 ### [Seb/Nick] Large amount of features cloging up in staging (Impossible to migrate to production)
 
+Implementing new features fully sometimes took longer than a week. Due to the development workflow described earlier the staging environment was used as a development/testing environment. This resulted in features gate keeped by ohter not fully implemented features. 
 
+Some of the new features required changing the other features, such as the migration from docker compose to docker stack required a full rewrite of the docker compose scripts. 
+
+This made it impossible to migrate the changes to production and delayed the release of the full implementation of the logging and monitoring.  
 
 ## Operation
 Keep the system running

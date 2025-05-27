@@ -74,8 +74,9 @@ Reflect and describe what was the "DevOps" style of your work.
 
 Each Friday after the lectures we met up to have an extensive meeting about the current state of the project. First we shared what features we had worked on the past week, what kind of problems we had faced and how we had solved them. We did this to keep everyone up to date with all the different new technologies and featues implemented. 
 
-Second we discussed the content of the lecture and inspected what new features to implement in the next week. Then we discussed how to implement the new features and the pros and cons of the different options. 
-The group members had different schedules and varying capacity due to other commitments such as handins for other courses. We also took that into account in the discussion of *when* to implement the *what* when delegating the work. We typically worked in three teams:
+Second we discussed the content of the lecture and inspected what new features to implement in the next week. Then we discussed *how* to implement the new features and the pros and cons of the different options. For each tasks we created a new issue on GitHub.
+
+Third we discussed *when* to implement the new issues. The group members had different schedules and varying capacity due to other commitments such as handins for other courses. We took this into considaration when we delegated the work. We typically worked in three teams:
 
 1. Nicolaj
 2. Gabor and Zalan
@@ -85,5 +86,9 @@ These Friday meetings worked very well for us, as we all had a very busy schedul
 
 
 ### [Seb/Nick] Development environemnt: local => branch => staging => production
+
+When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
+
+
 ### [Seb/Nick] Repo settings. Workflows on merge. Require 1 team member on pull requests.
 ### [Seb/Nick] Running simulator in workflows

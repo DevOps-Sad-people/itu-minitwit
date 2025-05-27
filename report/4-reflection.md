@@ -64,7 +64,7 @@ Although it's great to solve problems on yuor own, sometimes other have done a g
 
 ## Maintenance
 Keep system up to date and fix bugs 
-### [Seb/Nick] Stale ReadMe.md throughout project
+### [Seb/Nick] MAYBE NOT NECCESSAY TO DISCUSS THIS Stale ReadMe.md throughout project
 ### [Seb/Nick] Returning wrong statuscode (Misalignment with simulation)
 
 We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
@@ -92,14 +92,14 @@ Third we discussed *when* to implement the new issues. The group members had dif
 These Friday meetings worked very well for us, as we all had a very busy schedule. These meetings allowed us to delegate the work, inspect the progess, adapt the plan and be up to date in terms of the implementation details. While still going in depth into almost all subject.
 
 
-### [Seb/Nick] Development environemnt: local => branch => staging => production
+### [Seb/Nick] MERGE THIS INTO PROCESS SECTION Development environemnt: local => branch => staging => production
 
 As explain in the [Proceess section](3-process.md) we wen developing a new fea
 
 When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
 
 
-### [Seb/Nick] Repo settings. Workflows on merge. Require 1 team member on pull requests.
+### [Seb/Nick] THIS CAN PROBABLY BE MERGED AND DELTED Repo settings. Workflows on merge. Require 1 team member on pull requests.
 
 To support and enforce the development workflow of new features as explained in [Process Section](3-process.md) we have setup branch protection rules via Github. For the `main` and `develop` branch the rules are:  
  
@@ -109,4 +109,4 @@ To support and enforce the development workflow of new features as explained in 
 
 This ensures that all changes to the protected branches have been approved and tested.
 
-### [Seb/Nick] Running simulator in workflows
+### [Seb/Nick] MAYBE EXPLAIN THIS IN PROCESS SECTION Running simulator in workflows

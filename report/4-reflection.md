@@ -21,7 +21,10 @@ As soon as the migration was done, we switched to the new application image, mea
 
 
 ### [Nic] Transition from docker compose to docker swarm (networking problems).
-Transitioning onto multiple machines with docker swarm came with multiple obstacles. First, the docker compose version running on certain of the docker compose scripts, were unsupported by docker swarm. WRITE HERE, WRITE HERE **[Seb/Nick] Docker compose versioning problem (moving to stack)**.
+Transitioning onto multiple machines with docker swarm came with multiple obstacles.
+**[Seb/Nick] Docker compose versioning problem (moving to stack)**. 
+First, the docker compose version that supporst `docker stack deploy` is a legacy version of docker.Second the there is a difference in the features and syntax supported which caused some probelms. The `docker stack` does not take `build`, `container_name` and `depend_on` into consideration. So we had to rewrite the compose scripts to make them compatiple with docker stack.    
+ on certain of the docker compose scripts, were unsupported by docker swarm.
 
 Second, the swarm nodes were able to communicate with each other, but self-instantiated virtual networks defined in the docker-compose file, did not propagate to worker nodes, leaving application containers unable to contact the database, and prometheus unable to collect monitoring events. To accommodate the issue, we destroyed and redeployed new virtual machines, and this time used the VPC IP address to define the IP address of the manager node. This meant that workers are referring to the manager using the virtual network layer, and solved the communication issue.
 

@@ -104,7 +104,11 @@ We have not been able to identify any issues regarding this.
 
 ## [Seb/Nick] Applied strategy for scaling and upgrades.
 
+We have used both horizontal and vertical scaling. 
 
+For the logging and monitoring it was nessesary to scale vertical here we scaled from one 1gb-CPU(s-1vcpu-1gb) to two 2GB CPU (s-2vcpu-4gb) to handle the workload associated with monitoring and logging.
+
+We increased the number of node/droplets from 1 to 3 To increase availability we upgraded from docker compose to docker swarm with a docker stack deployment containing multiple replicas of the minitwit application.
 
 ## [Nic] In case you have used AI-assistants during your project briefly explain which system(s) you used during the project and reflect how it supported or hindered your process.
 This project included the use of both chatbots and in-editor help using copilot. These were provided by OpenAI and Anthrophic.

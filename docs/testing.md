@@ -33,12 +33,13 @@ Extra features:
 - The webSocket stays open for the duration of the test, so everything is sent on one connection. 
 
 This is one reason why Playwright’s execution speeds tend to be faster.
+Genreally Playwrigt is easier to setup and use develop tests.
 
 History:  
 Playwright is fairly new to the automation scene created in 2020. It is faster than Selenium and has capabilities that Selenium lacks, but it does not yet have as broad a range of support for browsers/languages or community support. It is open source and [backed by Microsoft](https://github.com/microsoft/playwright).
 
 
-We tried to implement both Selenium and Playwright. For us it was impossible to get the Selenium to work, we had critical problems with the external browser drivers needed for the Selenium framework to work. Playwright did not need external dirvers since built in protocal clients. 
+We tried to implement both Selenium and Playwright. For us it was impossible to get the Selenium to work, we had critical problems with the external browser drivers needed for the Selenium framework to work. Playwright did not need external dirvers since built in protocol clients and was easy to setup and use to develop new UI test. 
 
 
 ## Playwright Testing

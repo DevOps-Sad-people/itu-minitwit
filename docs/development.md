@@ -7,7 +7,35 @@
 
 ### Development Environment
 
-When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.   
+When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `docker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.   
+
+### How to run locally
+
+To start up all docker services:
+
+`docker compose -f docker-compose.dev.yml up -d`
+
+After this, the minitwit application will be avaible at http://localhost:4567/.
+
+To run a specific service:
+
+`docker compose -f docker-compose.dev.yml up <service_name> -d`
+
+To run the tests:
+
+`docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test`
+
+To stop and delete running containers:
+
+`docker compose -f docker-compose.dev.yml down`
+
+To stop and delete a specific container:
+
+`docker compose -f docker-compose.dev.yml down <service_name>`
+
+To clean up volumes afterwards: (***WARNING:*** deletes all persisted project data)
+
+`docker compose -f docker-compose.dev.yml down --volumes`
 
 ### Repo settings
 
@@ -28,7 +56,7 @@ We met up every friday to first present what we each had worked on the last week
 
 We typically worked in three teams
 1. Nicolaj
-1. Gabor and Zalan
+1. Gábor and Zalán
 1. Sebastian and Nicklas
 
 ## Playwright

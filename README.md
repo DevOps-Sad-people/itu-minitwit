@@ -28,7 +28,8 @@ This project serves as a practical example of DevOps best practices including in
 
 ![Project architecture](./docs/images/architecture.png)
 
-## Setup & Run:
+<!--## Setup & Run:
+
 *NOT RECOMMENDED - USE DOCKER INSTEAD*
 
 - Install Ruby version 3.3
@@ -36,30 +37,40 @@ This project serves as a practical example of DevOps best practices including in
 - Setup postgres (Add postgres credentials to the .env file)
 - `bundle install` to install packages
 - `sh control.sh init` to init db.
-- `ruby minitwit.rb` to run program.
+- `ruby minitwit.rb` to run program.-->
 
-## Run using Docker
+## How to run locally
 
-`docker compose up -d`
+To start up all docker services:
 
-### Test in docker
+`docker compose -f docker-compose.dev.yml up -d`
+
+After this, the minitwit application will be avaible at http://localhost:4567/.
+
+To run a specific service:
+
+`docker compose -f docker-compose.dev.yml up <service_name> -d`
+
+To run the tests:
 
 `docker compose -f docker-compose.testing.yml up --abort-on-container-exit --exit-code-from test`
 
-### Interactive development
+To stop and delete running containers:
 
-1. `docker compose -f docker-compose.dev.yml run --rm --service-ports dev bash`
-2. Run `rspec` to test or `ruby minitwit.rb` to start the app.
+`docker compose -f docker-compose.dev.yml down`
 
-Clean up database afterwards:
+To stop and delete a specific container:
+
+`docker compose -f docker-compose.dev.yml down <service_name>`
+
+To clean up volumes afterwards: (***WARNING:*** deletes all persisted project data)
+
 `docker compose -f docker-compose.dev.yml down --volumes`
 
 ## Testing
 All tests are performed using RSpec, which is a great DSL for expressing tests. To add tests, use `spec/minitwit_spec.rb` as inspiration. Add `XXXX_spec.rb` to the `spec/` folder, import `spec_helper`, and write as many tests as you should require.
 
-
-
-## developing erb files
+## Developing erb files
 
 The `.erb` files are in folder `templates/`
 
@@ -175,6 +186,68 @@ The release version is determined by the contents of the last commit message, fo
 - If you include `#patch` in the commit message, it will bump the patch version for the release.
 - If you include `#none` in the commit message, **no release will be done**.
 - Otherwise, if you don't include any of the above options, the *minor* version will be bumped by default.
+
+## Monitoring
+
+Monitoring is implemented using Prometheus + Grafana.
+
+Go to http://localhost:3000/ to see the dashboard.
+
+Config is stored in yaml and json files, under the folder ./grafana.
+
+Currently configured metrics:
+
+- HTTP response count by status codes
+- HTTP error response count
+- Latency percentiles
+- Average latency
+- Total registered users
+
+Currently configured alerts:
+
+- Email alerting when 5XX (server-side) error count exceeds the threshold, on the "HTTP error response count" panel
+
+### How to modify dashboard/metrics:
+
+1. Go to the dashboard on the monitoring interface, make changes. You can add, remove or change panels.
+2. You cannot save changes from the UI. Export the whole dashboard as json, and overwrite [this](./grafana/predefined-dashboards/minitwit_dashboard.json) file.
+3. Restart the grafana docker container.
+
+### How to add new alert rules:
+
+1. Go to the dashboard, select the panel you want to add alerts to.
+2. Create and save alert.
+3. Export as json (only way to make it permanent). Copy only the relevant alert group under section "groups". 
+4. Save it under [this](./grafana/alerting/alert_rules.yaml) file (append it to section "groups").
+5. Restart the grafana docker container.
+
+### How to modify alert rules:
+
+1. Go to the dashboard, select the panel, then the existing alert rule.
+2. Select "Export with modifications".
+3. Make changes, then export as json.
+4. Save it under the relevant file, as discussed before.
+5. Restart the grafana docker container.
+
+## Logging
+
+Logging is implemented using the ELFK stack (Elasticsearch, Logstash, Filebeat, Kibana).
+
+Go to http://localhost:5601/ to see the kibana UI.
+
+First time startup:
+1. Run ```docker compose -f docker-compose.dev.yml up elasticsearch-setup```. This configures the necessary users and roles for Elasticsearch and the stack.
+2. Run the stack normally.
+3. On the Kibana UI, click on Analytics/Discover to create the initial data view.
+
+The following fields are the most relevant for filtering logs:
+- service: the name of the docker service, as defined in the docker compose file.
+- level: the logging level (DEBUG, INFO etc.) if applicable. If a log could not be parsed by Logstash, this field is omitted.
+- @timestamp
+
+Config files are stored under ./elk.
+
+Logstash filtering logic can be changed in [this](./elk/logstash/pipeline/logstash.conf) file.
 
 ## Deployment
 We use Vagrant to provision a droplet to Digital Ocean. For this to work, a few configuration steps must be taken. The github workflows refer to the reserved IPs, so after provisioning, you need to assign these IPs to the droplets.

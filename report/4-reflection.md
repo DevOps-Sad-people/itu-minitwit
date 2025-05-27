@@ -52,8 +52,10 @@ Keep the system running
 ## Maintenance
 Keep system up to date and fix bugs 
 ### [Seb/Nick] Stale ReadMe.md throughout project
-### [Seb/Nick]Returning wrong statuscode (Misalignment with simulation) 
-   - Thanks to running similator in the CI/CD pipeline we found this
+### [Seb/Nick] Returning wrong statuscode (Misalignment with simulation)
+
+We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
+
 ### [Nic] Upgrading to NGINX, setting up ufw, moving to domain
 ### [Nic] Simulator IP protection stopped sim access (causing errors)
 

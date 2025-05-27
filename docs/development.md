@@ -1,9 +1,15 @@
 # Development
 
-- [Local development](#How-to-run-locally)
+- [Development Workflow](#Development%20Workflow)
 - [Playwright](#Playwright)
 
-## How to run locally
+## Development Workflow
+
+### Development Environment
+
+When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `docker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.   
+
+### How to run locally
 
 To start up all docker services:
 
@@ -30,6 +36,28 @@ To stop and delete a specific container:
 To clean up volumes afterwards: (***WARNING:*** deletes all persisted project data)
 
 `docker compose -f docker-compose.dev.yml down --volumes`
+
+### Repo settings
+
+We have setup branch protection to merge into `main` and `develop` 
+1. Merge changes through pull request
+1. At least one developer has to approve the changes
+1. Workflows and test have to pass LINK TO TESTS
+
+This ensures that all changes to the protected branches have been approved and tested.  
+
+
+### Ways of Working 
+
+
+Implementing new features
+
+We met up every friday to first present what we each had worked on the last weeks. If one of us had problems or question we would discuss them here. Then plan how to implement the next weeks features.   
+
+We typically worked in three teams
+1. Nicolaj
+1. Gábor and Zalán
+1. Sebastian and Nicklas
 
 ## Playwright
 

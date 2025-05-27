@@ -1,7 +1,16 @@
+# Testing
+
+- [Testing](#testing)
+- [UI-Testing](#ui-testing)
+  - [Selenium vs Playwright](#selenium-vs-playwright)
+  - [Playwright Testing](#playwright-testing)
+    - [How to run](#how-to-run)
+    - [Create a new test](#create-a-new-test)
+- [Simulator Tests](#simulator-tests)
+
 # UI-Testing
 
 ## Selenium vs Playwright
-
 
 **Selenium**
 
@@ -70,3 +79,9 @@ pytest Playwright/test_signup.py  --browser chrome --headed --slowmo 200
 1. Read the next section to see how to record a test
 
 # Simulator Tests
+
+The simulator can be found in the folder `simulator/` and contains
+- `minitwit_scenario.csv` (data)
+- `minitwit_simulator_test.py` (sends request with the data)
+
+The simulator test are run as a part of the testing pipeline/workflow [`test-on-request.yml`](../.github/workflows/test-on-request.yml) . It runs to ensure that the enpoints behave correctly, testing that the endpoints are available and return the correct status codes. 

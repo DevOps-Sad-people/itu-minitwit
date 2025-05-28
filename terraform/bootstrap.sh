@@ -103,6 +103,12 @@ echo -e "--> To remove the infrastructure run: bash destroy.sh"
 read -p "Do you want to restore the database from backup? (y/n): " restore_db
 if [[ "$restore_db" == "y" || "$restore_db" == "Y" ]]; then
     echo -e "\n--> Restoring database from backup\n"
+    ssh \
+        -o 'StrictHostKeyChecking no' \
+        root@$(terraform output -raw minitwit-swarm-leader-ip-address) \
+        -i ssh_key/terraform \
+        'docker exec minitwit_db sh /scripts/restore.sh'
+
 
     echo -e "--> Database restored successfully"
 else

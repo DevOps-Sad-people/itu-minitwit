@@ -13,6 +13,7 @@ We use GitHub for handling our repository and tracking the process with their is
 2. Once ready, a pull-request is created to merge the `feature`-branch into `staging`, where tests, linting, static code analysis and a fellow team member, must pass or approve the request, before being able to merge it into staging.
 3. Once deployed to the staging environment, if the staging environment sees no failures and passes a manual test, a pull-request into `production` is made. Once approved by tests, linting, static code analysis and a fellow team member, the feature is pushed into main.
 
+
 ### Automated Testing and Quality Gates
 
 Pull-requests as well as pushing to staging and production, include several tests that are performed using workflows that trigger a GitHub action, which builds a Docker container with which these tests can be performed. On top of the web API container, an associated PostgreSQL database is instantiated, to perform E2E and simulation tests.
@@ -22,7 +23,7 @@ Pull-requests as well as pushing to staging and production, include several test
 - Simulation tests are performed by instantiating a new environment, and using Python to perform requests
 - Static code analysis using SonarQube, which requires ≤3.0% code duplication in the Ruby application.
 
-GitHub branch protection rules ensure that developers follow this workflow. Concretely it prevents users from merging directly into the `staging` and `production` branch.
+GitHub branch protection rules ensure that developers follow this workflow. Concretely it prevents users from merging directly into the `develop` and `main` branch.
 
 On top of the above, Ruby and Docker code is formatted and linted on push to any branch. This is done using the GitHub action modules `standardrb/standard-ruby-action@v1` and `hadolint/hadolint` respectively.
 

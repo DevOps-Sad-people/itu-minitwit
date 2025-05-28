@@ -5,7 +5,7 @@ IT University of Copenhagen
 
 ### People
 - *Gábor Tódor* - gato@itu.dk
-- *Kálny Zalán* - zaka@itu.dk
+- *Zalán Kálny* - zaka@itu.dk
 - *Nicklas Koch Rasmussen* - nicra@itu.dk
 - *Nicolai Grymer* - ngry@itu.dk
 - *Sebastian Andersen* - seaa@itu.dk

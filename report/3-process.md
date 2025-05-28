@@ -61,13 +61,38 @@ Using Digital Oceans container registry became our choice given it's integration
 We chose SonarQube for static analysis as it gave us an ability to understand code duplication while being simple to integrate into our CD/CI pipeline.
 
 
-
 ## [Z/G] How do you monitor your systems and what precisely do you monitor?
 
+Monitoring is configured in our system using Prometheus and Grafana. Prometheus handles time-series based raw metric collection, Grafana handles metric visualization.
+
+### How it works in our system
+
+Our Minitwit application uses an existing Ruby client library of Prometheus, and exposes raw metrics on the `/metrics` endpoint. The Prometheus service periodically scrapes the data from this endpoint of the application. In Grafana, these collected metrics are visualized using highly customizable dashboard panels. In each panel, metrics from Prometheus are queried at regular intervals using PromQL queries. We also set up email alerting for certain panels, this way we can be notified when certain conditions, thresholds etc. are met.
+
+### Panels configured on our Grafana dashboard
+
+- **HTTP response count by status codes:** Time-series. Shows the number of HTTP responses during the last minute at any given point of the time range, grouped by status codes.
+- **HTTP error response count:** Time-series. Shows the number of HTTP client- and server-side error responses during the last minute at any given point of the time range. Email alerting is also set up for this panel, when the server-side (5XX) error count during the last minute hits a certain threshold.
+- **Latency percentiles:** Time-series. Shows the median, 95th and 99th percentiles of latency (request duration) in milliseconds at any given point of the time range.
+- **Average latency:** Gauge. Shows the average latency in milliseconds over the given time range.
+- **Total registered users:** Stat. Shows the total number of registered users in the Minitwit application.
+
+As seen in the list above, aside from the *Total registered users* panel, we mainly do infrastructure monitoring in our system. We also planned to include more meaningful application-specific monitoring too such as the number of new users/new posts made in the last X minutes; due to time constraints, however, we did not implement these.
 
 
 ## [Z/G]  What do you log in your systems and how do you aggregate logs?
 
+Logging is configured in our system using the ELFK stack: Elasticsearch, Logstash, Filebeat and Kibana.
+
+### How it works in our system and the way we aggregate logs
+
+First, Filebeat handles log shipping by reading and collecting logs from each of our Docker containers' log files. These logs are then forwarded to Logstash, which processes and transforms the log data as needed. Logstash then sends the processed logs to Elasticsearch where they are indexed and stored for efficient querying. Finally, the aggregated logs are visualized using Kibana.
+
+The reason we also used Filebeat for log shipping is because it is much more lightweight than Logstash. Traditionally, Logstash is the log aggregator which collects, transforms and forwards logs for further processing, but since we have multiple physical nodes in our system, each node would require one Logstash instance running on them. Instead, each node has a Filebeat instance running which handles log shipping for the containers running on that node.
+
+### What we log in our system
+
+Filebeat forwards all logs, from all Docker containers in the system. In Logstash, we filter based on the logging levels (filtering/parsing is specific to each service's logging format). We try to parse each log record to extract the logging level; if the parsing was successful, all *DEBUG*- and *INFO*-level messages are excluded, everything else is forwarded to Elasticsearch for indexing. Additionally, Logstash also drops many unneeded fields in each log record, so that the number of indexed fields will stay relatively small.
 
 
 ## [Nic] Brief results of the security assessment and brief description of how did you harden the security of your system based on the analysis.
@@ -97,7 +122,7 @@ A08:2021-Software and Data Integrity
 We have not been able to identify any issues regarding this.
 
 A09:2021-Security Logging and Monitoring Failures
-We experienced a log overflow causing our production service to fail. This failure did not cause any warnings, causing three days of downtime for our application. We will elaobrate on how we fixed this when reflecting on system operation.
+We experienced a log overflow causing our production service to fail. This failure did not cause any warnings, causing three days of downtime for our application. We will elaborate on how we fixed this when reflecting on system operation.
 
 A10:2021-Server-Side Request Forgery
 We have not been able to identify any issues regarding this.

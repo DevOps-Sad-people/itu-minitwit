@@ -12,6 +12,57 @@ The current deployment flow.
 
 ## [Nic] All dependencies of your _ITU-MiniTwit_ systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on.
 
+### Application
+- Programming Language: Ruby
+- Framework: Sinatra
+- Database ORM: Sequal
+- pg (ruby library)
+- digest
+  - md5
+  - sha2
+- json
+- dotenv
+- rack
+- prometheus/middleware/exporter
+- active_support/time
+
+### DB
+- PostgresSQL
+- DB Backup
+  
+### Testing
+- Python
+   - requests
+- Playwright
+   - pytest
+- rspec
+- SonarQube
+- hadolint/hadolint
+- erb_lint
+
+
+
+### Deployment
+- ubuntu
+- NGINX
+- Docker
+- GitHub
+  - Actions
+  - Secrets
+- Vagrent
+- Terrafrom
+- Digital Ocean
+  - Container Registry
+  - Storage (S3)
+
+### Monitoring + Logging
+- Elastic search
+- Logstash
+- Filebeat
+- Kibana
+- Prometheus
+- Grafana
+
 
 ## [Nic] Important interactions of subsystems.
 Both the simulator and client contact the same API application, so both sequence diagrams look identical. The following sequence diagram uses the simulator request endpoint `/fllws/[username]` as the baseline. The following sequence diagrams does not take Docker Swarm into account, as the underlying communication is hidden.

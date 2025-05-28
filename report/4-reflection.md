@@ -3,14 +3,6 @@
 ## Evolution and refactoring
 Finishing a sprint and adding a new feature 
 
-### [G/Z] ELK logging resource heavy + too many fields + all fields were indexed
-
-
-### [G/Z] Filebeat on all swarm nodes
-
-
-### [G/Z] Logging deployment: put config images in
-
 
 ### [Nic] Database migrating from SQLite to PostgreSQL to PostgreSQL
 The migration from SQLite to Postgresql happened at a stage, where no active users was using our platform (The simulator was yet to start). This meant that we could safely upgrade without having to move over data, which would have otherwise been a hassle given the SQL dissimilarities.
@@ -22,19 +14,21 @@ As soon as the migration was done, we switched to the new application image, mea
 
 ### [Nic] Transition from docker compose to docker swarm (networking problems).
 Transitioning onto multiple machines with docker swarm came with multiple obstacles.
+
 **[Seb/Nick] Docker compose versioning problem (moving to stack)**.  
 
-First, the docker compose version that supporst `docker stack deploy` is a legacy version of docker.Second the there is a difference in the features and syntax supported which caused some probelms. The `docker stack` does not take `build`, `container_name` and `depend_on` into consideration. So we had to rewrite the compose scripts to make them compatiple with docker stack.    
+Firstly, the docker compose version that supports `docker stack deploy` is a legacy version of docker, and there is a difference in the features and syntax supported which caused some problems. The `docker stack` does not take `build`, `container_name` and `depend_on` into consideration, and also handles unnamed volumes differently. Therefore, we had to rewrite the compose scripts to make them compatible with docker stack. One of the biggest change that also resulted from this is that from this point on, we had to build the configuration files of each service into Docker images, and publish them to our DigitalOcean registry. This came with several complications, such as automatically building images in our workflows during deployment, and ensuring correct versioning/tagging for each image, since publishing all images in every deployment would take a lot of resources and time. This change also solved another one of our problems: previously, we manually copied all configuration files onto the server using `scp`, which made every deployment error prone.
 
-Second, the swarm nodes were able to communicate with each other, but self-instantiated virtual networks defined in the docker-compose file, did not propagate to worker nodes, leaving application containers unable to contact the database, and prometheus unable to collect monitoring events. To accommodate the issue, we destroyed and redeployed new virtual machines, and this time used the VPC IP address to define the IP address of the manager node. This meant that workers are referring to the manager using the virtual network layer, and solved the communication issue.
+Secondly, the swarm nodes were able to communicate with each other, but self-instantiated virtual networks defined in the docker-compose file, did not propagate to worker nodes, leaving application containers unable to contact the database, and prometheus unable to collect monitoring events. To accommodate the issue, we destroyed and redeployed new virtual machines, and this time used the VPC IP address to define the IP address of the manager node. This meant that workers are referring to the manager using the virtual network layer, and solved the communication issue.
 
 
-### [G/Z] scp files onto server and then deployment (Discuss ups/downs)
-    - You can destroy the prod environment with wrong files/wrong docker compose
-  
+### [G/Z] Logging issues (ELK logging resource heavy + too many fields + all fields were indexed, Filebeat on all swarm nodes)
 
-### [G/Z] Transition from config files to docker images (Tagging docker containers) 
+The initial deployment of our logging stack was quite problematic, as Elasticsearch turned out to be very resource heavy, consuming almost ~60-80% CPU at times (before introducing logging, it was ~10% at peak load), and also taking all available RAM. We tackled this in two ways:
+- We scaled the droplets vertically, giving them more resources, as previously discussed. This was necessary because the stack has larger minimal resource requirements than what we had.
+- We introduced Logstash filters, which dramatically decreased the number of fields indexed by Elasticsearch, lowering its resource consumption greatly.
 
+We also encountered another issue with Filebeat, after switching to Docker Swarm. We found that one Filebeat instance needs to run on each node, because every instance needs direct access to read the containers' log files. This was solved by introducing global replication for not only the Minitwit application, but for Filebeat as well.
 
 
 ### [Seb/Nick] Large amount of features cloging up in staging (Impossible to migrate to production)
@@ -54,12 +48,13 @@ Migrating from docker compose to the docker swarm included the use of postgres f
 Unfortunately, after switching a few days later, the pub/sub mechanism of logical replication in Postgres accidentally corrupted a tracking file, meaning the postgres would immediately crash on start. This problem was accomodated by immediately running `pg_resetwal` on startup to reset the corrputed file, and then unsubscriping from the expired subscription. The subscription does not provide any value at this point, as we swapped from the old to the new production machine, and the old one has been turned off.
 
 
-### [G/Z]Log overflow problem. Access denied to machine. Massive clutch
+### [G/Z] Log overflow problem. Access denied to machine. Massive clutch
 
+After quite some time into development, our droplet became overwhelmed by the large volume of logs being generated by the different containers. This log overflow consumed all available disk space on our droplet, resulting in the droplet becoming inoperable, also shutting down our whole system. We did not notice this issue for a few days as Grafana also shut down, being unable to send alerts to us. After noticing the issue, we were also denied SSH access into the droplet. We had to use DigitalOcean's recovery console to regain access to the server, delete unnecessary log files, and restore normal operation. Learning from this incident, we introduced log rotation in our docker compose file which limits the maximum number and size of generated log files.
 
 
 ### [Nic] Backup strategy (cron job every three hours)
-Although it's great to solve problems on yuor own, sometimes other have done a great job already. And this proved to be the case for backing up a Postgres database. Simply adding the `eeshugerman/postgres-backup-s3:15` container image to the manager node and configuring environment variables, we successfully setup a cron job that automatically backs up daily, and sends the backup to DO's space storage, which is S3 compatible. Using the exact same script, it also includes functions that easily allow restoring from a previous backup. The latter is a crucial step, for when things are burning. The container likewise provide clean-up functionality, such that only 7 days of backups are kept.
+Although it's great to solve problems on your own, sometimes other have done a great job already. And this proved to be the case for backing up a Postgres database. Simply adding the `eeshugerman/postgres-backup-s3:15` container image to the manager node and configuring environment variables, we successfully setup a cron job that automatically backs up daily, and sends the backup to DO's space storage, which is S3 compatible. Using the exact same script, it also includes functions that easily allow restoring from a previous backup. The latter is a crucial step, for when things are burning. The container likewise provide clean-up functionality, such that only 7 days of backups are kept.
 
 
 ## Maintenance

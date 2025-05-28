@@ -4,6 +4,11 @@ A description and illustration of the:
 
 ## [ seb/nick ] Design and architecture of your _ITU-MiniTwit_ systems
 
+The current achitecture of the minitwit system.
+![Project architecture](./images/minitwit_architecture.drawio.png)
+The current deployment flow.
+![Deployment flow](./images/deployment_flow.drawio.png)
+
 
 ## [Nic] All dependencies of your _ITU-MiniTwit_ systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on.
 

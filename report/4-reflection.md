@@ -21,7 +21,10 @@ As soon as the migration was done, we switched to the new application image, mea
 
 
 ### [Nic] Transition from docker compose to docker swarm (networking problems).
-Transitioning onto multiple machines with docker swarm came with multiple obstacles. First, the docker compose version running on certain of the docker compose scripts, were unsupported by docker swarm. WRITE HERE, WRITE HERE **[Seb/Nick] Docker compose versioning problem (moving to stack)**.
+Transitioning onto multiple machines with docker swarm came with multiple obstacles.
+**[Seb/Nick] Docker compose versioning problem (moving to stack)**.  
+
+First, the docker compose version that supporst `docker stack deploy` is a legacy version of docker.Second the there is a difference in the features and syntax supported which caused some probelms. The `docker stack` does not take `build`, `container_name` and `depend_on` into consideration. So we had to rewrite the compose scripts to make them compatiple with docker stack.    
 
 Second, the swarm nodes were able to communicate with each other, but self-instantiated virtual networks defined in the docker-compose file, did not propagate to worker nodes, leaving application containers unable to contact the database, and prometheus unable to collect monitoring events. To accommodate the issue, we destroyed and redeployed new virtual machines, and this time used the VPC IP address to define the IP address of the manager node. This meant that workers are referring to the manager using the virtual network layer, and solved the communication issue.
 
@@ -36,7 +39,11 @@ Second, the swarm nodes were able to communicate with each other, but self-insta
 
 ### [Seb/Nick] Large amount of features cloging up in staging (Impossible to migrate to production)
 
+Implementing new features fully sometimes took longer than a week. Due to the development workflow described earlier the staging environment was used as a development/testing environment. This resulted in features gate keeped by ohter not fully implemented features. 
 
+Some of the new features required changing the other features, such as the migration from docker compose to docker stack required a full rewrite of the docker compose scripts. 
+
+This made it impossible to migrate the changes to production and delayed the release of the full implementation of the logging and monitoring.  
 
 ## Operation
 Keep the system running
@@ -57,7 +64,7 @@ Although it's great to solve problems on yuor own, sometimes other have done a g
 
 ## Maintenance
 Keep system up to date and fix bugs 
-### [Seb/Nick] Stale ReadMe.md throughout project
+### [Seb/Nick] MAYBE NOT NECCESSAY TO DISCUSS THIS Stale ReadMe.md throughout project
 ### [Seb/Nick] Returning wrong statuscode (Misalignment with simulation)
 
 We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
@@ -82,24 +89,13 @@ Third we discussed *when* to implement the new issues. The group members had dif
 2. Gabor and Zalan
 3. Sebastian and Nicklas
 
-These Friday meetings worked very well for us, as we all had a very busy schedule. These meetings allowed us to delegate the work, inspect the progess, adapt the plan and be up to date in terms of the implementation details. While still going in depth into almost all subject.
+These Friday meetings worked very well for us, as we all had a very busy schedule. These meetings allowed us to delegate the work, inspect the progess, adapt the plan and be up to date in terms of the implementation details. While still going in depth into the subjects.
 
 
-### [Seb/Nick] Development environemnt: local => branch => staging => production
+### [Seb/Nick] MERGE THIS INTO PROCESS SECTION Development environemnt: local => branch => staging => production
 
 As explain in the [Proceess section](3-process.md) we wen developing a new fea
 
 When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
 
 
-### [Seb/Nick] Repo settings. Workflows on merge. Require 1 team member on pull requests.
-
-To support and enforce the development workflow of new features as explained in [Process Section](3-process.md) we have setup branch protection rules via Github. For the `main` and `develop` branch the rules are:  
- 
-1. No direct merge into protected branch.
-2. Changes must be approved by at least team member
-3. Workflows and test must pass
-
-This ensures that all changes to the protected branches have been approved and tested.
-
-### [Seb/Nick] Running simulator in workflows

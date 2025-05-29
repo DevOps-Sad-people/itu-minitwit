@@ -70,8 +70,3 @@ Third we discussed *when* to implement the new issues. The group members had dif
 3. Sebastian and Nicklas
 
 These Friday meetings worked very well for us, as we all had a very busy schedule. These meetings allowed us to delegate the work, inspect the progress, adapt the plan and be up to date in terms of the implementation details, while still going in depth into the subjects.
-
-
- 
-
-

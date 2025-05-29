@@ -22,7 +22,7 @@ We orchestrate the containers using Docker Swarm, and given the size of our appl
 
 ### Environment Management and Infrastructure
 
-We have manually set up instances using Digital Ocean's interface, but have prepared a Terraform script for setting up a new environment in the future. For artifact management, we use Digital Ocean's container registry, where we differentiate between container versions using staging and production tags.
+We have manually set up instances on Digital Ocean using Vagrant, but have prepared a Terraform script for setting up a new environment in the future. For artifact management, we use Digital Ocean's container registry, where we differentiate between container versions using staging and production tags.
 
 To distribute secrets that GitHub Actions can access, we set up GitHub Secrets to keep an access key to Digital Ocean on which we deploy our application.
 

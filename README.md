@@ -24,9 +24,12 @@ This project serves as a practical example of DevOps best practices including in
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-production.yml/badge.svg)
 ![](https://github.com/DevOps-Sad-people/itu-minitwit/actions/workflows/deploy-to-staging.yml/badge.svg)
 
-## Project architecture
+## Project Architecture
 
-![Project architecture](./docs/images/architecture.png)
+![Project architecture](./docs/images/minitwit_architecture.drawio.png)
+
+## Deployment Flow
+![Project architecture](./docs/images/deployment_flow.drawio.png)
 
 <!--## Setup & Run:
 

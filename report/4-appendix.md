@@ -1,5 +1,5 @@
 # Appendix
-### [Seb/Nick] Repo settings. Workflows on merge. Require 1 team member on pull requests.
+## Repo settings. Workflows on merge. Require 1 team member on pull requests.
 
 This section is also described in the Process Section
 
@@ -22,9 +22,9 @@ We use GitHub for handling our repository and tracking the process with their is
 2. Once ready, a pull-request is created to merge the `feature`-branch into `staging`, where tests, linting, static code analysis and a fellow team member, must pass or approve the request, before being able to merge it into staging.
 3. Once deployed to the staging environment, if the staging environment sees no failures and passes a manual test, a pull-request into `production` is made. Once approved by tests, linting, static code analysis and a fellow team member, the feature is pushed into main.
 
-### Development environemnt: local => branch => staging => production
+### Development environment: local => feature-branch => staging => production
 
-As explain in the [Proceess section](3-process.md) when developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `docker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
+As explain in the [Process section](3-process.md) when developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `docker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
 
 ### Automated Testing and Quality Gates
 
@@ -42,11 +42,11 @@ On top of the above, Ruby and Docker code is formatted and linted on push to any
 
 ## Issues and bugs
 
-### [Seb/Nick] Returning wrong statuscode (Misalignment with simulation)
+### Returning wrong status code (misalignment with simulation)
 
 We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
 
-### [Seb/Nick] Stale ReadMe.md throughout project
+### Stale README.md throughout project
 
 Througout the project we have not always been the best to update the README.md, we have prioritized implementing the features for the deadline over the documentation. [Agile Manifesto: ](https://agilemanifesto.org/)*Working software over comprehensive documentation.*
 Due to the features clogging up in staging we had plenty of problems to solve to get working software. 
@@ -155,6 +155,33 @@ While newer and with less community support, it offers modern features and perfo
   - customizability
   - steeper learning curve
   - more enterprise focused
+
+**Digital Ocean** also provided its own container registry, which was our choice when looking for a registry later into the development process, given it's integration with the DigitalOcean platform. Only after using it, did we realize that the biggest upsides are primarily for users of digital oceans other deployment tools, that are not running on rented VMs. Also given the price of DO's container registry, we would most likely migrate to Docker Hub, if the project had continued.
+
+### Monitoring
+- **Prometheus** provides several features which are useful for us:
+  - centralized, pull-based metric collection
+  - metrics are time-series based -> can show changes over time
+  - had ane existing Ruby client library -> easy setup & integration with our system
+
+- **Grafana:**
+  - integrates well with Prometheus
+  - supports a wide range of metric types
+  - (relatively) easy to use by writing PromQL queries
+  - supports alerts (e.g. email)
+
+### Logging
+- **ELFK stack - Filebeat + Logstash + Elasticsearch + Kibana**
+  - very popular, pretty much industry standard
+  - nice interoperability (Kibana is tailored for Elasticsearch)
+  - Logstash + Elasticsearch can be very resource-heavy -> Filebeat addresses this with lightweight log collection
+- **Grafana + Loki**
+  - less resource-heavy
+  - could integrate well into our existing Grafana service
+  - less popular choice
+
+We chose the ELFK stack mainly because it's the most popular choice, and we wanted to get familiar with it.
+
 
 ## Full Security Analysis (OWASP Top 10 list)
 By running through the [OWASP Top 10 list](https://owasp.org/www-project-top-ten/) on security assessment, we have done the following analysis:

@@ -59,10 +59,7 @@ Although it's great to solve problems on your own, sometimes other have done a g
 
 ## Maintenance
 Keep system up to date and fix bugs 
-### [Seb/Nick] MAYBE NOT NECCESSAY TO DISCUSS THIS Stale ReadMe.md throughout project
-### [Seb/Nick] Returning wrong statuscode (Misalignment with simulation)
-
-We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
+   
 
 ### [Nic] Upgrading to NGINX, setting up ufw, moving to domain
 Upgrading to NGINX, we learned multiple things about running a system. First being that having a staging environment to learn how to run command in the correct order proved great to build a shell script that immediately upgrades the production service. Second, that although we had configured our ufw with all the right ports, actually the service was disabled, which it is by default. Only by realizing that the 443 port was open although no specified, did we realize that ufw needs to be actively activated. From this we gathered, that it is important to double check firewall and other security measures, to ensure they're configured properly. Luckily, our database was not exposed by PORT from the docker network, and therefore inaccessible, but having full access to other ports may have exposed other vulnerabilities on the machine.
@@ -87,10 +84,6 @@ Third we discussed *when* to implement the new issues. The group members had dif
 These Friday meetings worked very well for us, as we all had a very busy schedule. These meetings allowed us to delegate the work, inspect the progess, adapt the plan and be up to date in terms of the implementation details. While still going in depth into the subjects.
 
 
-### [Seb/Nick] MERGE THIS INTO PROCESS SECTION Development environemnt: local => branch => staging => production
-
-As explain in the [Proceess section](3-process.md) we wen developing a new fea
-
-When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
+ 
 
 

@@ -45,3 +45,89 @@ Due to the features clogging up in staging we had plenty of problems to solve to
 ### Ideal Architecture
 The ideal architecture with less pressure on the swarm leader node. 
 ![ideal-architecture](./images/ideal_minitwit_architecture.drawio.png)
+
+
+## Choosing technologies
+
+### Progamming Language and Web Framework
+- **C# + Razor-Pages**
+  - Familiarity with both the language and framework
+  - Big enterprise standard
+  - Enterprise-grade software
+  - Very popular in Denmark
+  - Verbose + A lot of boilerplate
+  - Compiled => faster execution
+  - Founded by Microsoft (Trustworthy)
+- **Ruby + Sinatra**
+  - No familiarity
+  - **Interesting (to learn new technologies)**
+  - Lighter than Go
+  - **Very readable & learnable**
+  - **Rapid development**
+  - Interpreted => Slower
+    - Reports of lower scalability
+- **Go + Gorilla**
+  - Compiled => Faster
+  - Great for concurrency
+  - Not designed for web applications
+    - Reports of longer development time
+  - More low-level features (e.g. pointers)
+  - DevOps => popular for microservices
+  - Founded by Google (Trustworthy)
+
+We chose Ruby + Sinatra because of the readibility and learnability.
+
+It allows us to do rapid development.
+
+We also find it interesting to learn new technologies.
+
+### Database
+- **SQLite**
+  - SQLite locks during writes
+  - Does not scale as well
+  - Great for development
+- **MySQL**
+  - Simpler feature set
+  - Industry standard
+  - Great for large amount of reads
+  - Oracle owned
+- **PostgresQL**
+  - Advanced query features
+  - Industry standard
+  - Open-source
+
+### E2E Testing
+Playwright launches browsers faster and runs tests in parallel by default.Headless mode is optimized, leading to faster execution times compared to Selenium.
+
+Auto-waiting for elements prevents flaky tests, whereas Selenium often requires explicit waits.
+
+Supports multiple browsers out of the box:
+Playwright works natively with Chromium, Firefox, and WebKit (Safari engine)
+
+Architecture: Playwright uses a WebSocket connection rather than the WebDriver API and HTTP. This stays open for the duration of the test, so everything is sent on one connection. This is one reason why Playwright’s execution speeds tend to be faster.
+
+History: Playwright is fairly new to the automation scene. It is faster than Selenium and has capabilities that Selenium lacks, but it does not yet have as broad a range of support for browsers/languages or community support. It is open source and [backed by Microsoft](https://github.com/microsoft/playwright).
+
+While newer and with less community support, it offers modern features and performance advantages. We tried to implement both Selenium and Playwrigt, the Selenium was difficult to implement due the the required browser executables. Playwright was easier to setup and develop. So that became our choice for E2E tests. More info in Appendix.
+
+### Unit testing
+- **Minitest**
+  - Built-in
+  - Often standard in web frameworks
+  - Very light and efficient
+- **RSpec**
+  - Very readable DSL
+  - Very popular alternative to minitest
+  - Large toolkit
+
+### Deployment
+- **Digital Ocean**
+  - **focuses on simplicity**
+  - **easy to learn CLI/interface**
+  - **great tooling**
+  - sufficient credits to cover our needs
+- **AWS**/**Microsoft Azure**
+  - industry leading, popular
+  - customizability
+  - steeper learning curve
+  - more enterprise focused

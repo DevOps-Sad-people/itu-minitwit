@@ -1,79 +1,14 @@
 # Appendix
-## Repo settings. Workflows on merge. Require 1 team member on pull requests.
 
-This section is also described in the Process Section
+## Ideal Architecture
+The ideal architecture with less pressure on the swarm leader node:
 
-To support and enforce the development workflow of new features as explained in [Process Section](3-process.md) we have setup branch protection rules via Github. For the `main` and `develop` branch the rules are:  
- 
-1. No direct merge into protected branch.
-2. Changes must be approved by at least team member
-3. Workflows and test must pass
-
-This ensures that all changes to the protected branches have been approved and tested.
-
-
-## CI/CD Pipeline
-
-In the following section, we will discuss the CI/CD pipeline of our system, and for this, we discuss two key branches: `main` and `develop`. The `main` branch includes the code running on our production environment, and `develop` branch includes the code running on our staging environment. For the sake of communication, we will simply address these branches by `production` and `staging`.
-
-We use GitHub for handling our repository and tracking the process with their issue system. We use a branching strategy, where features written in issues are worked on in `feature`-branches. Once ready, they are then merged into `staging` and then into `production`. This enables us to test and deploy the feature before production, at the cost of slightly longer delivery times. This means that for features to make it through to production, it includes three phases:
-
-1. We work on the issue using a `feature`-branch. Developers work on and finalize the feature on this branch.
-2. Once ready, a pull-request is created to merge the `feature`-branch into `staging`, where tests, linting, static code analysis and a fellow team member, must pass or approve the request, before being able to merge it into staging.
-3. Once deployed to the staging environment, if the staging environment sees no failures and passes a manual test, a pull-request into `production` is made. Once approved by tests, linting, static code analysis and a fellow team member, the feature is pushed into main.
-
-### Development environment: local => feature-branch => staging => production
-
-As explain in the [Process section](3-process.md) when developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `docker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
-
-### Automated Testing and Quality Gates
-
-Pull-requests as well as pushing to staging and production, include several tests that are performed using workflows that trigger a GitHub action, which builds a Docker container with which these tests can be performed. On top of the web API container, an associated PostgreSQL database is instantiated, to perform E2E and simulation tests.
-
-- Unit tests are performed using Ruby Rack
-- E2E tests are performed using Playwright
-- Simulation tests are performed by instantiating a new environment, and using Python to perform requests (these tests helped us identify a misaligned status code response - read Appendix)
-- Static code analysis using SonarQube, which requires ≤3.0% code duplication in the Ruby application.
-
-GitHub branch protection rules ensure that developers follow this workflow. Concretely it prevents users from merging directly into the `develop` and `main` branch.
-
-On top of the above, Ruby and Docker code is formatted and linted on push to any branch. This is done using the GitHub action modules `standardrb/standard-ruby-action@v1` and `hadolint/hadolint` respectively.
-
-
-## Issues and bugs
-
-### Returning wrong status code (misalignment with simulation)
-
-We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
-
-### Stale README.md throughout project
-
-Througout the project we have not always been the best to update the README.md, we have prioritized implementing the features for the deadline over the documentation. [Agile Manifesto: ](https://agilemanifesto.org/)*Working software over comprehensive documentation.*
-Due to the features clogging up in staging we had plenty of problems to solve to get working software. 
-
-### GitHub Actions as choice 
-
-- Seamless integration into github
-- Cost-Effective: It is free for open source project (3000 min pr month)
-- Extensive Marketplace and Reusable Workflows
-- Pre-Built Actions
-- Reusable Workflows
-- Scalability and Flexibility
-- Supports Multiple Runners: Linux, macOS, and Windows
-- Highly Customizable Workflows: You can define the workflows in YAML files
-- Built-in Security Features
-- GitHub Actions provides secrets management, role-based access control
-- Parallel Execution: Supports matrix builds and parallel jobs, reducing build and deployment time
-- Tight GitHub Integration: Workflows can trigger on pull requests, pushes, issue comments, and other GitHub events, enabling efficient automation.
-
-### Ideal Architecture
-The ideal architecture with less pressure on the swarm leader node. 
 ![ideal-architecture](./images/ideal_minitwit_architecture.drawio.png)
 
 
 ## Choosing technologies
 
-### Progamming Language and Web Framework
+### Programming Language and Web Framework
 - **C# + Razor-Pages**
   - Familiarity with both the language and framework
   - Big enterprise standard
@@ -105,6 +40,7 @@ It allows us to do rapid development.
 
 We also find it interesting to learn new technologies.
 
+
 ### Database
 - **SQLite**
   - SQLite locks during writes
@@ -134,6 +70,19 @@ We also find it interesting to learn new technologies.
   - more enterprise focused
 
 **Digital Ocean** also provided its own container registry, which was our choice when looking for a registry later into the development process, given it's integration with the DigitalOcean platform. Only after using it, did we realize that the biggest upsides are primarily for users of digital oceans other deployment tools, that are not running on rented VMs. Also given the price of DO's container registry, we would most likely migrate to Docker Hub, if the project had continued.
+
+
+### GitHub Actions 
+
+- Seamless integration into Github
+- Cost-effective: it is free for open source, public repositories
+- Extensive Marketplace, reusable workflows, pre-built actions
+- Scalability and flexibility
+- Supports multiple runners: Linux, macOS, and Windows
+- Highly customizable workflows: You can define the workflows in YAML files
+- Built-in security features, secrets management, role-based access control
+- Parallel execution: Supports matrix builds and parallel jobs, reducing build and deployment time
+- Tight GitHub integration: Workflows can trigger on pull requests, pushes, issue comments, and other GitHub events, enabling efficient automation
 
 
 ### E2E Testing
@@ -186,6 +135,34 @@ While newer and with less community support, it offers modern features and perfo
 We chose the ELFK stack mainly because it's the most popular choice, and we wanted to get familiar with it.
 
 
+## CI/CD Pipeline
+
+In the following section, we will discuss the CI/CD pipeline of our system, and for this, we discuss two key branches: `main` and `develop`. The `main` branch includes the code running on our production environment, and `develop` branch includes the code running on our staging environment. For the sake of communication, we will simply address these branches by `production` and `staging`.
+
+We use GitHub for handling our repository and tracking the process with their issue system. We use a branching strategy, where features written in issues are worked on in `feature`-branches. Once ready, they are then merged into `staging` and then into `production`. This enables us to test and deploy the feature before production, at the cost of slightly longer delivery times. This means that for features to make it through to production, it includes three phases:
+
+1. We work on the issue using a `feature`-branch. Developers work on and finalize the feature on this branch.
+2. Once ready, a pull-request is created to merge the `feature`-branch into `staging`, where tests, linting, static code analysis must pass and 1 fellow team member must also approve the request, before being able to merge it into staging.
+3. Once deployed to the staging environment, if the staging environment sees no failures and passes a manual test, a pull-request into `production` is made. Once approved by tests, linting, static code analysis and a fellow team member, the feature is pushed into main.
+
+### Development environment: local => feature-branch => staging => production
+
+As explained in the [Process section](2-process.md) when developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `docker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
+
+### Automated Testing and Quality Gates
+
+Pull-requests as well as pushing to staging and production, include several tests that are performed using workflows that trigger a GitHub action, which builds a Docker container with which these tests can be performed. On top of the web API container, an associated PostgreSQL database is instantiated, to perform E2E and simulation tests.
+
+- Unit tests are performed using Ruby Rack
+- E2E tests are performed using Playwright
+- Simulation tests are performed by instantiating a new environment, and using Python to perform requests (these tests helped us identify a misaligned status code response - read Appendix)
+- Static code analysis using SonarQube, which requires ≤3.0% code duplication in the Ruby application.
+
+GitHub **branch protection** rules ensure that developers follow this workflow. Concretely it prevents users from merging directly into the `develop` and `main` branch.
+
+On top of the above, Ruby and Docker code is formatted and linted on push to any branch. This is done using the GitHub action modules `standardrb/standard-ruby-action@v1` and `hadolint/hadolint` respectively.
+
+
 ## Full Security Analysis (OWASP Top 10 list)
 By running through the [OWASP Top 10 list](https://owasp.org/www-project-top-ten/) on security assessment, we have done the following analysis:
 
@@ -217,6 +194,19 @@ We experienced a log overflow causing our production service to fail. This failu
 
 - A10:2021-Server-Side Request Forgery
 We have not been able to identify any issues regarding this.
+
+
+## Other issues and bugs
+
+### Returning wrong status code (misalignment with simulation)
+
+We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
+
+### Stale README.md throughout project
+
+Throughout the project we have not always been the best to update the README.md, we have prioritized implementing the features for the deadline over the documentation. [Agile Manifesto: ](https://agilemanifesto.org/)*Working software over comprehensive documentation.*
+Due to the features clogging up in staging we had plenty of problems to solve to get working software.
+
 
 ## Use of AI
 

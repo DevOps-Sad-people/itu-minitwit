@@ -2,9 +2,12 @@
 
 ## Design and architecture of the _ITU-MiniTwit_ systems
 
-The current achitecture of the minitwit system. The ideal architecture can be found in the appendix. 
+The current achitecture of the minitwit system. The ideal architecture can be found in the appendix.
+
 ![Project architecture](./images/minitwit_terraform_architecture.drawio.png)
+
 The current deployment flow:
+
 ![Deployment flow](./images/deployment_flow.drawio.png)
 
 
@@ -124,7 +127,7 @@ They both offer rental of VMs. We chose Digital Ocean as our cloud provider main
 
 ### CI/CD system
 
-We have chosen Github Actions as they offer a free, scalable, and secure CI/CD solution with seamless GitHub integration, customizable YAML workflows, reusable actions, multi-platform support, and efficient automation through parallel execution and event-driven triggers.
+We have chosen Github Actions as they offer a free, scalable, and secure CI/CD solution with seamless GitHub integration, customizable YAML workflows, reusable actions, multi-platform support, and efficient automation through parallel execution and event-driven triggers. More about the advantages in the Appendix.
 
 
 ### Testing (Unit, UI, E2E)

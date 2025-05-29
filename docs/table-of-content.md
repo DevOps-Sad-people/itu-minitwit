@@ -1,6 +1,5 @@
 ## TOC
 
-- [Overview](./overview.md)  
 - [Architecture](./architecture.md)  
 - [Deployment](./deployment.md)  
 - [Development](./development.md)  

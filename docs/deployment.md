@@ -3,7 +3,33 @@
 
 ## Deploy using Vagrant.
 
-Before instantiating the virtual machine, you need to setup a DigitalOcean account, and obtain a secret key, which is allows to instantiate droplets (Virtual machine). Once this is done, setup the `.env` file and run `vagrant up` to create and provision the VM.
+We use Vagrant to provision a droplet to Digital Ocean. For this to work, a few configuration steps must be taken. The github workflows refer to the reserved IPs, so after provisioning, you need to assign these IPs to the droplets.
+
+Before starting, you are required to have an [ssh-key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and a [digital ocean token](https://docs.digitalocean.com/reference/api/create-personal-access-token/), with access to the container registry & droplets. Likewise, you are required to have the PROFESSIONAL plan of container registry at Digital Ocean. Add your SSH key to DO, such that it knows your key.
+
+
+### PREPARE FOR DEPLOYMENT
+1. Add following variables to your bash/zsh environment (Or simply run them)
+```bash
+export DIGITAL_OCEAN_TOKEN="your-generated-token"
+export SSH_KEY_NAME="name-of-your-ssh-key-in-DO" # DO > settings > security > name
+export SSH_PRIVATE_KEY_PATH="private-ssh-key-path"
+```
+2. Add your public SSH key to `remote_files/authorized_keys`
+3. Adjust env variables in `.github/workflows/deploy-to-XXXX.yml`
+4. Add secrets to Github, to allow Github Actions to operate on Digital Ocean resources. Specifically add a secret `DIGITALOCEAN_ACCESS_TOKEN` and `SSH_KEY`. The access token requires access to the read/write to the container registry. The SSH_KEY is the private key of some private/public key, that must also be included in `remote_files/authorized_keys`. This should preferably be an isolated key, not available on private machines.
+5. Install [vagrant](https://developer.hashicorp.com/vagrant/install)
+6. Add DO vagrant plugin `vagrant plugin install vagrant-digitalocean`
+
+### COMMANDS:
+- `vagrant up` - Spin up instance
+- `vagrant destroy` - Destroy current instance
+- `doctl compute ssh app-name` - SSH into instance. default app-name is `minitwit`. [Install doctl here](https://docs.digitalocean.com/reference/doctl/how-to/install/)
+
+If you want to run a specific vagrant file, you can specify it by setting the `VAGRANT_VAGRANTFILE` env variable. E.g.:
+```bash
+VAGRANT_VAGRANTFILE=VagrantfileStaging vagrant up --provider=digital_ocean
+```
 
 ## Deploy using Docker Swarm.
 
@@ -59,6 +85,48 @@ e.g. /:username would match /login or /logout
 | `/latest`            | `GET`  | Retrieves the latest processed command ID                 |
 | `/register`            | `POST`  | Create a new user               |
 
+
+## Release
+
+Releases are done automatically by Github Actions.  
+The release version is determined by the contents of the last commit message, for every push on main (which will be the merge commit).  
+- If you include `#major` in the commit message, it will bump the major version for the release.
+- If you include `#minor` in the commit message, it will bump the minor version for the release.
+- If you include `#patch` in the commit message, it will bump the patch version for the release.
+- If you include `#none` in the commit message, **no release will be done**.
+- Otherwise, if you don't include any of the above options, the *minor* version will be bumped by default.
+
+
+## Info
+### Upgrade from docker compose to docker stack
+
+We upgraded to use docker compose scripts. 
+For the horizontal scaling we had to implement docker stack. 
+
+Docker stack is a way to deploy and manage mulitple docker continers across a Swarm environment - a multi-container application. 
+
+The docker stack deployment features in docker builds on [legacy version of the Compose file format](https://docs.docker.com/reference/compose-file/).
+
+Further there are other differences when using a compose file for a docker stack deployment compared to a docker compose deployment. 
+
+In a docker stack deployment pre-built images are required - where in Docker Compose you can build the images. 
+
+**docker compose vs docker stack fields**
+
+When using `docker stack deploy` some fields in the compose file are ignored:
+- `build`
+- `container_name`
+- `cap_add`
+- `depend_on`
+- `privileged`
+
+Then some additional fields can be specified when using docker stack
+- `deploy` with the subfields
+   - `replicas`, `resources`, `placement`, `update_config`
+- `mode` (`global` or `replicated`)
+
+
+The legacy docker compose versioning, the differences in the fields available made it diffucult to transition from `docker compose` to `docker stack deploy`.
 
 
 

@@ -25,9 +25,12 @@ This project serves as a practical example of DevOps best practices including in
 # Architecture
 
 The current achitecture of the minitwit system.
-![Project architecture](./images/minitwit_terraform_architecture.drawio.png)
+
+![Project architecture](./docs/images/minitwit_terraform_architecture.drawio.png)
+
 The current deployment flow.
-![Deployment flow](./images/deployment_flow.drawio.png)
+
+![Deployment flow](./docs/images/deployment_flow.drawio.png)
 
 # Deployment
 

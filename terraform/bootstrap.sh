@@ -61,6 +61,13 @@ terraform validate
 echo -e "\n--> Creating Infrastructure\n"
 terraform apply -auto-approve
 
+# add label to swarm leader
+echo -e "\n--> Adding label to swarm leader\n"
+ssh root@$(terraform output -raw minitwit-swarm-leader-ip-address) \
+    -i ssh_key/terraform \
+    "docker node update --label-add leader=true minitwit-swarm-leader"
+
+
 # Sign in to container registry
 echo -e "\n--> Signing in to container registry\n"
 
@@ -102,13 +109,19 @@ echo -e "--> To remove the infrastructure run: bash destroy.sh"
 # ask user if they want to restore the database from backup
 read -p "Do you want to restore the database from backup? (y/n): " restore_db
 if [[ "$restore_db" == "y" || "$restore_db" == "Y" ]]; then
-    echo -e "\n--> Restoring database from backup\n"
-    ssh \
-        -o 'StrictHostKeyChecking no' \
-        root@$(terraform output -raw minitwit-swarm-leader-ip-address) \
-        -i ssh_key/terraform \
-        'docker exec minitwit_db sh /scripts/restore.sh'
 
+    echo -e "\n--> Restoring database from backup\n"
+    backup_node=$(ssh -o 'StrictHostKeyChecking no' root@$(terraform output -raw minitwit-swarm-leader-ip-address) -i ssh_key/terraform \
+    "docker service ps minitwit_backup --filter 'desired-state=running' --format '{{.Node}}' | head -n 1")
+    echo -e "--> Backup node is: $backup_node"
+
+    backup_ip=$(ssh -o 'StrictHostKeyChecking no' root@$(terraform output -raw minitwit-swarm-leader-ip-address) -i ssh_key/terraform \
+    "docker node inspect $backup_node --format '{{.Status.Addr}}'")
+    echo -e "--> Backup IP is: $backup_ip"
+
+    # Now SSH into the correct node and run the restore script
+    ssh -o 'StrictHostKeyChecking no' root@$backup_ip -i ssh_key/terraform \
+    'backup_container=$(docker ps --filter "name=minitwit_backup" --format "{{.Names}}" | head -n 1) && docker exec $backup_container sh restore.sh'
 
     echo -e "--> Database restored successfully"
 else

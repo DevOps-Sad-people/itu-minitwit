@@ -1,11 +1,21 @@
 version: "3.8"
 
 services:
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8888:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: 
+          - node.role == manager
+          - node.labels.leader == true
   web:
     image: registry.digitalocean.com/sad-containers/minitwit:${TAG}
     deploy:
       replicas: 4
-      mode: global
       update_config:
         delay: 10s
         order: start-first
@@ -34,6 +44,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
     logging:
       driver: "json-file"
       options:
@@ -60,6 +71,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
 
   prometheus:
     image: registry.digitalocean.com/sad-containers/prometheus:${TAG}
@@ -71,6 +83,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
     logging:
       driver: "json-file"
       options:
@@ -91,6 +104,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
     logging:
       driver: "json-file"
       options:
@@ -136,6 +150,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
     logging:
       driver: "json-file"
       options:
@@ -162,6 +177,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
     logging:
       driver: "json-file"
       options:
@@ -184,6 +200,7 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+          - node.labels.leader != true
     ports:
       - "5601:5601"
     logging:

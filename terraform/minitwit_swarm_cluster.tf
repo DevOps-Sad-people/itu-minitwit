@@ -10,7 +10,7 @@ resource "digitalocean_droplet" "minitwit-swarm-leader" {
   image = "docker-20-04" // ubuntu-22-04-x64
   name = "minitwit-swarm-leader"
   region = var.region
-  size = "s-2vcpu-4gb"
+  size = "s-1vcpu-1gb"
   # add public ssh key so we can access the machine
   ssh_keys = [digitalocean_ssh_key.minitwit.fingerprint]
 
@@ -79,7 +79,7 @@ resource "digitalocean_droplet" "minitwit-swarm-manager" {
   image = "docker-20-04"
   name = "minitwit-swarm-manager-${count.index}"
   region = var.region
-  size = "s-1vcpu-1gb"
+  size = "s-2vcpu-4gb"
   # add public ssh key so we can access the machine
   ssh_keys = [digitalocean_ssh_key.minitwit.fingerprint]
 
@@ -138,7 +138,7 @@ resource "digitalocean_droplet" "minitwit-swarm-worker" {
   depends_on = [null_resource.swarm-worker-token]
 
   # number of vms to create
-  count = 1
+  count = 2
 
   image = "docker-20-04"
   name = "minitwit-swarm-worker-${count.index}"

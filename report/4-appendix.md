@@ -166,33 +166,33 @@ On top of the above, Ruby and Docker code is formatted and linted on push to any
 ## Full Security Analysis (OWASP Top 10 list)
 By running through the [OWASP Top 10 list](https://owasp.org/www-project-top-ten/) on security assessment, we have done the following analysis:
 
-- A01:2021-Broken Access Control
+- **A01:2021-Broken Access Control**
 In the system only two levels of access control exist in the system. Either you are a user, who can post, follow and unfollow, or you access as a public user. For user-specific endpoints, we have not found any vulnerabilities. CORS settings however, allow anyone to access the API. This misconfiguration allows malicious websites to make authenticated requests to the API on behalf of logged-in users.
 
-- A02:2021-Cryptographic
+- **A02:2021-Cryptographic**
 We've upgraded from HTTP to HTTPS, but still expose the port of the application, meaning IP:PORT still gives users access to the service in non-encrypted ways, such that network eavesdroppers can capture username and passwords. The hashing algorithm has been upgraded from MD5 to SHA256, but unfortunately without salting, allowing attackers who gain access to the database to easily crack passwords with rainbow tables or brute force attacks. Lastly, the simulator protection-key is hard-coded which means anyone with access to the public github repo, can essentially bypass that security measure.
 
-- A03:2021-Injection
+- **A03:2021-Injection**
 We use the ORM Ruby Sequel, which includes sanitization of input before constructing SQL statements. Developers can create raw SQL statements, but we have opted not to do this given the impracticality and security risks.
 
-- A04:2021-Insecure Design
+- **A04:2021-Insecure Design**
 Given the tiny feature set, we could not find anything particularly noteworthy about the design.
 
-- A05:2021-Security Misconfiguration
+- **A05:2021-Security Misconfiguration**
 After experiencing a ransomware attack, requiring bitcoin for our data, we closed ports and changed the default password to prevent future attacks. Similarly, we discovered that `ufw` was disabled by the end of the course, which exposes all services to the web. Lastly, we are aware that CORS settings are overly permissive as elaborated in A01.
 
-- A06:2021-Vulnerable and Outdated Components
+- **A06:2021-Vulnerable and Outdated Components**
 Our system has very weak password checking, which allow users to create easily hackable accounts. Simultaneously, weak email validation and not sending a confirmation email makes it particularly easy for bots to create users. In fact, 99.9% of our activity is from a single bot.
 
 - On the developers side, we did not require 2FA to log into DigitalOcean, bringing our level of security down to the weakest login-type of the five team members. And technically, Dependabot has been suggesting a Ruby update from `3.3.7` to `3.4.4`, which have been postponed multiple times.
 
-- A08:2021-Software and Data Integrity
+- **A08:2021-Software and Data Integrity**
 We have not been able to identify any issues regarding this.
 
-- A09:2021-Security Logging and Monitoring Failures
+- **A09:2021-Security Logging and Monitoring Failures**
 We experienced a log overflow causing our production service to fail. This failure did not cause any warnings, causing three days of downtime for our application. We will elaborate on how we fixed this when reflecting on system operation.
 
-- A10:2021-Server-Side Request Forgery
+- **A10:2021-Server-Side Request Forgery**
 We have not been able to identify any issues regarding this.
 
 
@@ -200,12 +200,12 @@ We have not been able to identify any issues regarding this.
 
 ### Returning wrong status code (misalignment with simulation)
 
-We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our enpoints was misaligned the specification. The endpoint returned the wrong status code. By implementing the simulator tests we discovered the issue in a very early stage.  
+We implemented the simulator test in our testing workflow. It runs to ensure that the endpoints are available, works and return the correct status codes. After we had implemented the simulator test they failed and we realised that one of our endpoints was misaligned with the specification. The endpoint returned the wrong status code. By implementing the simulator tests we [discovered](https://github.com/DevOps-Sad-people/itu-minitwit/issues/63#issuecomment-2682477866) the issue in a very early stage.  
 
 ### Stale README.md throughout project
 
-Throughout the project we have not always been the best to update the README.md, we have prioritized implementing the features for the deadline over the documentation. [Agile Manifesto: ](https://agilemanifesto.org/)*Working software over comprehensive documentation.*
-Due to the features clogging up in staging we had plenty of problems to solve to get working software.
+Throughout the project we have [not always been the best](https://github.com/DevOps-Sad-people/itu-minitwit/issues/231) to update the README.md, we have prioritized implementing the features for each deadline over continuously updating the documentation, in line with the [Agile Manifesto:](https://agilemanifesto.org/) *Working software over comprehensive documentation.*
+Due to features clogging up in staging we had plenty of problems to solve to get working software.
 
 
 ## Use of AI
@@ -222,7 +222,7 @@ Chatbots on the other hand involved four primary types of prompts:
 
 Elaboration and comparison were primarily used at the planning stage of implementing new technologies, or for developers unfamiliar with existing technologies already implemented.
 
-Creation is used throughout the implementation of technologies or features, but the scale of the issues attempting to address diminishes over time, as the feature or technology becomes more intergrated into the system, and required changes are smaller.
+Creation is used throughout the implementation of technologies or features, but as these become more integrated into the system, the scope of the problems being addressed tend to shrink, focusing on smaller, more specific changes.
 As more code is added to the codebase, solving unwanted behavior becomes more important, and makes out large parts of prompts.
 
-Additional reflection on use of chatbots, we found that Claude 3.7 Sonnet provided better code-based responses as well as understanding misconfigurations and bugs. It gives detailed descriptions of different variables and potential flaws in the code and configs. This is measured against ChatGPT o1.
+Additional reflection on use of chatbots: we found that Claude 3.7 Sonnet provided better code-based responses as well as understanding misconfigurations and bugs. It gives detailed descriptions of different variables and potential flaws in the code and configs. This is measured against ChatGPT o1.

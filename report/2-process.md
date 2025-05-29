@@ -77,33 +77,31 @@ Filebeat forwards all logs, from all Docker containers in the system. In Logstas
 ## Security Assessment
 By running through the [OWASP Top 10 list](https://owasp.org/www-project-top-ten/) on security assessment, we have done the following analysis:
 
-- A01:2021-Broken Access Control
+- **A01:2021-Broken Access Control**
 The system has two levels of access control, a user or public user.
 We have found no vulnerabilities for user-specifc endpoints. 
 But anyone can access the API this allows malicious websites to make authenticated requests to the API on behalf of logged-in users.
 
-- A02:2021-Cryptographic
+- **A02:2021-Cryptographic**
 Upgraded to HTTPS, but still exposes its port over HTTP, leaving credentials vulnerable to interception.
 Passwords are hashed with SHA256 but without salting, and the hard-coded simulator protection key in the public GitHub repo undermines its security.
 
-- A03:2021-Injection
+- **A03:2021-Injection**
 We use the ORM Ruby Sequel, which includes sanitization of input before constructing SQL statements. Developers can create raw SQL statements, but we have opted not to do this given the impracticality and security risks.
 
-
-A05:2021-Security Misconfiguration
+- **A05:2021-Security Misconfiguration**
 Following a ransomware attack demanding bitcoin, we closed ports and changed default passwords to improve security. 
 However, `ufw` was later found disabled, exposing all services, and overly permissive CORS settings remain a known vulnerability(explained in A01).
 
-A06:2021-Vulnerable and Outdated Components
+- **A06:2021-Vulnerable and Outdated Components**
 
-Our system allows weak passwords and lacks proper email validation or confirmation, making it easy for bots to create accounts one of which accounts for 99.9% of activity. 
+- Our system allows weak passwords and lacks proper email validation or confirmation, making it easy for bots to create accounts one of which accounts for 99.9% of activity. 
 On the developer side, 2FA is not enforced for DigitalOcean access, and important security updates, like Ruby 3.3.7 to 3.4.4, have been repeatedly postponed.
 
-
-A09:2021-Security Logging and Monitoring Failures
+- **A09:2021-Security Logging and Monitoring Failures**
 We experienced a log overflow causing our production service to fail. This failure did not cause any warnings, causing three days of downtime for our application. We will elaborate on how we fixed this when reflecting on system operation.
 
-A04:2021-Insecure Design, A08:2021-Software and Data Integrity and A10:2021-Server-Side Request Forgery
+- **A04:2021-Insecure Design, A08:2021-Software and Data Integrity and A10:2021-Server-Side Request Forgery**
 We have not been able to identify any issues regarding this.
 
 

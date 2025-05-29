@@ -31,11 +31,7 @@ We also encountered another [issue](https://github.com/DevOps-Sad-people/itu-min
 
 ### Large amount of features cloging up in staging (impossible to migrate to production)
 
-Fully implementing new features sometimes took longer than a week. Due to the development workflow described earlier the staging environment was used as a development/testing environment. This resulted in features gate keeped by other partially implemented features. 
-
-Some of the new features required changing other features, such as the migration from docker compose to docker stack requiring a full rewrite of the docker compose scripts. 
-
-This made it impossible to migrate the changes to production and delayed the release of the full implementation of the logging and monitoring.  
+Fully implementing new features sometimes took longer than a week. Due to the development workflow described earlier, the staging environment was used as a development/testing environment. This resulted in features being gate keeped by other partially implemented features. Some of the new features also required changing others, such as the migration from docker compose to docker swarm requiring a full rewrite of the docker compose scripts. These made it impossible to migrate the changes to production in time and delayed the release of the full implementation of the logging and monitoring.
 
 ## Operation
 

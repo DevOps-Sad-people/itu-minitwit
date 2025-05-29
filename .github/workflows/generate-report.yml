@@ -27,7 +27,7 @@ jobs:
           find report -maxdepth 1 -name "*.md" | sort | while read file; do
             cat "$file"
             echo ""
-          done > "report/tmp/report.md"
+          done > "report/tmp/MSc_group_k.md"
 
       - name: Markdown to PDF and HTML
         uses: BaileyJM02/markdown-to-pdf@v1.2.0

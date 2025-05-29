@@ -97,7 +97,7 @@ We managed to avoid/solve *Security* and *Reliablity* issues, and the remaining 
 
 ### Programming language and framework
 
-We considered several programming languages and frameworks for the API application, including C# with Razor-Pages, Ruby with Sinatra, and Go with Gorilla. More in Appendix.
+We considered several programming languages and frameworks for the API application, including C# with Razor-Pages, Ruby with Sinatra, and Go with Gorilla. We chose Ruby + Sinatra because of the readability and learnability. More in Appendix.
 
 
 ### Database

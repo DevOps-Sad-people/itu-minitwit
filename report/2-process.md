@@ -22,7 +22,7 @@ We orchestrate the containers using Docker Swarm, and given the size of our appl
 
 ### Environment Management and Infrastructure
 
-We have manually set up instances using Digital Ocean's interface, but have prepared a Terraform script for setting up a new environment in the future. For artifact management, we use Digital Ocean's container registry, where we differentiate between container versions using staging and production tags.
+We use Terraform scripts for setting up our production environment. For artifact management, we use Digital Ocean's container registry, where we differentiate between container versions using staging and production tags.
 
 To distribute secrets that GitHub Actions can access, we set up GitHub Secrets to keep an access key to Digital Ocean on which we deploy our application.
 
@@ -111,7 +111,7 @@ We have used both horizontal and vertical scaling.
 
 For the logging and monitoring it was nessesary to scale vertical where we scaled from 1 CPU, 1GB RAM (s-1vcpu-1gb) to 2 CPU, 4GB RAM (s-2vcpu-4gb) to handle the workload associated with monitoring and logging.
 
-We increased the number of node/droplets from 1 to 3 to increase availability when we upgraded from docker compose to docker swarm with a docker stack deployment containing multiple replicas of the minitwit application.
+We increased the number of node/droplets from 1 to 4 to increase availability when we upgraded from docker compose to docker swarm with a docker stack deployment containing multiple replicas of the minitwit application.
 
 To handle higher user load we first switched from SQLite to PostgreSQL to get a more reliable database. After that we also indexed the database to ensure efficient data access.  
 

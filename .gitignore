@@ -175,3 +175,8 @@ cython_debug/
 .vagrant
 
 tmp/latest_processed_sim_action_id.txt
+/terraform/ssh_key
+terraform/secrets
+terraform/.terraform.lock.hcl
+/terraform/.terraform
+/terraform/temp

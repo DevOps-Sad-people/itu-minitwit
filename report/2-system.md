@@ -10,7 +10,7 @@ The current deployment flow.
 ![Deployment flow](./images/deployment_flow.drawio.png)
 
 
-## [Nic] All dependencies of your _ITU-MiniTwit_ systems on all levels of abstraction and development stages. That is, list and briefly describe all technologies and tools you applied and depend on.
+## All dependencies of _ITU-MiniTwit_
 ### Application
 | Tech/Tool | Discription |
 | ----| ----- |

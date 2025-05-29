@@ -77,7 +77,7 @@ Second we discussed the content of the lecture and inspected what new features t
 
 Third we discussed *when* to implement the new issues. The group members had different schedules and varying capacity due to other commitments such as handins for other courses. We took this into considaration when we delegated the work. We typically worked in three teams:
 
-1. Nicolaj
+1. Nicolai
 2. Gabor and Zalan
 3. Sebastian and Nicklas
 

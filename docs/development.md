@@ -1,7 +1,14 @@
 # Development
 
-- [Development Workflow](#Development%20Workflow)
-- [Playwright](#Playwright)
+- [Development](#development)
+  - [Development Workflow](#development-workflow)
+    - [Development Environment](#development-environment)
+    - [How to run locally](#how-to-run-locally)
+    - [Repo settings](#repo-settings)
+    - [Ways of Working](#ways-of-working)
+  - [Playwright](#playwright)
+    - [Setting up](#setting-up)
+    - [How to record and generate](#how-to-record-and-generate)
 
 ## Development Workflow
 
@@ -55,7 +62,7 @@ Implementing new features
 We met up every friday to first present what we each had worked on the last weeks. If one of us had problems or question we would discuss them here. Then plan how to implement the next weeks features.   
 
 We typically worked in three teams
-1. Nicolaj
+1. Nicolai
 1. Gábor and Zalán
 1. Sebastian and Nicklas
 

@@ -4,14 +4,11 @@ This perspective should clarify how code or other artifacts come from idea into 
 
 In particular, the following descriptions should be included:
 
-## [Nic] A complete description of stages and tools included in the CI/CD chains, including deployment and release of your systems.
-In the following section, we will discuss the CI/CD pipeline of our system, and for this, we discuss two key branches: `main` and `develop`. The `main` branch includes the code running on our production environment, and `develop` branch includes the code running on our staging environment. For the sake of communication, we will simply address these branches by `production` and `staging`.
+<!-- ## A complete description of stages and tools included in the CI/CD chains, including deployment and release of your systems. -->
+## CI/CD chain (tools)
+Our CI/CD pipeline uses two main branches: `main` (production) and `develop` (staging), with GitHub managing the repository and issues. Features are developed in `feature`-branches, merged into staging for testing and review, and then into production after passing all checks. This process involves three phases: development on a feature branch, review and testing in staging, and final approval and deployment to production. 
 
-We use GitHub for handling our repository and tracking the process with their issue system. We use a branching strategy, where features written in issues are worked on in `feature`-branches. Once ready, they are then merged into `staging` and then into `production`. This enables us to test and deploy the feature before production, at the cost of slightly longer delivery times. This means that for features to make it through to production, it includes three phases:
-
-1. We work on the issue using a `feature`-branch. Developers work on and finalize the feature on this branch.
-2. Once ready, a pull-request is created to merge the `feature`-branch into `staging`, where tests, linting, static code analysis and a fellow team member, must pass or approve the request, before being able to merge it into staging.
-3. Once deployed to the staging environment, if the staging environment sees no failures and passes a manual test, a pull-request into `production` is made. Once approved by tests, linting, static code analysis and a fellow team member, the feature is pushed into main.
+The full description in Appendix. 
 
 ### Automated Testing and Quality Gates
 

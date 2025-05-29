@@ -5,7 +5,7 @@ A description and illustration of the:
 ## [ seb/nick ] Design and architecture of your _ITU-MiniTwit_ systems
 
 The current achitecture of the minitwit system. The ideal architecture can be found in the appendix. 
-![Project architecture](./images/minitwit_architecture.drawio.png)
+![Project architecture](./images/minitwit_terraform_architecture.drawio.png)
 The current deployment flow.
 ![Deployment flow](./images/deployment_flow.drawio.png)
 

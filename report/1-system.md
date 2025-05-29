@@ -4,11 +4,12 @@
 
 The current achitecture of the minitwit system. The ideal architecture can be found in the appendix.
 
-<img src="./images/minitwit_terraform_architecture.drawio.png" alt="System architecture" height="500" /><br>
+![System architecture](./images/minitwit_terraform_architecture.drawio.png)
+<div style="page-break-after: always;"></div>
 
 The current deployment flow:
 
-<img src="./images/deployment_flow.drawio.png" alt="Deployment flow" height="500" />
+![Deployment flow](./images/deployment_flow.drawio.png)
 
 
 ## All dependencies of _ITU-MiniTwit_

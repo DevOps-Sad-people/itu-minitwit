@@ -13,7 +13,7 @@ This ensures that all changes to the protected branches have been approved and t
 
 ### [Seb/Nick] Development environemnt: local => branch => staging => production
 
-As explain in the [Proceess section](3-process.md) we wen developing a new fea
+As explain in the [Proceess section](3-process.md) when developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
 
 When developing new features you branch off `develop` then implement the changes and test them **locally** via the local docker development environment `dovker-compose.dev.yml`. Then changes are pushed to a remote branch so another person can continue working on the changes. When the feature/tasks is completed a pull request is created. When the changes are approved they merge into `develop` and trigger a new deployment to the staging environment. If the changes work in the staging environment a pull request from `develop` into `main` can be created. Once the pull request is approved a new release and deployment to production is triggered.  
 
@@ -32,3 +32,7 @@ When developing new features you branch off `develop` then implement the changes
 - GitHub Actions provides secrets management, role-based access control
 - Parallel Execution: Supports matrix builds and parallel jobs, reducing build and deployment time
 - Tight GitHub Integration: Workflows can trigger on pull requests, pushes, issue comments, and other GitHub events, enabling efficient automation.
+
+### Ideal Architecture
+The ideal architecture with less pressure on the swarm leader node. 
+![ideal-architecture](./images/ideal_minitwit_architecture.drawio.png)

@@ -95,20 +95,37 @@ We managed to avoid/solve *Security* and *Reliablity* issues, and the remaining 
 
 ##  Arguments for the technology choices
 
-
 ### Programming language and framework
-We considered several programming languages and frameworks for the API application, including C# with Razor-Pages, Ruby with Sinatra, and Go with Gorilla. More in Appendix. 
+
+We considered several programming languages and frameworks for the API application, including C# with Razor-Pages, Ruby with Sinatra, and Go with Gorilla. More in Appendix.
+
+
+### Database
+
+We went with PostgreSQL. Both MySQL and PostgreSQL are great options for our purpose - familiarity with PostgreSQL and it being open-source motivated our choice. More in appendix.
 
 
 ### Virtualization techniques and deployment targets
+
+**Containerization and virtualization**
+
+We have chosen Docker to containerize our applications, as it allows us to create lightweight, reproducible environments, packaging all necessary dependencies together, making development, testing and deployment all easier.
+
+For virtualization, on our staging environment, we use Vagrant to provision VMs as it allows us to set up and configure reproducible machines from code.
+
+**More advanced Infrastructure as Code (Terraform)**
+
+We use Terraform instead of Vagrant for our production environment because it is flexible and more powerful, allowing us to manage our infrastructure as code across multiple droplets. Vagrant is used for staging because it provides a simpler setup, allowing us to quickly spin up and tear down instances as needed.
+
+**Hosting: Digital Ocean vs AWS/Microsoft Azure**
+
+They both offer rental of VMs. We chose Digital Ocean as our cloud provider mainly because of its simplicity and great tooling. Because of the simplicity we can focus on everything else, rather than learning how a complex tool works. Pros and cons found in Appendix.
+
 
 ### CI/CD system
 
 We have chosen Github Actions as they offer a free, scalable, and secure CI/CD solution with seamless GitHub integration, customizable YAML workflows, reusable actions, multi-platform support, and efficient automation through parallel execution and event-driven triggers.
 
-
-### Database
-We went with PostgreSQL. Both MySQL and PostgreSQL are great options for our purpose - familiarity with PostgreSQL and it being open-source motivated our choice. More in appendix. 
 
 ### Testing (Unit, UI, E2E)
 
@@ -120,20 +137,9 @@ We chose RSpec, as we are prioritizing readable and maintainable technologies. I
 
 Playwright is a fast, open-source browser automation tool backed by Microsoft that launches browsers quickly, runs tests in parallel, and uses optimized headless mode for faster execution than Selenium. It supports Chromium, Firefox, and WebKit natively, auto-waits for elements to reduce flakiness, and uses a persistent WebSocket connection instead of Selenium’s HTTP-based WebDriver. We tried to implement both Selenium and Playwright. For us it was impossible to get Selenium to work as we had critical problems with the external browser drivers needed for the Selenium framework to work. Playwright did not need external drivers since it has built-in protocol clients; it was also easy to setup and use for developing new UI tests. 
 
-### Hosting (Digital Ocean)
 
-**Digital Ocean vs AWS/Microsoft Azure**:
-They both offer rental of VMs. We chose Digital Ocean because of its simplicity and great tooling. Because of the simplicity we can focus on everything else, rather than learning how a complex tool works. Pros and cons found in Appendix. 
+### Monitoring and Logging
 
-### Monitoring + Logging
 For monitoring we chose **Prometheus** and **Grafana** as our stack.
 For logging we went with the **ELFK** stack.
 More in the appendix.
-
-### Infrastructure as Code (Terraform)
-
-We used Vagrant for staging and Terraform for production. We chose Terraform for production because it is powerful and flexible, allowing us to manage our infrastructure as code across multiple droplets. Vagrant is used for staging because it provides a simpler setup, allowing us to quickly spin up and tear down instances as needed.
-
-### Virtualization?
-- **Docker**
-- **Vagrant**

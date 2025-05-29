@@ -120,6 +120,22 @@ We also find it interesting to learn new technologies.
   - Industry standard
   - Open-source
 
+
+### Deployment
+- **Digital Ocean**
+  - **focuses on simplicity**
+  - **easy to learn CLI/interface**
+  - **great tooling**
+  - sufficient credits to cover our needs
+- **AWS**/**Microsoft Azure**
+  - industry leading, popular
+  - customizability
+  - steeper learning curve
+  - more enterprise focused
+
+**Digital Ocean** also provided its own container registry, which was our choice when looking for a registry later into the development process, given it's integration with the DigitalOcean platform. Only after using it, did we realize that the biggest upsides are primarily for users of digital oceans other deployment tools, that are not running on rented VMs. Also given the price of DO's container registry, we would most likely migrate to Docker Hub, if the project had continued.
+
+
 ### E2E Testing
 Playwright launches browsers faster and runs tests in parallel by default.Headless mode is optimized, leading to faster execution times compared to Selenium.
 
@@ -144,19 +160,6 @@ While newer and with less community support, it offers modern features and perfo
   - Very popular alternative to minitest
   - Large toolkit
 
-### Deployment
-- **Digital Ocean**
-  - **focuses on simplicity**
-  - **easy to learn CLI/interface**
-  - **great tooling**
-  - sufficient credits to cover our needs
-- **AWS**/**Microsoft Azure**
-  - industry leading, popular
-  - customizability
-  - steeper learning curve
-  - more enterprise focused
-
-**Digital Ocean** also provided its own container registry, which was our choice when looking for a registry later into the development process, given it's integration with the DigitalOcean platform. Only after using it, did we realize that the biggest upsides are primarily for users of digital oceans other deployment tools, that are not running on rented VMs. Also given the price of DO's container registry, we would most likely migrate to Docker Hub, if the project had continued.
 
 ### Monitoring
 - **Prometheus** provides several features which are useful for us:
@@ -195,24 +198,24 @@ We've upgraded from HTTP to HTTPS, but still expose the port of the application,
 - A03:2021-Injection
 We use the ORM Ruby Sequel, which includes sanitization of input before constructing SQL statements. Developers can create raw SQL statements, but we have opted not to do this given the impracticality and security risks.
 
-A04:2021-Insecure Design
+- A04:2021-Insecure Design
 Given the tiny feature set, we could not find anything particularly noteworthy about the design.
 
-A05:2021-Security Misconfiguration
+- A05:2021-Security Misconfiguration
 After experiencing a ransomware attack, requiring bitcoin for our data, we closed ports and changed the default password to prevent future attacks. Similarly, we discovered that `ufw` was disabled by the end of the course, which exposes all services to the web. Lastly, we are aware that CORS settings are overly permissive as elaborated in A01.
 
-A06:2021-Vulnerable and Outdated Components
+- A06:2021-Vulnerable and Outdated Components
 Our system has very weak password checking, which allow users to create easily hackable accounts. Simultaneously, weak email validation and not sending a confirmation email makes it particularly easy for bots to create users. In fact, 99.9% of our activity is from a single bot.
 
-On the developers side, we did not require 2FA to log into DigitalOcean, bringing our level of security down to the weakest login-type of the five team members. And technically, Dependabot has been suggesting a Ruby update from `3.3.7` to `3.4.4`, which have been postponed multiple times.
+- On the developers side, we did not require 2FA to log into DigitalOcean, bringing our level of security down to the weakest login-type of the five team members. And technically, Dependabot has been suggesting a Ruby update from `3.3.7` to `3.4.4`, which have been postponed multiple times.
 
-A08:2021-Software and Data Integrity
+- A08:2021-Software and Data Integrity
 We have not been able to identify any issues regarding this.
 
-A09:2021-Security Logging and Monitoring Failures
+- A09:2021-Security Logging and Monitoring Failures
 We experienced a log overflow causing our production service to fail. This failure did not cause any warnings, causing three days of downtime for our application. We will elaborate on how we fixed this when reflecting on system operation.
 
-A10:2021-Server-Side Request Forgery
+- A10:2021-Server-Side Request Forgery
 We have not been able to identify any issues regarding this.
 
 ## Use of AI

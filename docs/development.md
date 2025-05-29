@@ -1,6 +1,7 @@
 # Development
 
 - [Development](#development)
+    - [Developing erb files](#developing-erb-files)
   - [Development Workflow](#development-workflow)
     - [Development Environment](#development-environment)
     - [How to run locally](#how-to-run-locally)
@@ -9,6 +10,37 @@
   - [Playwright](#playwright)
     - [Setting up](#setting-up)
     - [How to record and generate](#how-to-record-and-generate)
+  - [Terraform](#terraform)
+    - [Setup](#setup)
+    - [Usage](#usage)
+
+
+## Developing erb files
+
+The `.erb` files are in folder `templates/`
+
+read more about the erb syntax [here](https://www.puppet.com/docs/puppet/5.5/lang_template_erb.html)
+
+The css file is in the `public/stylesheets` folder.
+
+The erb structure and syntax
+```erb
+<%# Non-printing tag ↓ -%>
+<% if @keys_enable -%>
+<%# Expression-printing tag ↓ -%>
+keys <%= @keys_file %>
+<% unless @keys_trusted.empty? -%>
+trustedkey <%= @keys_trusted.join(' ') %>
+<% end -%>
+<% if @keys_requestkey != '' -%>
+requestkey <%= @keys_requestkey %>
+<% end -%>
+<% if @keys_controlkey != '' -%>
+controlkey <%= @keys_controlkey %>
+<% end -%>
+
+<% end -%>
+``` 
 
 ## Development Workflow
 
@@ -65,6 +97,42 @@ We typically worked in three teams
 1. Nicolai
 1. Gábor and Zalán
 1. Sebastian and Nicklas
+
+## Database
+
+## Database
+
+### Migrations
+
+For more information go to [sequel documentation](https://sequel.jeremyevans.net/documentation.html)
+We have created a folder `migrations/` that contains the database changes
+
+For development: `manage_migrations_dev.rb` used in `docker-compose.dev.yml`
+For production: `manage_migrations.rb`used in `docker-compose.yml`
+
+This creates a migration of the current database, in this way you can see if the migrations have been applied to the database
+This should be run inside the docker container (run Interactive Development 1. and then maybe CTRL+C)
+
+```bash
+sequel -d <DB_URL> 
+```
+
+### Setup
+Create and run a PostgreSQL docker container:
+`docker run --name minitwit-postgres --network=minitwit -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres`
+
+Restoring from a dump file:
+```
+docker exec -it minitwit-postgres /bin/bash
+psql -U postgres -d minitwit -f minitwit_db.sql
+
+```
+
+Creating a dump file:
+`docker exec minitwit-postgres pg_dump -U postgres -F t postgres > db_dump.sql`
+
+### ORM
+The Ruby application communicates with the PostgreSQL database through the [Sequel](https://sequel.jeremyevans.net/) ORM, which handles the database connection, manages the connection pool, and provides an abstraction for executing SQL queries and mapping their results to Ruby objects.
 
 ## Playwright
 

@@ -13,7 +13,7 @@ This project serves as a practical example of DevOps best practices including in
 - [Architecture](./docs/architecture.md)
 - [Deployment](./docs/deployment.md)
 - [Development](./docs/development.md)
-- [Monitoring+logging](./docs/monitoring-logging.md)
+- [Monitoring, logging](./docs/monitoring-logging.md)
 - [Testing](./docs/testing.md)
 - [Workflows](./docs/workflows.md)
 - [Environment Variables](./docs/environment-variables.md)
@@ -433,7 +433,7 @@ To destroy the infrastructure, run the following command in the `terraform` dire
 This will prompt you for confirmation before destroying the infrastructure. Type `y` to confirm.
 **Note** that this will destroy all resources created by the `bootstrap.sh` script, including the database and any other resources. Make sure to back up any important data before running this command.
 
-## Monitoring
+# Monitoring
 
 Monitoring is implemented using Prometheus + Grafana.
 
@@ -453,13 +453,13 @@ Currently configured alerts:
 
 - Email alerting when 5XX (server-side) error count exceeds the threshold, on the "HTTP error response count" panel
 
-### How to modify dashboard/metrics:
+## How to modify dashboard/metrics:
 
 1. Go to the dashboard on the monitoring interface, make changes. You can add, remove or change panels.
 2. You cannot save changes from the UI. Export the whole dashboard as json, and overwrite [this](./grafana/predefined-dashboards/minitwit_dashboard.json) file.
 3. Restart the grafana docker container.
 
-### How to add new alert rules:
+## How to add new alert rules:
 
 1. Go to the dashboard, select the panel you want to add alerts to.
 2. Create and save alert.
@@ -467,7 +467,7 @@ Currently configured alerts:
 4. Save it under [this](./grafana/alerting/alert_rules.yaml) file (append it to section "groups").
 5. Restart the grafana docker container.
 
-### How to modify alert rules:
+## How to modify alert rules:
 
 1. Go to the dashboard, select the panel, then the existing alert rule.
 2. Select "Export with modifications".
@@ -475,7 +475,7 @@ Currently configured alerts:
 4. Save it under the relevant file, as discussed before.
 5. Restart the grafana docker container.
 
-## Logging
+# Logging
 
 Logging is implemented using the ELFK stack (Elasticsearch, Logstash, Filebeat, Kibana).
 

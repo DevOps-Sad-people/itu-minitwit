@@ -8,9 +8,9 @@
     - [Create a new test](#create-a-new-test)
 - [Simulator Tests](#simulator-tests)
 
-# UI-Testing
+## UI-Testing
 
-## Selenium vs Playwright
+### Selenium vs Playwright
 
 **Selenium**
 
@@ -51,9 +51,9 @@ Playwright is fairly new to the automation scene created in 2020. It is faster t
 We tried to implement both Selenium and Playwright. For us it was impossible to get the Selenium to work, we had critical problems with the external browser drivers needed for the Selenium framework to work. Playwright did not need external dirvers since built in protocol clients and was easy to setup and use to develop new UI test. 
 
 
-## Playwright Testing
+### Playwright Testing
 
-### How to run
+#### How to run
 How to run all test locally - this will find the test automatically
 
 ```bash
@@ -70,7 +70,7 @@ if you want to only run ONE file
 ```bash
 pytest Playwright/test_signup.py  --browser chrome --headed --slowmo 200
 ```
-### Create a new test
+#### Create a new test
 1. Create a new file in the `Playwright` folder with the name `test_<new_test>.py`
 1. The file should have functions to test the new functionality
 1. The function take in the `Page` class from `playwright.sync_api` 
@@ -78,7 +78,7 @@ pytest Playwright/test_signup.py  --browser chrome --headed --slowmo 200
 1. Then the rest of the function should test the functionality of the page
 1. Read the next section to see how to record a test
 
-# Simulator Tests
+## Simulator Tests
 
 The simulator can be found in the folder `simulator/` and contains
 - `minitwit_scenario.csv` (data)

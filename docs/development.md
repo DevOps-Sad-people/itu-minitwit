@@ -100,8 +100,6 @@ We typically worked in three teams
 
 ## Database
 
-## Database
-
 ### Migrations
 
 For more information go to [sequel documentation](https://sequel.jeremyevans.net/documentation.html)
@@ -177,11 +175,13 @@ playwright codegen http://localhost:4567/public
 Then you can use the recorder tool to create the test and copy it to the python file `test_<new_test>.py` and function you have created.
 
 
-# Terraform
+## Terraform
+
 We use Terraform to manage our production infrastructure. The Terraform code is located in the `terraform` directory.
 
-## Setup
-### Install `jq`
+### Setup
+
+#### Install `jq`
 
 Some of the scripts use `jq` which is a cli tool for parsing JSON.
 
@@ -200,10 +200,12 @@ On other systems:
 
 Download the binaries here: https://stedolan.github.io/jq/ and put them in a folder included in your system's PATH.
 
-### Install Terraform
+#### Install Terraform
+
 Follow the instructions here: https://learn.hashicorp.com/tutorials/terraform/install-cli
 
-### Install AWS CLI
+#### Install AWS CLI
+
 We use the AWS CLI to fetch and upload files to DigitalOcean Spaces Object Storage, which is an S3-compatible object storage service. The AWS CLI is a command-line tool for managing AWS services, but it can also be used with other S3-compatible services like DigitalOcean Spaces Object Storage.
 
 You can install it with the following commands:
@@ -219,7 +221,8 @@ On Ubuntu:
 sudo apt install -y awscli
 ```
 
-### Add secrets
+#### Add secrets
+
 You need to add a file called `secrets` in the `terraform` directory. You can use the `secrets_template` file as a template.
 You can copy it with the following command:
 
@@ -248,11 +251,13 @@ The `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are your DigitalOcean Spaces
 The `DIGITAL_OCEAN_KEY` is used to sign to the regestry. You can create one in the DigitalOcean API control panel.
 
 
-## Usage
-### Modifying the infrastructure
+### Usage
+
+#### Modifying the infrastructure
+
 To modify the infrastructure, you can edit the Terraform files in the `terraform` directory. The main file is `minitwit_swarm_cluster.tf`, which contains the resources and their configurations.
 
-### Creating and updating the infrastructure
+#### Creating and updating the infrastructure
 
 We create the `bootstrap.sh` script to bootstrap the infrastructure. This script will create the necessary resources in DigitalOcean and configure them for use with our application.
 
@@ -262,7 +267,8 @@ Make sure to be in the `terraform` directory and run the following command to cr
 ./bootstrap.sh
 ```
 
-### Destroying the infrastructure
+#### Destroying the infrastructure
+
 To destroy the infrastructure, run the following command in the `terraform` directory:
 
 ```bash
